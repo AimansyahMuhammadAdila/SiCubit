@@ -1,0 +1,42 @@
+#--------------------------------------------------------------------
+# Application Environment
+#--------------------------------------------------------------------
+.env
+
+#--------------------------------------------------------------------
+# Writable Directory (Cache, Logs, Uploads, Session, etc.)
+#--------------------------------------------------------------------
+writable/*
+!writable/.gitkeep
+!writable/cache/
+!writable/debugbar/
+!writable/logs/
+!writable/session/
+!writable/uploads/
+
+# Kecualikan isinya tapi pertahankan foldernya
+writable/cache/*
+!writable/cache/.gitkeep
+writable/debugbar/*
+!writable/debugbar/.gitkeep
+writable/logs/*
+!writable/logs/.gitkeep
+writable/session/*
+!writable/session/.gitkeep
+writable/uploads/*
+!writable/uploads/.gitkeep
+
+#--------------------------------------------------------------------
+# System & Vendor
+#--------------------------------------------------------------------
+vendor/
+system/
+
+#--------------------------------------------------------------------
+# OS & IDE Settings
+#--------------------------------------------------------------------
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
