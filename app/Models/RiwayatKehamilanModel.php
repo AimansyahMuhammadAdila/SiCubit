@@ -15,7 +15,7 @@ class RiwayatKehamilanModel extends Model
     protected $updatedField     = 'updated_at';
 
     protected $allowedFields = [
-        'id_ibu',
+        'user_id',
         'tgl_pengisian',
         'kehamilan_ke',
         'umur_kehamilan',
@@ -31,7 +31,7 @@ class RiwayatKehamilanModel extends Model
     ];
 
     protected $validationRules = [
-        'id_ibu'          => 'required|integer',
+        'user_id'          => 'required|integer',
         'tgl_pengisian'   => 'required|valid_date',
         'kehamilan_ke'    => 'required|integer|greater_than[0]',
         'umur_kehamilan'  => 'required|integer|greater_than[0]|less_than[46]',
@@ -47,11 +47,11 @@ class RiwayatKehamilanModel extends Model
     ];
 
     /**
-     * Ambil semua riwayat kehamilan berdasarkan ID ibu.
+     * Ambil semua riwayat kehamilan berdasarkan ID user.
      */
-    public function getByIbu(int $idIbu): array
+    public function getByUser(int $userId): array
     {
-        return $this->where('id_ibu', $idIbu)
+        return $this->where('user_id', $userId)
                     ->orderBy('tgl_pengisian', 'DESC')
                     ->findAll();
     }
@@ -59,10 +59,22 @@ class RiwayatKehamilanModel extends Model
     /**
      * Ambil riwayat kehamilan terakhir.
      */
-    public function getLatestByIbu(int $idIbu): ?array
+    public function getLatestByUser(int $userId): ?array
     {
-        return $this->where('id_ibu', $idIbu)
+        return $this->where('user_id', $userId)
                     ->orderBy('tgl_pengisian', 'DESC')
                     ->first();
+    }
+
+    /**
+     * Ambil data riwayat kehamilan.
+     * Jika $id false, ambil semua. Jika ada id, ambil satu.
+     */
+    public function getRiwayatKehamilan($id = false)
+    {
+        if ($id === false) {
+            return $this->findAll();
+        }
+        return $this->where(['id' => $id])->first();
     }
 }

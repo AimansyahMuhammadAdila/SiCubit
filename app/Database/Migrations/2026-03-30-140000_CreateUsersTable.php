@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateIbuTable extends Migration
+class CreateUsersTable extends Migration
 {
     public function up()
     {
@@ -19,10 +19,16 @@ class CreateIbuTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
             ],
+            'role' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 20,
+                'default'    => 'ibu',
+            ],
             'umur' => [
                 'type'       => 'INT',
                 'constraint' => 3,
                 'unsigned'   => true,
+                'null'       => true,
             ],
             'pekerjaan' => [
                 'type'       => 'VARCHAR',
@@ -34,6 +40,7 @@ class CreateIbuTable extends Migration
                 'constraint' => 3,
                 'unsigned'   => true,
                 'default'    => 0,
+                'null'       => true,
             ],
             'no_telp' => [
                 'type'       => 'VARCHAR',
@@ -69,11 +76,11 @@ class CreateIbuTable extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->createTable('ibu', true);
+        $this->forge->createTable('users', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('ibu', true);
+        $this->forge->dropTable('users', true);
     }
 }

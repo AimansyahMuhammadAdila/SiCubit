@@ -3,7 +3,7 @@
 namespace App\Controllers\Actions;
 
 use App\Controllers\BaseController;
-use App\Models\IbuModel;
+use App\Models\UserModel;
 use App\Models\RiwayatPraKehamilanModel;
 use App\Models\RiwayatKehamilanModel;
 use App\Models\RiwayatPersalinanModel;
@@ -12,7 +12,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class DataReadAction extends BaseController
 {
-    protected IbuModel                 $ibuModel;
+    protected UserModel                $userModel;
     protected RiwayatPraKehamilanModel $praKehamilanModel;
     protected RiwayatKehamilanModel    $kehamilanModel;
     protected RiwayatPersalinanModel   $persalinanModel;
@@ -20,7 +20,7 @@ class DataReadAction extends BaseController
 
     public function __construct()
     {
-        $this->ibuModel          = new IbuModel();
+        $this->userModel         = new UserModel();
         $this->praKehamilanModel = new RiwayatPraKehamilanModel();
         $this->kehamilanModel    = new RiwayatKehamilanModel();
         $this->persalinanModel   = new RiwayatPersalinanModel();
@@ -32,22 +32,22 @@ class DataReadAction extends BaseController
     // ---------------------------------------------------------------
     public function profil(): ResponseInterface
     {
-        $idIbu = session('id_ibu');
-        $ibu   = $this->ibuModel->find($idIbu);
+        $userId = session('user_id');
+        $user   = $this->userModel->find($userId);
 
-        if (!$ibu) {
+        if (!$user) {
             return $this->response->setJSON([
                 'status'  => 'error',
-                'message' => 'Data ibu tidak ditemukan.',
+                'message' => 'Data user tidak ditemukan.',
             ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
         // Hapus password_hash dari response
-        unset($ibu['password_hash']);
+        unset($user['password_hash']);
 
         return $this->response->setJSON([
             'status' => 'success',
-            'data'   => $ibu,
+            'data'   => $user,
         ]);
     }
 
@@ -56,14 +56,14 @@ class DataReadAction extends BaseController
     // ---------------------------------------------------------------
     public function riwayat(): ResponseInterface
     {
-        $idIbu = session('id_ibu');
+        $userId = session('user_id');
 
         return $this->response->setJSON([
             'status' => 'success',
             'data'   => [
-                'pra_kehamilan' => $this->praKehamilanModel->getByIbu($idIbu),
-                'kehamilan'     => $this->kehamilanModel->getByIbu($idIbu),
-                'persalinan'    => $this->persalinanModel->getByIbu($idIbu),
+                'pra_kehamilan' => $this->praKehamilanModel->getByUser($userId),
+                'kehamilan'     => $this->kehamilanModel->getByUser($userId),
+                'persalinan'    => $this->persalinanModel->getByUser($userId),
             ],
         ]);
     }
@@ -73,11 +73,11 @@ class DataReadAction extends BaseController
     // ---------------------------------------------------------------
     public function cekAsi(): ResponseInterface
     {
-        $idIbu = session('id_ibu');
+        $userId = session('user_id');
 
         return $this->response->setJSON([
             'status' => 'success',
-            'data'   => $this->asiModel->getByIbu($idIbu),
+            'data'   => $this->asiModel->getByUser($userId),
         ]);
     }
 
@@ -86,8 +86,8 @@ class DataReadAction extends BaseController
     // ---------------------------------------------------------------
     public function cekAsiLatest(): ResponseInterface
     {
-        $idIbu  = session('id_ibu');
-        $latest = $this->asiModel->getLatestByIbu($idIbu);
+        $userId = session('user_id');
+        $latest = $this->asiModel->getLatestByUser($userId);
 
         if (!$latest) {
             return $this->response->setJSON([
@@ -107,20 +107,20 @@ class DataReadAction extends BaseController
     // ---------------------------------------------------------------
     public function dashboard(): ResponseInterface
     {
-        $idIbu = session('id_ibu');
-        $ibu   = $this->ibuModel->find($idIbu);
+        $userId = session('user_id');
+        $user   = $this->userModel->find($userId);
 
-        unset($ibu['password_hash']);
+        unset($user['password_hash']);
 
-        $latestAsi       = $this->asiModel->getLatestByIbu($idIbu);
-        $latestKehamilan = $this->kehamilanModel->getLatestByIbu($idIbu);
+        $latestAsi       = $this->asiModel->getLatestByUser($userId);
+        $latestKehamilan = $this->kehamilanModel->getLatestByUser($userId);
 
         return $this->response->setJSON([
             'status' => 'success',
             'data'   => [
-                'ibu'               => $ibu,
-                'total_cek_asi'     => count($this->asiModel->getByIbu($idIbu)),
-                'total_kehamilan'   => count($this->kehamilanModel->getByIbu($idIbu)),
+                'user'              => $user,
+                'total_cek_asi'     => count($this->asiModel->getByUser($userId)),
+                'total_kehamilan'   => count($this->kehamilanModel->getByUser($userId)),
                 'latest_asi'        => $latestAsi,
                 'latest_kehamilan'  => $latestKehamilan,
             ],

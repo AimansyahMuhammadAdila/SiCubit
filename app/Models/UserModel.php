@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class IbuModel extends Model
+class UserModel extends Model
 {
-    protected $table            = 'ibu';
+    protected $table            = 'users';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
@@ -24,6 +24,7 @@ class IbuModel extends Model
         'alamat',
         'id_kabkota',
         'id_puskesmas',
+        'role',
         'password_hash',
     ];
 
@@ -33,8 +34,8 @@ class IbuModel extends Model
 
     protected $validationRules = [
         'nama'     => 'required|min_length[3]|max_length[100]',
-        'umur'     => 'required|integer|greater_than[0]|less_than[100]',
-        'no_telp'  => 'required|min_length[8]|max_length[20]|is_unique[ibu.no_telp,id,{id}]',
+        'umur'     => 'permit_empty|integer|greater_than[0]|less_than[100]',
+        'no_telp'  => 'required|min_length[8]|max_length[20]|is_unique[users.no_telp,id,{id}]',
         'password_hash' => 'required',
     ];
 
@@ -74,10 +75,10 @@ class IbuModel extends Model
         $db = \Config\Database::connect();
 
         $ibu['total_riwayat_kehamilan'] = $db->table('riwayat_kehamilan')
-            ->where('id_ibu', $id)->countAllResults();
+            ->where('user_id', $id)->countAllResults();
 
         $ibu['total_cek_asi'] = $db->table('cek_kelancaran_asi')
-            ->where('id_ibu', $id)->countAllResults();
+            ->where('user_id', $id)->countAllResults();
 
         return $ibu;
     }

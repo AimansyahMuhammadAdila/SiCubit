@@ -15,7 +15,7 @@ class RiwayatPersalinanModel extends Model
     protected $updatedField     = 'updated_at';
 
     protected $allowedFields = [
-        'id_ibu',
+        'user_id',
         'tgl_pengisian',
         'cara_persalinan',
         'umur_kehamilan_salin',
@@ -23,7 +23,7 @@ class RiwayatPersalinanModel extends Model
     ];
 
     protected $validationRules = [
-        'id_ibu'                => 'required|integer',
+        'user_id'                => 'required|integer',
         'tgl_pengisian'         => 'required|valid_date',
         'cara_persalinan'       => 'required|in_list[Normal,Sectio Caesarea]',
         'umur_kehamilan_salin'  => 'required|integer|greater_than[0]|less_than[46]',
@@ -31,12 +31,24 @@ class RiwayatPersalinanModel extends Model
     ];
 
     /**
-     * Ambil semua riwayat persalinan berdasarkan ID ibu.
+     * Ambil semua riwayat persalinan berdasarkan ID user.
      */
-    public function getByIbu(int $idIbu): array
+    public function getByUser(int $userId): array
     {
-        return $this->where('id_ibu', $idIbu)
+        return $this->where('user_id', $userId)
                     ->orderBy('tgl_pengisian', 'DESC')
                     ->findAll();
+    }
+
+    /**
+     * Ambil data riwayat persalinan.
+     * Jika $id false, ambil semua. Jika ada id, ambil satu.
+     */
+    public function getRiwayatPersalinan($id = false)
+    {
+        if ($id === false) {
+            return $this->findAll();
+        }
+        return $this->where(['id' => $id])->first();
     }
 }

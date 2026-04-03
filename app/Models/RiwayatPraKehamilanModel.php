@@ -15,7 +15,7 @@ class RiwayatPraKehamilanModel extends Model
     protected $updatedField     = 'updated_at';
 
     protected $allowedFields = [
-        'id_ibu',
+        'user_id',
         'tgl_pengisian',
         'bb_sebelum_hamil',
         'riwayat_penyakit',
@@ -23,19 +23,31 @@ class RiwayatPraKehamilanModel extends Model
     ];
 
     protected $validationRules = [
-        'id_ibu'          => 'required|integer',
+        'user_id'          => 'required|integer',
         'tgl_pengisian'   => 'required|valid_date',
         'bb_sebelum_hamil' => 'permit_empty|decimal',
         'riwayat_abortus' => 'permit_empty|in_list[Ya,Tidak]',
     ];
 
     /**
-     * Ambil semua riwayat pra-kehamilan berdasarkan ID ibu.
+     * Ambil semua riwayat pra-kehamilan berdasarkan ID user.
      */
-    public function getByIbu(int $idIbu): array
+    public function getByUser(int $userId): array
     {
-        return $this->where('id_ibu', $idIbu)
+        return $this->where('user_id', $userId)
                     ->orderBy('tgl_pengisian', 'DESC')
                     ->findAll();
+    }
+
+    /**
+     * Ambil data riwayat pra-kehamilan.
+     * Jika $id false, ambil semua. Jika ada id, ambil satu.
+     */
+    public function getRiwayatPraKehamilan($id = false)
+    {
+        if ($id === false) {
+            return $this->findAll();
+        }
+        return $this->where(['id' => $id])->first();
     }
 }

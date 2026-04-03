@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateRiwayatPraKehamilanTable extends Migration
+class CreateVideoTable extends Migration
 {
     public function up()
     {
@@ -15,27 +15,27 @@ class CreateRiwayatPraKehamilanTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'user_id' => [
+            'judul' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 255,
+            ],
+            'video_url' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 255,
+            ],
+            'deskripsi' => [
+                'type' => 'TEXT',
+                'null' => true,
+            ],
+            'id_penulis' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'tgl_pengisian' => [
-                'type' => 'DATE',
-            ],
-            'bb_sebelum_hamil' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '5,2',
-                'null'       => true,
-            ],
-            'riwayat_penyakit' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'riwayat_abortus' => [
+            'status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['Ya', 'Tidak'],
-                'default'    => 'Tidak',
+                'constraint' => ['draft', 'published'],
+                'default'    => 'published',
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -48,12 +48,12 @@ class CreateRiwayatPraKehamilanTable extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('riwayat_pra_kehamilan', true);
+        $this->forge->addForeignKey('id_penulis', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('video', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('riwayat_pra_kehamilan', true);
+        $this->forge->dropTable('video', true);
     }
 }

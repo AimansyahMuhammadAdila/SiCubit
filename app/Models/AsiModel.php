@@ -15,7 +15,7 @@ class AsiModel extends Model
     protected $updatedField     = 'updated_at';
 
     protected $allowedFields = [
-        'id_ibu',
+        'user_id',
         'tgl_pengisian',
         'kondisi_puting',
         'frekuensi_menyusui',
@@ -33,7 +33,7 @@ class AsiModel extends Model
     ];
 
     protected $validationRules = [
-        'id_ibu'              => 'required|integer',
+        'user_id'              => 'required|integer',
         'tgl_pengisian'       => 'required|valid_date',
         'kondisi_puting'      => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam]',
         'frekuensi_menyusui'  => 'required|integer|greater_than_equal_to[0]',
@@ -127,11 +127,11 @@ class AsiModel extends Model
     }
 
     /**
-     * Ambil semua riwayat cek ASI berdasarkan ID ibu.
+     * Ambil semua riwayat cek ASI berdasarkan ID user.
      */
-    public function getByIbu(int $idIbu): array
+    public function getByUser(int $userId): array
     {
-        return $this->where('id_ibu', $idIbu)
+        return $this->where('user_id', $userId)
                     ->orderBy('tgl_pengisian', 'DESC')
                     ->findAll();
     }
@@ -139,10 +139,22 @@ class AsiModel extends Model
     /**
      * Ambil cek ASI terakhir.
      */
-    public function getLatestByIbu(int $idIbu): ?array
+    public function getLatestByUser(int $userId): ?array
     {
-        return $this->where('id_ibu', $idIbu)
+        return $this->where('user_id', $userId)
                     ->orderBy('tgl_pengisian', 'DESC')
                     ->first();
+    }
+
+    /**
+     * Ambil data cek ASI.
+     * Jika $id false, ambil semua. Jika ada id, ambil satu.
+     */
+    public function getCekAsi($id = false)
+    {
+        if ($id === false) {
+            return $this->findAll();
+        }
+        return $this->where(['id' => $id])->first();
     }
 }

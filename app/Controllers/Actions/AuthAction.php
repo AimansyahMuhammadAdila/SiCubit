@@ -3,16 +3,16 @@
 namespace App\Controllers\Actions;
 
 use App\Controllers\BaseController;
-use App\Models\IbuModel;
+use App\Models\UserModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class AuthAction extends BaseController
 {
-    protected IbuModel $ibuModel;
+    protected UserModel $userModel;
 
     public function __construct()
     {
-        $this->ibuModel = new IbuModel();
+        $this->userModel = new UserModel();
     }
 
     // ---------------------------------------------------------------
@@ -25,7 +25,7 @@ class AuthAction extends BaseController
         $rules = [
             'nama'          => 'required|min_length[3]|max_length[100]',
             'umur'          => 'required|integer|greater_than[0]|less_than[100]',
-            'no_telp'       => 'required|min_length[8]|max_length[20]|is_unique[ibu.no_telp]',
+            'no_telp'       => 'required|min_length[8]|max_length[20]|is_unique[users.no_telp]',
             'password'      => 'required|min_length[6]',
             'konfirmasi_password' => 'required|matches[password]',
             'pekerjaan'     => 'permit_empty|max_length[100]',
@@ -81,18 +81,18 @@ class AuthAction extends BaseController
         ];
 
         // Simpan ke database
-        if (!$this->ibuModel->insert($data, false)) {
+        if (!$this->userModel->insert($data, false)) {
             return $this->response->setJSON([
                 'status'  => 'error',
                 'message' => 'Gagal menyimpan data.',
-                'errors'  => $this->ibuModel->errors(),
+                'errors'  => $this->userModel->errors(),
             ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return $this->response->setJSON([
             'status'  => 'success',
             'message' => 'Registrasi berhasil.',
-            'data'    => ['id' => $this->ibuModel->getInsertID()],
+            'data'    => ['id' => $this->userModel->getInsertID()],
         ])->setStatusCode(ResponseInterface::HTTP_CREATED);
     }
 
@@ -119,9 +119,9 @@ class AuthAction extends BaseController
         $password = $this->request->getPost('password');
 
         // Cari user berdasarkan no_telp
-        $ibu = $this->ibuModel->findByNoTelp($noTelp);
+        $user = $this->userModel->findByNoTelp($noTelp);
 
-        if (!$ibu) {
+        if (!$user) {
             return $this->response->setJSON([
                 'status'  => 'error',
                 'message' => 'Nomor telepon tidak ditemukan.',
@@ -129,7 +129,7 @@ class AuthAction extends BaseController
         }
 
         // Verifikasi password
-        if (!password_verify($password, $ibu['password_hash'])) {
+        if (!password_verify($password, $user['password_hash'])) {
             return $this->response->setJSON([
                 'status'  => 'error',
                 'message' => 'Password salah.',
@@ -139,9 +139,10 @@ class AuthAction extends BaseController
         // Set session
         $session = session();
         $session->set([
-            'id_ibu'    => $ibu['id'],
-            'nama'      => $ibu['nama'],
-            'no_telp'   => $ibu['no_telp'],
+            'user_id'   => $user['id'],
+            'nama'      => $user['nama'],
+            'no_telp'   => $user['no_telp'],
+            'role'      => $user['role'],
             'logged_in' => true,
         ]);
 
@@ -149,9 +150,10 @@ class AuthAction extends BaseController
             'status'  => 'success',
             'message' => 'Login berhasil.',
             'data'    => [
-                'id'     => $ibu['id'],
-                'nama'   => $ibu['nama'],
-                'no_telp' => $ibu['no_telp'],
+                'id'     => $user['id'],
+                'nama'   => $user['nama'],
+                'no_telp' => $user['no_telp'],
+                'role'   => $user['role'],
             ],
         ]);
     }

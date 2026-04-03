@@ -15,7 +15,7 @@ class CreateRiwayatKehamilanTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'id_ibu' => [
+            'user_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -97,7 +97,7 @@ class CreateRiwayatKehamilanTable extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('id_ibu', 'ibu', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('riwayat_kehamilan', true);
     }
 

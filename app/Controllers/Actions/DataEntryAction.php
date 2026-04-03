@@ -80,8 +80,8 @@ class DataEntryAction extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        // Ambil id_ibu dari session
-        $idIbu        = session('id_ibu');
+        // Ambil user_id dari session
+        $userId       = session('user_id');
         $tglPengisian = $this->request->getPost('tgl_pengisian');
 
         // ---- Mulai Database Transaction ----
@@ -90,7 +90,7 @@ class DataEntryAction extends BaseController
 
         // 1. Simpan Riwayat Pra Kehamilan
         $dataPraKehamilan = [
-            'id_ibu'           => $idIbu,
+            'user_id'          => $userId,
             'tgl_pengisian'    => $tglPengisian,
             'bb_sebelum_hamil' => $this->request->getPost('bb_sebelum_hamil'),
             'riwayat_penyakit' => $this->request->getPost('riwayat_penyakit'),
@@ -100,7 +100,7 @@ class DataEntryAction extends BaseController
 
         // 2. Simpan Riwayat Kehamilan
         $dataKehamilan = [
-            'id_ibu'          => $idIbu,
+            'user_id'         => $userId,
             'tgl_pengisian'   => $tglPengisian,
             'kehamilan_ke'    => (int) $this->request->getPost('kehamilan_ke'),
             'umur_kehamilan'  => (int) $this->request->getPost('umur_kehamilan'),
@@ -118,7 +118,7 @@ class DataEntryAction extends BaseController
 
         // 3. Simpan Riwayat Persalinan
         $dataPersalinan = [
-            'id_ibu'                => $idIbu,
+            'user_id'               => $userId,
             'tgl_pengisian'         => $tglPengisian,
             'cara_persalinan'       => $this->request->getPost('cara_persalinan'),
             'umur_kehamilan_salin'  => (int) $this->request->getPost('umur_kehamilan_salin'),
@@ -146,7 +146,7 @@ class DataEntryAction extends BaseController
         $statusAsi = $this->asiModel->hitungKecukupanAsi($dataAsiInput);
 
         $dataAsi = array_merge($dataAsiInput, [
-            'id_ibu'              => $idIbu,
+            'user_id'             => $userId,
             'tgl_pengisian'       => $tglPengisian,
             'status_kecukupan_asi' => $statusAsi,
         ]);
