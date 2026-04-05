@@ -5,42 +5,80 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
 
 // ---------------------------------------------------------------
-// API Routes — SI CUBIT Backend
+// 1. FRONTEND ROUTES (HALAMAN WEB)
 // ---------------------------------------------------------------
 
-// Auth (public — tidak perlu login)
-$routes->post('api/register', 'Actions\AuthAction::register');
-$routes->post('api/login',    'Actions\AuthAction::login');
-$routes->post('api/logout',   'Actions\AuthAction::logout');
+// Halaman Publik (Tanpa Login)
+$routes->get('/', 'Auth::index');
+$routes->get('login', 'Auth::login');
+$routes->get('register', 'Auth::register');
+$routes->get('lupa-password', 'Auth::lupaPassword'); // <-- Pindah ke sini (Publik)
 
-// Data Entry & Read (protected — wajib login)
-$routes->group('api', ['filter' => 'auth'], static function ($routes) {
-    // POST — simpan data
-    $routes->post('save-riwayat', 'Actions\DataEntryAction::saveData');
+// Halaman Internal (Wajib Login)
+$routes->get('dashboard', 'Dashboard::index');
+$routes->get('chat', 'Chat::index');
+$routes->get('riwayat', 'Riwayat::index');
+$routes->get('edukasi/video', 'Edukasi::video');
+$routes->get('laktasi/cek', 'Laktasi::cek');
+$routes->get('profil', 'Profil::index');
+$routes->get('profil/edit', 'Profil::edit'); // <-- Pindah ke sini (Web)
+$routes->get('statistik', 'Dashboard::statistik');
 
-    // GET — ambil data
-    $routes->get('profil',        'Actions\DataReadAction::profil');
-    $routes->get('riwayat',       'Actions\DataReadAction::riwayat');
-    $routes->get('cek-asi',       'Actions\DataReadAction::cekAsi');
-    $routes->get('cek-asi/latest', 'Actions\DataReadAction::cekAsiLatest');
-    $routes->get('dashboard',     'Actions\DataReadAction::dashboard');
-    // Edukasi (Ibu/Public)
-    $routes->get('artikel',            'Actions\ContentAction::listArtikel');
-    $routes->get('artikel/(:segment)', 'Actions\ContentAction::getArtikel/$1');
-    $routes->get('video',              'Actions\ContentAction::listVideo');
-    $routes->get('video/(:num)',       'Actions\ContentAction::getVideo/$1');
+// Halaman Khusus Admin
+$routes->get('admin/login', 'AuthAdmin::login');
+    $routes->get('admin/logout', 'AuthAdmin::logout');
 
-    // Edukasi (Admin CRUD)
-    $routes->group('admin', static function ($routes) {
-        $routes->post('artikel',          'Actions\AdminContentAction::createArtikel');
-        $routes->put('artikel/(:num)',    'Actions\AdminContentAction::updateArtikel/$1');
-        $routes->delete('artikel/(:num)', 'Actions\AdminContentAction::deleteArtikel/$1');
-
-        $routes->post('video',          'Actions\AdminContentAction::createVideo');
-        $routes->put('video/(:num)',    'Actions\AdminContentAction::updateVideo/$1');
-        $routes->delete('video/(:num)', 'Actions\AdminContentAction::deleteVideo/$1');
+    // Halaman Dashboard Admin (Wajib Login)
+    $routes->group('admin', ['filter' => 'auth'], function ($routes) {
+        $routes->get('dashboard', 'Admin::index');
+        $routes->get('data-ibu', 'Admin::dataIbu');
     });
+
+    // --- RUTE API (PROSES) ---
+    $routes->post('api/admin/login', 'Actions\AuthAction::adminLogin');
+
+
+// ---------------------------------------------------------------
+// 2. API ROUTES (BACKEND SI CUBIT)
+// ---------------------------------------------------------------
+
+// API Publik (Bisa diakses tanpa login)
+$routes->post('api/register', 'Actions\AuthAction::register');
+$routes->post('api/login', 'Actions\AuthAction::login');
+$routes->post('api/logout', 'Actions\AuthAction::logout');
+$routes->post('api/reset-password', 'Actions\AuthAction::resetPassword'); // <-- Pindah ke sini (Publik)
+
+// API Wilayah (Dropdown Dinamis)
+$routes->get('api/wilayah/kabkota', 'Actions\AuthAction::getKabkota');
+$routes->get('api/wilayah/puskesmas/(:segment)', 'Actions\AuthAction::getPuskesmas/$1');
+$routes->post('api/admin/login', 'Actions\AuthAction::adminLogin');
+
+// API Terlindungi (Wajib pakai filter 'auth' alias sudah login)
+$routes->group('api', ['namespace' => 'App\Controllers\Actions', 'filter' => 'auth'], static function ($routes) {
+
+    // POST — Simpan Data
+    $routes->post('save-riwayat', 'DataEntryAction::saveData');
+    $routes->post('save-asi', 'DataEntryAction::saveAsiOnly');
+    $routes->post('profil/update', 'ProfilAction::update'); // <-- URL menjadi api/profil/update
+    $routes->post('chat/send', 'ChatAction::sendMessage');
+
+    // GET — Ambil Data (Baca)
+    $routes->get('profil', 'DataReadAction::profil');
+    $routes->get('riwayat', 'DataReadAction::riwayat');
+    $routes->get('cek-asi', 'DataReadAction::cekAsi');
+    $routes->get('cek-asi/latest', 'DataReadAction::cekAsiLatest');
+    $routes->get('dashboard', 'DataReadAction::dashboard');
+
+    // GET — Edukasi
+    $routes->get('artikel', 'ContentAction::listArtikel');
+    $routes->get('artikel/(:segment)', 'ContentAction::getArtikel/$1');
+    $routes->get('video', 'ContentAction::listVideo');
+    $routes->get('video/(:num)', 'ContentAction::getVideo/$1');
+
+    // --- RUTE HALAMAN WEB (TAMPILAN) ---
+
+    // Halaman Login Admin (Harus di luar group filter agar bisa dibuka umum)
+    
 });

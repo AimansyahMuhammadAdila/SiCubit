@@ -4,16 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class UserModel extends Model
+class IbuModel extends Model
 {
-    protected $table = 'users';
-    protected $primaryKey = 'id';
+    protected $table            = 'ibu';
+    protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType = 'array';
-    protected $useSoftDeletes = false;
-    protected $useTimestamps = true;
-    protected $createdField = 'created_at';
-    protected $updatedField = 'updated_at';
+    protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $useTimestamps    = true;
+    protected $createdField     = 'created_at';
+    protected $updatedField     = 'updated_at';
 
     protected $allowedFields = [
         'nama',
@@ -24,8 +24,7 @@ class UserModel extends Model
         'alamat',
         'id_kabkota',
         'id_puskesmas',
-        'role',
-        'password_hash'
+        'password_hash',
     ];
 
     // ---------------------------------------------------------------
@@ -33,19 +32,19 @@ class UserModel extends Model
     // ---------------------------------------------------------------
 
     protected $validationRules = [
-        'nama' => 'required|min_length[3]|max_length[100]',
-        'umur' => 'permit_empty|integer|greater_than[0]|less_than[100]',
-        'no_telp' => 'required|min_length[8]|max_length[20]|is_unique[users.no_telp,id,{id}]',
+        'nama'     => 'required|min_length[3]|max_length[100]',
+        'umur'     => 'required|integer|greater_than[0]|less_than[100]',
+        'no_telp'  => 'required|min_length[8]|max_length[20]|is_unique[ibu.no_telp,id,{id}]',
         'password_hash' => 'required',
     ];
 
     protected $validationMessages = [
         'nama' => [
-            'required' => 'Nama wajib diisi.',
+            'required'   => 'Nama wajib diisi.',
             'min_length' => 'Nama minimal 3 karakter.',
         ],
         'no_telp' => [
-            'required' => 'Nomor telepon wajib diisi.',
+            'required'  => 'Nomor telepon wajib diisi.',
             'is_unique' => 'Nomor telepon sudah terdaftar.',
         ],
     ];
@@ -75,22 +74,11 @@ class UserModel extends Model
         $db = \Config\Database::connect();
 
         $ibu['total_riwayat_kehamilan'] = $db->table('riwayat_kehamilan')
-            ->where('user_id', $id)->countAllResults();
+            ->where('id_ibu', $id)->countAllResults();
 
         $ibu['total_cek_asi'] = $db->table('cek_kelancaran_asi')
-            ->where('user_id', $id)->countAllResults();
+            ->where('id_ibu', $id)->countAllResults();
 
         return $ibu;
-    }
-    /**
-     * Ambil data user lengkap dengan nama Kabupaten/Kota dan Puskesmas (JOIN)
-     */
-    public function getUserWithWilayah(int $id): ?array
-    {
-        return $this->select('users.*, kabupaten_kota.nama as nama_kabkota, kabupaten_kota.tipe as tipe_kabkota, puskesmas.nama as nama_puskesmas')
-            ->join('kabupaten_kota', 'kabupaten_kota.id = users.id_kabkota', 'left')
-            ->join('puskesmas', 'puskesmas.id = users.id_puskesmas', 'left')
-            ->where('users.id', $id)
-            ->first();
     }
 }

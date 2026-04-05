@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title><?= esc($title) ?></title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#1a1ab7", "bg-soft": "#f8fafc" },
+                    fontFamily: { "display": ["Plus Jakarta Sans", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-bg-soft font-display min-h-screen flex overflow-x-hidden">
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden hidden"
+        onclick="toggleSidebar()"></div>
+
+    <aside id="admin-sidebar"
+        class="fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200 flex flex-col z-50 transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen">
+        <div class="p-8 flex items-center justify-between">
+            <div class="flex items-center gap-3 text-primary">
+                <span class="material-symbols-outlined text-3xl font-variation-fill">child_care</span>
+                <span class="font-black text-xl tracking-tighter uppercase">SI CUBIT</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 p-2"><span
+                    class="material-symbols-outlined">close</span></button>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-1">
+            <p class="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Layanan Utama</p>
+            <a href="#"
+                class="flex items-center gap-4 px-4 py-3.5 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 transition">
+                <span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+            <a href="<?= base_url('admin/data-ibu') ?>"
+                class="flex items-center gap-4 px-4 py-3.5 text-slate-500 hover:bg-slate-50 rounded-2xl font-semibold transition">
+                <span class="material-symbols-outlined">groups</span> Data Ibu & Anak
+            </a>
+        </nav>
+
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50">
+            <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border border-slate-100 mb-4">
+                <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">BN
+                </div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-slate-800 truncate">Bidan Nurul</p>
+                    <p class="text-[10px] text-slate-400 italic">Pusk. Banjarbaru</p>
+                </div>
+            </div>
+            <a href="<?= base_url('admin/login') ?>"
+                class="flex items-center justify-center gap-2 py-3 w-full bg-rose-50 text-rose-600 font-bold text-xs rounded-xl hover:bg-rose-100 transition">
+                <span class="material-symbols-outlined text-sm">logout</span> KELUAR SISTEM
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 min-w-0 p-4 lg:p-10">
+        <div
+            class="lg:hidden flex items-center justify-between mb-8 bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+            <button onclick="toggleSidebar()"
+                class="size-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600">
+                <span class="material-symbols-outlined text-xl">menu</span>
+            </button>
+            <span class="font-black text-primary italic">SI CUBIT</span>
+            <div class="size-10 rounded-xl bg-slate-100"></div>
+        </div>
+
+        <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight uppercase italic">Panel Kendali Bidan</h1>
+                <p class="text-slate-400 font-medium mt-1">Pemantauan Terpadu Puskesmas Banjarbaru, Kabupaten
+                    Banjarbaru.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-white px-6 py-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-xl">calendar_month</span>
+                    <span class="text-sm font-bold text-slate-700 italic"><?= date('l, d F Y') ?></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 group">
+                <div class="size-12 bg-blue-50 text-primary rounded-2xl flex items-center justify-center mb-5"><span
+                        class="material-symbols-outlined">group</span></div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ibu Terdaftar</p>
+                <h3 class="text-4xl font-black text-slate-800 tracking-tighter"><?= number_format($totalIbu) ?></h3>
+            </div>
+
+            <div class="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 group">
+                <div class="size-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-5"><span
+                        class="material-symbols-outlined">assignment_late</span></div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Perlu Validasi</p>
+                <h3 class="text-4xl font-black text-slate-800 tracking-tighter"><?= $perluCek ?></h3>
+            </div>
+
+            <div class="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 group">
+                <div class="size-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-5"><span
+                        class="material-symbols-outlined">heart_broken</span></div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Resiko Tinggi</p>
+                <h3 class="text-4xl font-black text-slate-800 tracking-tighter"><?= $resikoTinggi ?></h3>
+            </div>
+
+            <div class="bg-primary p-7 rounded-[2.5rem] text-white relative overflow-hidden group">
+                <span
+                    class="material-symbols-outlined absolute -right-4 -top-4 text-[120px] opacity-10">water_drop</span>
+                <p class="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-1">Status Sistem</p>
+                <h3 class="text-4xl font-black tracking-tighter italic">AKTIF</h3>
+                <p class="text-[10px] text-blue-100 font-bold mt-2 italic">Monitoring Real-time</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h3 class="font-black text-slate-800 italic flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary font-variation-fill">monitoring</span>
+                    PEMANTAUAN DATA MASUK
+                </h3>
+                <div class="flex gap-2">
+                    <button
+                        class="px-4 py-2 bg-slate-50 text-slate-500 rounded-xl text-xs font-bold border border-slate-100 hover:bg-slate-100 transition">HARI
+                        INI</button>
+                    <button
+                        class="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold border border-primary transition shadow-md shadow-primary/10">SEMUA
+                        DATA</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto no-scrollbar">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50/50 text-slate-400 text-[10px] font-black tracking-[0.1em] uppercase">
+                        <tr>
+                            <th class="px-10 py-6">IDENTITAS BUNDA</th>
+                            <th class="px-10 py-6">STATUS GIZI</th>
+                            <th class="px-10 py-6 text-center">KELANCARAN ASI</th>
+                            <th class="px-10 py-6">PROGRESS DATA</th>
+                            <th class="px-10 py-6">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        <?php foreach ($users as $u): ?>
+                            <tr class="hover:bg-slate-50/50 transition duration-300">
+                                <td class="px-10 py-7">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="size-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-primary">
+                                            <?= strtoupper(substr($u['nama'], 0, 2)) ?>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-slate-800 text-sm italic uppercase tracking-tighter">
+                                                <?= esc($u['nama']) ?></p>
+                                            <p class="text-[10px] text-slate-400"><?= esc($u['nama_puskesmas']) ?> •
+                                                <?= esc($u['umur']) ?> Thn</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-10 py-7">
+                                    <div class="flex items-center gap-2 text-xs font-bold text-green-600">
+                                        <span class="size-1.5 bg-green-500 rounded-full"></span> NORMAL
+                                    </div>
+                                </td>
+                                <td class="px-10 py-7 text-center">
+                                    <?php if ($u['status_asi'] === 'Ya'): ?>
+                                        <span
+                                            class="bg-green-100 text-green-700 text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">CUKUP</span>
+                                    <?php elseif ($u['status_asi'] === 'Tidak'): ?>
+                                        <span
+                                            class="bg-rose-600 text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">KURANG</span>
+                                    <?php else: ?>
+                                        <span
+                                            class="bg-slate-100 text-slate-400 text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">BELUM
+                                            ISI</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-10 py-7 text-xs font-bold text-slate-500">
+                                    <?= date('d/m/Y', strtotime($u['created_at'])) ?>
+                                </td>
+                                <td class="px-10 py-7">
+                                    <a href="<?= base_url('admin/detail/' . $u['id']) ?>"
+                                        class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black hover:bg-primary transition uppercase tracking-widest italic">DETAIL</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer
+            class="mt-20 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-slate-100 pt-10 pb-10 opacity-60">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-2xl font-variation-fill">school</span>
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] italic">POLTEKKES </p>
+            </div>
+            <p class="text-[10px] font-bold text-slate-400 italic">Project Investigasi Kesehatan Ibu & Anak</p>
+        </footer>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('admin-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+
+</html>
