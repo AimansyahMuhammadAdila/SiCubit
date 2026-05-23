@@ -58,7 +58,7 @@ class DataEntryAction extends BaseController
             'imd'                   => 'permit_empty|in_list[Ya,Tidak]',
 
             // Cek ASI
-            'kondisi_puting'      => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam]',
+            'kondisi_puting'      => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam,Menonjol,Pecah]',
             'frekuensi_menyusui'  => 'required|integer|greater_than_equal_to[0]',
             'lama_menyusui'       => 'required|integer|greater_than_equal_to[0]',
             'frekuensi_bab_bayi'  => 'required|integer|greater_than_equal_to[0]',
@@ -70,6 +70,8 @@ class DataEntryAction extends BaseController
             'warna_urin_bayi'             => 'permit_empty|in_list[Jernih,Kuning Muda,Kuning Pekat]',
             'payudara_penuh'              => 'permit_empty|in_list[Ya,Tidak]',
             'volume_pumping'              => 'permit_empty|decimal',
+            'bb_naik_sesuai_usia'         => 'permit_empty|in_list[Ya,Tidak]',
+            'kondisi_lainnya'             => 'permit_empty|string',
         ];
 
         if (!$this->validate($rules)) {
@@ -140,6 +142,8 @@ class DataEntryAction extends BaseController
             'warna_urin_bayi'              => $this->request->getPost('warna_urin_bayi') ?? 'Jernih',
             'payudara_penuh'               => $this->request->getPost('payudara_penuh') ?? 'Ya',
             'volume_pumping'               => $this->request->getPost('volume_pumping'),
+            'bb_naik_sesuai_usia'          => $this->request->getPost('bb_naik_sesuai_usia') ?? 'Ya',
+            'kondisi_lainnya'              => $this->request->getPost('kondisi_lainnya'),
         ];
 
         // Hitung status kecukupan ASI menggunakan service logic
@@ -170,4 +174,83 @@ class DataEntryAction extends BaseController
             ],
         ])->setStatusCode(ResponseInterface::HTTP_CREATED);
     }
+
+    // ---------------------------------------------------------------
+    // SAVE ASI ONLY — POST /api/save-asi
+    // Menyimpan data cek kelancaran ASI saja
+    // ---------------------------------------------------------------
+    public function saveAsiOnly(): ResponseInterface
+    {
+        $rules = [
+            'tgl_pengisian'               => 'required|valid_date',
+            'kondisi_puting'              => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam,Menonjol,Pecah]',
+            'frekuensi_menyusui'          => 'required|integer|greater_than_equal_to[0]',
+            'lama_menyusui'               => 'required|integer|greater_than_equal_to[0]',
+            'frekuensi_bab_bayi'          => 'required|integer|greater_than_equal_to[0]',
+            'frekuensi_bak_bayi'          => 'required|integer|greater_than_equal_to[0]',
+            'support_suami_menyusui'      => 'permit_empty|in_list[Ya,Tidak]',
+            'support_suami_gizi'          => 'permit_empty|in_list[Ya,Tidak]',
+            'bayi_tidur_12jam'            => 'permit_empty|in_list[Ya,Tidak]',
+            'bayi_tenang_setelah_menyusu' => 'permit_empty|in_list[Ya,Tidak]',
+            'warna_urin_bayi'             => 'permit_empty|in_list[Jernih,Kuning Muda,Kuning Pekat]',
+            'payudara_penuh'              => 'permit_empty|in_list[Ya,Tidak]',
+            'volume_pumping'              => 'permit_empty|decimal',
+            'bb_naik_sesuai_usia'         => 'permit_empty|in_list[Ya,Tidak]',
+            'kondisi_lainnya'             => 'permit_empty|string',
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Validasi gagal.',
+                'errors'  => $this->validator->getErrors(),
+            ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $userId       = session('user_id');
+        $tglPengisian = $this->request->getPost('tgl_pengisian');
+
+        $dataAsiInput = [
+            'kondisi_puting'              => $this->request->getPost('kondisi_puting') ?? 'Normal',
+            'frekuensi_menyusui'          => (int) $this->request->getPost('frekuensi_menyusui'),
+            'lama_menyusui'               => (int) $this->request->getPost('lama_menyusui'),
+            'frekuensi_bab_bayi'          => (int) $this->request->getPost('frekuensi_bab_bayi'),
+            'frekuensi_bak_bayi'          => (int) $this->request->getPost('frekuensi_bak_bayi'),
+            'support_suami_menyusui'      => $this->request->getPost('support_suami_menyusui') ?? 'Ya',
+            'support_suami_gizi'          => $this->request->getPost('support_suami_gizi') ?? 'Ya',
+            'bayi_tidur_12jam'            => $this->request->getPost('bayi_tidur_12jam') ?? 'Ya',
+            'bayi_tenang_setelah_menyusu' => $this->request->getPost('bayi_tenang_setelah_menyusu') ?? 'Ya',
+            'warna_urin_bayi'             => $this->request->getPost('warna_urin_bayi') ?? 'Jernih',
+            'payudara_penuh'              => $this->request->getPost('payudara_penuh') ?? 'Ya',
+            'volume_pumping'              => $this->request->getPost('volume_pumping'),
+            'bb_naik_sesuai_usia'         => $this->request->getPost('bb_naik_sesuai_usia') ?? 'Ya',
+            'kondisi_lainnya'             => $this->request->getPost('kondisi_lainnya'),
+        ];
+
+        $statusAsi = $this->asiModel->hitungKecukupanAsi($dataAsiInput);
+
+        $dataAsi = array_merge($dataAsiInput, [
+            'user_id'              => $userId,
+            'tgl_pengisian'        => $tglPengisian,
+            'status_kecukupan_asi' => $statusAsi,
+        ]);
+
+        if (!$this->asiModel->insert($dataAsi, false)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Gagal menyimpan data kelancaran ASI.',
+                'errors'  => $this->asiModel->errors(),
+            ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Data kelancaran ASI berhasil disimpan.',
+            'data'    => [
+                'id'                   => $this->asiModel->getInsertID(),
+                'status_kecukupan_asi' => $statusAsi,
+            ],
+        ])->setStatusCode(ResponseInterface::HTTP_CREATED);
+    }
 }
+

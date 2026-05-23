@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class KondisiKejiwaanIbuModel extends Model
+{
+    protected $table            = 'kondisi_kejiwaan_ibu';
+    protected $primaryKey       = 'id';
+    protected $useAutoIncrement = true;
+    protected $returnType       = 'array';
+    protected $useTimestamps    = true;
+    protected $createdField     = 'created_at';
+    protected $updatedField     = 'updated_at';
+
+    protected $allowedFields = [
+        'user_id',
+        'tgl_pengisian',
+        'khawatir_berlebihan',
+        'gelisah',
+        'gemetar',
+        'tidak_dapat_rileks',
+        'ketegangan_otot',
+        'sakit_kepala',
+        'jantung_berdebar',
+        'berkeringat_berlebihan',
+        'sesak_napas',
+        'kepala_terasa_ringan',
+        'keluhan_ulu_hati',
+        'lelah_sulit_tidur',
+        'mudah_tersinggung',
+        'perubahan_hubungan_suami',
+        'skor_kejiwaan',
+        'status_kejiwaan',
+    ];
+
+    protected $validationRules = [
+        'user_id'                  => 'required|integer',
+        'tgl_pengisian'            => 'required|valid_date',
+        'khawatir_berlebihan'      => 'permit_empty|in_list[Ya,Tidak]',
+        'gelisah'                  => 'permit_empty|in_list[Ya,Tidak]',
+        'gemetar'                  => 'permit_empty|in_list[Ya,Tidak]',
+        'tidak_dapat_rileks'       => 'permit_empty|in_list[Ya,Tidak]',
+        'ketegangan_otot'          => 'permit_empty|in_list[Ya,Tidak]',
+        'sakit_kepala'             => 'permit_empty|in_list[Ya,Tidak]',
+        'jantung_berdebar'         => 'permit_empty|in_list[Ya,Tidak]',
+        'berkeringat_berlebihan'   => 'permit_empty|in_list[Ya,Tidak]',
+        'sesak_napas'              => 'permit_empty|in_list[Ya,Tidak]',
+        'kepala_terasa_ringan'     => 'permit_empty|in_list[Ya,Tidak]',
+        'keluhan_ulu_hati'         => 'permit_empty|in_list[Ya,Tidak]',
+        'lelah_sulit_tidur'        => 'permit_empty|in_list[Ya,Tidak]',
+        'mudah_tersinggung'        => 'permit_empty|in_list[Ya,Tidak]',
+        'perubahan_hubungan_suami' => 'permit_empty|in_list[Ya,Tidak]',
+    ];
+
+    // ---------------------------------------------------------------
+    // Daftar kolom pertanyaan untuk scoring
+    // ---------------------------------------------------------------
+    private array $pertanyaanFields = [
+        'khawatir_berlebihan',
+        'gelisah',
+        'gemetar',
+        'tidak_dapat_rileks',
+        'ketegangan_otot',
+        'sakit_kepala',
+        'jantung_berdebar',
+        'berkeringat_berlebihan',
+        'sesak_napas',
+        'kepala_terasa_ringan',
+        'keluhan_ulu_hati',
+        'lelah_sulit_tidur',
+        'mudah_tersinggung',
+        'perubahan_hubungan_suami',
+    ];
+
+    // ---------------------------------------------------------------
+    // Service Logic — Hitung Skor Kondisi Kejiwaan
+    // ---------------------------------------------------------------
+
+    /**
+     * Menghitung skor dan status kondisi kejiwaan ibu.
+     *
+     * Setiap jawaban "Ya" bernilai 1 poin.
+     * Total pertanyaan = 14.
+     *
+     * Klasifikasi:
+     *   - 0-4  → Normal
+     *   - 5-9  → Perlu Perhatian
+     *   - 10-14 → Berisiko
+     *
+     * @param array $data Data input dari form screening
+     * @return array ['skor_kejiwaan' => int, 'status_kejiwaan' => string]
+     */
+    public function hitungKondisiKejiwaan(array $data): array
+    {
+        $skor = 0;
+
+        foreach ($this->pertanyaanFields as $field) {
+            if (isset($data[$field]) && $data[$field] === 'Ya') {
+                $skor++;
+            }
+        }
+
+        // Klasifikasi status
+        if ($skor <= 4) {
+            $status = 'Normal';
+        } elseif ($skor <= 9) {
+            $status = 'Perlu Perhatian';
+        } else {
+            $status = 'Berisiko';
+        }
+
+        return [
+            'skor_kejiwaan'  => $skor,
+            'status_kejiwaan' => $status,
+        ];
+    }
+
+    /**
+     * Ambil semua riwayat kondisi kejiwaan berdasarkan user.
+     */
+    public function getByUser(int $userId): array
+    {
+        return $this->where('user_id', $userId)
+                    ->orderBy('tgl_pengisian', 'DESC')
+                    ->findAll();
+    }
+
+    /**
+     * Ambil data kejiwaan terakhir.
+     */
+    public function getLatestByUser(int $userId): ?array
+    {
+        return $this->where('user_id', $userId)
+                    ->orderBy('tgl_pengisian', 'DESC')
+                    ->first();
+    }
+
+    /**
+     * Ambil data kondisi kejiwaan.
+     * Jika $id false, ambil semua. Jika ada id, ambil satu.
+     */
+    public function getKondisiKejiwaan($id = false)
+    {
+        if ($id === false) {
+            return $this->findAll();
+        }
+        return $this->where(['id' => $id])->first();
+    }
+}

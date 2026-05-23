@@ -77,8 +77,14 @@ $routes->group('api', ['namespace' => 'App\Controllers\Actions', 'filter' => 'au
     $routes->get('video', 'ContentAction::listVideo');
     $routes->get('video/(:num)', 'ContentAction::getVideo/$1');
 
-    // --- RUTE HALAMAN WEB (TAMPILAN) ---
+    // --- Data Bayi (NEW) ---
+    $routes->post('data-bayi', 'DataBayiAction::save');
+    $routes->get('data-bayi', 'DataBayiAction::index');
+    $routes->get('data-bayi/(:num)', 'DataBayiAction::show/$1');
 
-    // Halaman Login Admin (Harus di luar group filter agar bisa dibuka umum)
-    
+    // --- Kondisi Kejiwaan Ibu (NEW) ---
+    $routes->post('kondisi-kejiwaan', 'KondisiKejiwaanAction::save');
+    $routes->get('kondisi-kejiwaan', 'KondisiKejiwaanAction::index');
+    $routes->get('kondisi-kejiwaan/latest', 'KondisiKejiwaanAction::latest');
+
 });

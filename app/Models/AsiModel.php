@@ -29,13 +29,15 @@ class AsiModel extends Model
         'warna_urin_bayi',
         'payudara_penuh',
         'volume_pumping',
+        'bb_naik_sesuai_usia',
+        'kondisi_lainnya',
         'status_kecukupan_asi',
     ];
 
     protected $validationRules = [
         'user_id'              => 'required|integer',
         'tgl_pengisian'       => 'required|valid_date',
-        'kondisi_puting'      => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam]',
+        'kondisi_puting'      => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam,Menonjol,Pecah]',
         'frekuensi_menyusui'  => 'required|integer|greater_than_equal_to[0]',
         'lama_menyusui'       => 'required|integer|greater_than_equal_to[0]',
         'frekuensi_bab_bayi'  => 'required|integer|greater_than_equal_to[0]',
@@ -47,6 +49,8 @@ class AsiModel extends Model
         'warna_urin_bayi'             => 'permit_empty|in_list[Jernih,Kuning Muda,Kuning Pekat]',
         'payudara_penuh'              => 'permit_empty|in_list[Ya,Tidak]',
         'volume_pumping'              => 'permit_empty|decimal',
+        'bb_naik_sesuai_usia'         => 'permit_empty|in_list[Ya,Tidak]',
+        'kondisi_lainnya'             => 'permit_empty|string',
         'status_kecukupan_asi'        => 'required|in_list[Ya,Tidak]',
     ];
 
