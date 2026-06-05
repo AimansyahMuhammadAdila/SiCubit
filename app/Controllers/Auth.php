@@ -12,7 +12,7 @@ class Auth extends BaseController
         $data = [
             'title' => 'Welcome to SI CUBIT'
         ];
-        return view('welcome', $data);
+        return view('auth/welcome', $data);
     }
 
     public function login()

@@ -2,6 +2,11 @@
 
 <?= $this->section('content') ?>
 
+<?php 
+// Mengambil status kehamilan dari session atau fallback ke variabel data backend
+$statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'pasca_melahirkan'; 
+?>
+
 <div class="flex flex-col h-full w-full overflow-hidden">
     <header
         class="relative bg-gradient-to-br from-primary via-blue-500 to-blue-600 pt-12 md:pt-10 pb-12 md:pb-16 px-6 md:px-10 rounded-b-[2.5rem] md:rounded-none md:rounded-bl-[2.5rem] shadow-lg shadow-blue-100 dark:shadow-none flex-shrink-0">
@@ -17,7 +22,11 @@
                 <div>
                     <h1 class="text-white font-bold text-xl md:text-2xl leading-tight">Halo Bunda
                         <?= esc(strtok($nama_ibu, " ")) ?>,</h1>
-                    <p class="text-blue-50 text-sm md:text-base opacity-90">Bagaimana kabar si kecil hari ini?</p>
+                    <?php if ($statusKehamilan === 'hamil'): ?>
+                        <p class="text-blue-50 text-sm md:text-base opacity-90">Bagaimana kondisi kandungan Bunda hari ini?</p>
+                    <?php else: ?>
+                        <p class="text-blue-50 text-sm md:text-base opacity-90">Bagaimana kabar si kecil hari ini?</p>
+                    <?php endif; ?>
                 </div>
             </div>
             <button
@@ -28,8 +37,28 @@
     </header>
 
     <div class="flex-1 overflow-y-auto no-scrollbar relative z-20 w-full">
-        <div
-            class="max-w-6xl mx-auto px-6 md:px-10 py-6 md:py-10 flex flex-col gap-8 md:gap-10 pb-32 md:pb-10 min-h-full">
+        <div class="max-w-6xl mx-auto px-6 md:px-10 py-6 md:py-10 flex flex-col gap-8 md:gap-10 pb-32 md:pb-10 min-h-full">
+
+            <!-- <?php if ($statusKehamilan !== 'hamil'): ?>
+                <section class="w-full bg-gradient-to-r from-amber-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/80 border border-amber-100 dark:border-slate-700 rounded-3xl p-5 md:p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="size-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-2xl font-variation-fill">notifications_active</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Pengingat Menyusui Otomatis (2 Jam)</h3>
+                            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Membantu Bunda menjadwalkan pemberian ASI berkala bagi si kecil secara konsisten.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 self-end sm:self-center bg-white dark:bg-slate-700 px-4 py-2 rounded-2xl shadow-inner border border-slate-100 dark:border-slate-600">
+                        <span id="alarmStatusText" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mati</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggleAlarmMenyusui" class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-200 dark:bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                </section>
+            <?php endif; ?> -->
 
             <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
                 <a href="<?= base_url('riwayat') ?>"
@@ -43,17 +72,31 @@
                         class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Riwayat</span>
                     <span class="text-[10px] md:text-sm text-slate-400 mt-1">Pra, Hamil & Salin</span>
                 </a>
-                <a href="<?= base_url('laktasi/cek') ?>"
-                    class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
-                    <div
-                        class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 transition-colors group-hover:scale-110 duration-300">
-                        <span
-                            class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">water_drop</span>
-                    </div>
-                    <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Cek
-                        Kelancaran</span>
-                    <span class="text-[10px] md:text-sm text-slate-400 mt-1">Evaluasi ASI</span>
-                </a>
+
+                <?php if ($statusKehamilan === 'hamil'): ?>
+                    <a href="<?= base_url('assessment-kejiwaan') ?>"
+                        class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
+                        <div
+                            class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 transition-colors group-hover:scale-110 duration-300">
+                            <span
+                                class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">psychology</span>
+                        </div>
+                        <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Kondisi Kejiwaan</span>
+                        <span class="text-[10px] md:text-sm text-slate-400 mt-1">Assessment Ibu</span>
+                    </a>
+                <?php else: ?>
+                    <a href="<?= base_url('laktasi/cek') ?>"
+                        class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
+                        <div
+                            class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 transition-colors group-hover:scale-110 duration-300">
+                            <span
+                                class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">water_drop</span>
+                        </div>
+                        <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Cek Kelancaran</span>
+                        <span class="text-[10px] md:text-sm text-slate-400 mt-1">Evaluasi ASI</span>
+                    </a>
+                <?php endif; ?>
+
                 <a href="<?= base_url('edukasi/video') ?>"
                     class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
                     <div
@@ -61,10 +104,10 @@
                         <span
                             class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">smart_display</span>
                     </div>
-                    <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Ruang
-                        Edukasi</span>
+                    <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Ruang Edukasi</span>
                     <span class="text-[10px] md:text-sm text-slate-400 mt-1">Artikel & Video</span>
                 </a>
+                
                 <a href="<?= base_url('statistik') ?>"
                     class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
                     <div
@@ -79,7 +122,6 @@
             </section>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 flex-1 mt-auto">
-
                 <section class="flex flex-col h-full">
                     <div class="flex items-center justify-between mb-4 px-1">
                         <h3 class="font-bold text-slate-800 dark:text-slate-100 text-lg">Update Terakhir</h3>
@@ -89,7 +131,6 @@
 
                     <?php if (!empty($latestAsi)): ?>
                         <?php
-                        // Logika untuk menentukan warna & icon berdasarkan status kecukupan ASI
                         $isCukup = ($latestAsi['status_kecukupan_asi'] === 'Ya');
                         $statusText = $isCukup ? 'Kebutuhan ASI Terpenuhi' : 'Perhatian: ASI Kurang Lancar';
                         $iconColor = $isCukup ? 'text-primary' : 'text-rose-500';
@@ -103,8 +144,7 @@
                                     class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill"><?= $iconSymbol ?></span>
                             </div>
                             <div class="flex-1">
-                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Evaluasi ASI
-                                </p>
+                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Evaluasi ASI</p>
                                 <h4
                                     class="font-bold text-slate-900 dark:text-white text-base md:text-lg leading-tight mb-1">
                                     <?= $statusText ?></h4>
@@ -158,20 +198,105 @@
                                 <span
                                     class="bg-white/20 text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full mb-3 md:mb-4 inline-block tracking-wide">TIP
                                     EDUKASI</span>
-                                <h4 class="font-bold text-xl md:text-2xl leading-snug mb-2"><?= esc($tip['judul']) ?>
-                                </h4>
+                                <h4 class="font-bold text-xl md:text-2xl leading-snug mb-2"><?= esc($tip['judul']) ?></h4>
                                 <p
                                     class="text-sm md:text-base text-indigo-100 max-w-[85%] md:max-w-[75%] leading-relaxed">
                                     <?= esc($tip['isi']) ?></p>
                             </div>
                         </div>
                     </a>
-
                 </section>
-
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleAlarm = document.getElementById("toggleAlarmMenyusui");
+    const statusText = document.getElementById("alarmStatusText");
+    let intervalAlarm = null;
+
+    if (!toggleAlarm) return;
+
+    const alarmState = localStorage.getItem("sicubit_alarm_asi") === "true";
+    toggleAlarm.checked = alarmState;
+    updateStatusLabel(alarmState);
+
+    if (alarmState) {
+        startAlarmCycle();
+    }
+
+    toggleAlarm.addEventListener("change", function () {
+        if (this.checked) {
+            if (!("Notification" in window)) {
+                alert("Browser ini tidak mendukung sistem push notification.");
+                this.checked = false;
+                return;
+            }
+
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        activateAlarm();
+                    } else {
+                        alert("Bunda perlu mengizinkan akses notifikasi agar pengingat aktif.");
+                        this.checked = false;
+                        updateStatusLabel(false);
+                    }
+                });
+            } else {
+                activateAlarm();
+            }
+        } else {
+            deactivateAlarm();
+        }
+    });
+
+    function activateAlarm() {
+        localStorage.setItem("sicubit_alarm_asi", "true");
+        updateStatusLabel(true);
+        startAlarmCycle();
+        new Notification("SiCubit", {
+            body: "Pengingat menyusui setiap 2 jam berhasil aktif! ✨",
+            icon: "<?= base_url('assets/img/icons/breastfeeding.png') ?>"
+        });
+    }
+
+    function deactivateAlarm() {
+        localStorage.setItem("sicubit_alarm_asi", "false");
+        updateStatusLabel(false);
+        if (intervalAlarm) clearInterval(intervalAlarm);
+    }
+
+    function updateStatusLabel(isActive) {
+        if (isActive) {
+            statusText.innerText = "Aktif";
+            statusText.classList.remove("text-slate-400");
+            statusText.classList.add("text-primary");
+        } else {
+            statusText.innerText = "Mati";
+            statusText.classList.remove("text-primary");
+            statusText.classList.add("text-slate-400");
+        }
+    }
+
+    function startAlarmCycle() {
+        if (intervalAlarm) clearInterval(intervalAlarm);
+        
+        const DUA_JAM_MS = 2 * 60 * 60 * 1000; // Rentang waktu 2 jam
+
+        intervalAlarm = setInterval(() => {
+            if (Notification.permission === "granted") {
+                new Notification("Waktunya Menyusu, Bunda! 🍼", {
+                    body: "Sudah 2 jam sejak jadwal terakhir bunda. Yuk berikan ASI terbaik bagi perkembangan si kecil.",
+                    icon: "<?= base_url('assets/img/icons/breastfeeding.png') ?>",
+                    tag: "sicubit-reminder"
+                });
+            }
+        }, DUA_JAM_MS);
+    }
+});
+</script>
 
 <?= $this->endSection() ?>

@@ -12,6 +12,6 @@ class Laktasi extends BaseController
             'title' => 'Cek Kelancaran ASI - SI CUBIT',
         ];
         
-        return view('laktasi/cek', $data);
+        return view('laktasi/kelancaran_asi', $data);
     }
 }

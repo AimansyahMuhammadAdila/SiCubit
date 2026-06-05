@@ -84,6 +84,13 @@
             <span class="text-[10px] lg:text-sm <?= $isProfil ? 'font-bold' : 'font-medium' ?>">Profil</span>
         </a>
 
+        <?php $isFaq = url_is('faq*'); ?>
+        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isFaq ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
+            href="<?= base_url('faq') ?>">
+            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isFaq ? 'font-variation-fill' : '' ?>">quiz</span>
+            <span class="text-[10px] lg:text-sm <?= $isFaq ? 'font-bold' : 'font-medium' ?>">FAQ Laktasi</span>
+        </a>
+
     </nav>
 
     <main class="flex-1 flex flex-col h-full overflow-hidden relative z-20">

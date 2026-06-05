@@ -21,10 +21,14 @@ $routes->get('dashboard', 'Dashboard::index');
 $routes->get('chat', 'Chat::index');
 $routes->get('riwayat', 'Riwayat::index');
 $routes->get('edukasi/video', 'Edukasi::video');
-$routes->get('laktasi/cek', 'Laktasi::cek');
+$routes->get('laktasi/cek', 'Laktasi::cek'); 
+// Tambahkan dua baris ini di bawahnya:
+$routes->get('form-bayi', 'Laktasi::formBayi');
+$routes->get('assessment-kejiwaan', 'Laktasi::kejiwaan');
 $routes->get('profil', 'Profil::index');
 $routes->get('profil/edit', 'Profil::edit'); // <-- Pindah ke sini (Web)
 $routes->get('statistik', 'Dashboard::statistik');
+$routes->get('faq', 'Edukasi::faq'); // Atau gunakan controller Chat::faq
 
 // Halaman Khusus Admin
 $routes->get('admin/login', 'AuthAdmin::login');
@@ -56,13 +60,18 @@ $routes->get('api/wilayah/puskesmas/(:segment)', 'Actions\AuthAction::getPuskesm
 $routes->post('api/admin/login', 'Actions\AuthAction::adminLogin');
 
 // API Terlindungi (Wajib pakai filter 'auth' alias sudah login)
+// API Terlindungi (Wajib pakai filter 'auth' alias sudah login)
 $routes->group('api', ['namespace' => 'App\Controllers\Actions', 'filter' => 'auth'], static function ($routes) {
 
     // POST — Simpan Data
     $routes->post('save-riwayat', 'DataEntryAction::saveData');
     $routes->post('save-asi', 'DataEntryAction::saveAsiOnly');
-    $routes->post('profil/update', 'ProfilAction::update'); // <-- URL menjadi api/profil/update
+    $routes->post('profil/update', 'ProfilAction::update');
     $routes->post('chat/send', 'ChatAction::sendMessage');
+    
+    // 👇 TAMBAHKAN DUA BARIS INI UNTUK FORM BARU 👇
+    $routes->post('save-data-bayi', 'DataBayiAction::saveData');
+    $routes->post('save-kejiwaan', 'KondisiKejiwaanAction::save');
 
     // GET — Ambil Data (Baca)
     $routes->get('profil', 'DataReadAction::profil');
@@ -76,9 +85,5 @@ $routes->group('api', ['namespace' => 'App\Controllers\Actions', 'filter' => 'au
     $routes->get('artikel/(:segment)', 'ContentAction::getArtikel/$1');
     $routes->get('video', 'ContentAction::listVideo');
     $routes->get('video/(:num)', 'ContentAction::getVideo/$1');
-
-    // --- RUTE HALAMAN WEB (TAMPILAN) ---
-
-    // Halaman Login Admin (Harus di luar group filter agar bisa dibuka umum)
     
 });
