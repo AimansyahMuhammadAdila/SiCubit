@@ -82,29 +82,56 @@ Tambahkan form input untuk pemantauan harian kelancaran ASI dengan field berikut
 
 ---
 
-## 6. Status Kesiapan Backend (Berdasarkan 4 Commit Terakhir)
-Sebagai referensi bagi tim Frontend, berikut adalah rincian API dan pekerjaan Backend yang **sudah diselesaikan** untuk mendukung implementasi di atas:
+## 6. Laporan Pembaruan Backend (5 Commit Terakhir)
+Sebagai referensi bagi tim Frontend, berikut adalah rincian API, daftar file yang diubah/ditambah, dan perubahan database selama 5 commit terakhir untuk mendukung implementasi UI/UX:
 
-### A. Setup Autentikasi, Role, dan API Konten Edukasi (`4ac9f5b`)
-- **Database:** Pembuatan tabel `users`, `artikel`, dan `video`. Perubahan relasi (foreign key) dari tabel `ibu` ke tabel `users`.
-- **API:** Menyiapkan `AuthAction` (login/register & role), `AdminContentAction` & `ContentAction` (mengelola artikel dan video), serta `DataReadAction` & `DataEntryAction` (riwayat kehamilan & persalinan).
-- **Seeder:** Menambahkan *dummy data* awal.
+### 1. `6a34808` - docs: sync frontend briefing with db migration design
+- **Tujuan:** Sinkronisasi dokumen *briefing* dan merapikan struktur database migration.
+- **File Diubah/Ditambah:**
+  - `[NEW]` `app/Database/Migrations/2026-06-01-000000_CreateSiCubitDatabase.php`
+  - `[NEW]` `app/Database/Seeds/SiCubitSeeder.php`
+  - `[MODIFY]` `app/Database/Seeds/DatabaseSeeder.php`
+  - `[NEW/UPDATE]` `frontend_briefing.md`
+  - `[DELETE]` Belasan file migration lama dihapus.
+- **Update Migration:** Semua file migration lama telah dikonsolidasikan (digabung) menjadi satu file `CreateSiCubitDatabase.php` untuk mempermudah *setup* awal aplikasi.
 
-### B. Pembuatan Fitur-fitur Utama Pengguna (`0c339c8`)
-- **Routing:** Memperbarui file konfigurasi `Routes.php` (menambahkan lebih dari 100 rute/endpoint baru).
-- **Controllers & Logika:** Menambahkan controller untuk halaman `Admin`, `Auth`, `Dashboard`, `Chat`, `Edukasi`, `Laktasi`, `Profil`, dan `Riwayat`. Menambahkan fungsi logika pada `ChatAction` dan `ProfilAction`.
-- **Views:** Menyertakan puluhan file _view_ dasar untuk semua fitur di atas (sebagai kerangka awal frontend).
+### 2. `14915f1` - fix: correct view path for welcome screen
+- **Tujuan:** Memperbaiki *bug* pada rute *view* otentikasi.
+- **File Diubah/Ditambah:**
+  - `[MODIFY]` `app/Controllers/Auth.php` (mengubah path `welcome` menjadi `auth/welcome`)
+- **Update Migration:** - (Tidak ada)
 
-### C. Penambahan Data Bayi, Kejiwaan Ibu & Kelancaran ASI (`0922249`)
-- **Migrasi Database:** 
+### 3. `0922249` - feat: add data bayi, kondisi kejiwaan ibu, status kehamilan users, etc.
+- **Tujuan:** Mengimplementasikan form kuesioner baru dari revisi UI/UX (Data Bayi, Kejiwaan Ibu, Kelancaran ASI).
+- **File Diubah/Ditambah:**
+  - `[NEW]` `app/Controllers/Actions/DataBayiAction.php` & `KondisiKejiwaanAction.php`
+  - `[NEW]` `app/Models/DataBayiModel.php` & `KondisiKejiwaanIbuModel.php`
+  - `[MODIFY]` `app/Controllers/Actions/DataEntryAction.php`
+- **Update Migration:** 
   - Penambahan kolom `status_kehamilan` pada tabel `users`.
-  - Pembuatan tabel `data_bayi` dan `kondisi_kejiwaan_ibu`.
-  - Penambahan kolom indikator kelancaran ASI pada tabel `cek_kelancaran_asi`.
-  - Update Enum kondisi puting.
-- **API & Model:** Pembuatan `DataBayiAction`, `DataBayiModel`, `KondisiKejiwaanAction`, dan `KondisiKejiwaanIbuModel` untuk menerima dan menyimpan data dari frontend. `DataEntryAction` telah dimodifikasi agar menyatu dengan alur ini.
+  - Pembuatan tabel baru `data_bayi` dan `kondisi_kejiwaan_ibu`.
+  - Penambahan kolom indikator kualitatif & kuantitatif kelancaran ASI pada tabel `cek_kelancaran_asi`.
+  - Update opsi Enum pada `kondisi_puting`.
 
-### D. Perbaikan Jalur View (`14915f1`)
-- **Bugfix:** Memperbaiki jalur folder *view* di dalam `Auth.php` yang tadinya mengarah langsung ke `welcome` menjadi `auth/welcome`.
+### 4. `0c339c8` - update all main user feature
+- **Tujuan:** Menambahkan kerangka dasar (view & controller) untuk seluruh fitur utama pengguna di aplikasi.
+- **File Diubah/Ditambah:**
+  - `[NEW]` Lebih dari 20 file view dasar di folder `app/Views/` (Dashboard, Edukasi, Chat, Profil, Laktasi, dll).
+  - `[NEW]` `app/Controllers/Dashboard.php`, `Edukasi.php`, `Chat.php`, `Profil.php`, `Laktasi.php`, `Riwayat.php`, `Admin.php`.
+  - `[NEW]` `app/Controllers/Actions/ChatAction.php` & `ProfilAction.php`.
+  - `[MODIFY]` `app/Config/Routes.php` (menambahkan lebih dari 100 rute backend/frontend).
+- **Update Migration:** - (Tidak ada penambahan database pada commit ini)
+
+### 5. `4ac9f5b` - feat: setup backend auth, role, and edukasi feature APIs
+- **Tujuan:** Menyiapkan fitur Autentikasi (login/register), manajemen Role pengguna, dan API konten Edukasi.
+- **File Diubah/Ditambah:**
+  - `[NEW]` `app/Controllers/Actions/AdminContentAction.php` & `ContentAction.php`.
+  - `[NEW]` `app/Models/ArtikelModel.php` & `VideoModel.php`.
+  - `[NEW]` `app/Database/Seeds/UserSeeder.php`.
+  - `[MODIFY]` `app/Controllers/Actions/AuthAction.php` & `DataReadAction.php`.
+- **Update Migration:** 
+  - Pembuatan tabel `users`, `artikel`, dan `video`. 
+  - Perubahan nama tabel dari `ibu` menjadi `users` beserta pembaruan relasi *foreign key*.
 
 > **Kesimpulan:** 
-> Seluruh rute (endpoint) dan logika penyimpanan data ke database **sudah siap**. Tim Frontend hanya perlu memanggil *endpoint* yang tepat (seperti `DataBayiAction` dan `KondisiKejiwaanAction`) serta menyesuaikan format data (payload) yang dikirim agar sesuai dengan skema Backend.
+> Seluruh rute (endpoint) dan logika penyimpanan data ke database **sudah siap**. Tim Frontend hanya perlu memanggil *endpoint* yang tepat (seperti `DataBayiAction` dan `KondisiKejiwaanAction`) serta menyesuaikan format data (payload) yang dikirim agar sesuai dengan skema tabel.
