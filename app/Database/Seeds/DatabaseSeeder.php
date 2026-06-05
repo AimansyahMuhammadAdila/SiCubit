@@ -8,9 +8,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Jalankan seeder sesuai urutan dependensi
-        $this->call('KabupatenKotaSeeder');
-        $this->call('PuskesmasSeeder');
-        $this->call('UserSeeder');
+        // Jalankan seeder gabungan
+        $this->call('SiCubitSeeder');
     }
 }
