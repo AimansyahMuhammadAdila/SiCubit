@@ -25,6 +25,7 @@ class UserModel extends Model
         'id_kabkota',
         'id_puskesmas',
         'role',
+        'status_kehamilan',
         'password_hash'
     ];
 
@@ -37,6 +38,7 @@ class UserModel extends Model
         'umur' => 'permit_empty|integer|greater_than[0]|less_than[100]',
         'no_telp' => 'required|min_length[8]|max_length[20]|is_unique[users.no_telp,id,{id}]',
         'password_hash' => 'required',
+        'status_kehamilan' => 'permit_empty|in_list[pra_kehamilan,hamil,pasca_melahirkan]',
     ];
 
     protected $validationMessages = [
