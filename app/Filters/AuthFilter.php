@@ -13,16 +13,23 @@ class AuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $session = session();
+        // Cek apakah session user_id tidak ada (belum login / sesi habis)
+        if (!session()->get('user_id')) {
 
-        if (!$session->get('logged_in')) {
-            // Untuk API request, kembalikan JSON 401
-            return service('response')
-                ->setJSON([
-                    'status'  => 'error',
-                    'message' => 'Anda belum login. Silakan login terlebih dahulu.',
-                ])
-                ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+            // 1. Jika request meminta API atau dikirim via AJAX (Fetch/Axios)
+            if ($request->isAJAX() || str_contains($request->getUri()->getPath(), 'api/')) {
+                return service('response')->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda belum login. Silakan login terlebih dahulu.'
+                ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+            }
+
+            // 2. Jika request adalah akses halaman WEB biasa (seperti laktasi/cek)
+            // Simpan pesan ke flashdata agar bisa ditangkap SweetAlert di halaman login
+            session()->setFlashdata('error_session', 'Sesi Bunda telah berakhir. Yuk, login kembali!');
+
+            // Redirect paksa secara halus ke halaman login
+            return redirect()->to(base_url('login'));
         }
     }
 

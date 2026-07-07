@@ -279,7 +279,7 @@ class CreateSiCubitDatabase extends Migration
             'bayi_tenang_setelah_menyusu' => ['type' => 'ENUM', 'constraint' => ['Ya', 'Tidak'], 'default' => 'Ya'],
             'warna_urin_bayi' => ['type' => 'ENUM', 'constraint' => ['Jernih', 'Kuning Muda', 'Kuning Pekat'], 'default' => 'Jernih'],
             'payudara_penuh' => ['type' => 'ENUM', 'constraint' => ['Ya', 'Tidak'], 'default' => 'Ya'],
-            'volume_pumping' => ['type' => 'DECIMAL', 'constraint' => '5,1', 'null' => true],
+            'volume_pumping' => ['type' => 'DECIMAL', 'constraint' => '6,1', 'null' => true],
             'bb_naik_sesuai_usia' => ['type' => 'ENUM', 'constraint' => ['Ya', 'Tidak'], 'default' => 'Ya', 'null' => true],
             'kondisi_lainnya' => ['type' => 'TEXT', 'null' => true],
             'status_kecukupan_asi' => ['type' => 'ENUM', 'constraint' => ['Ya', 'Tidak']],

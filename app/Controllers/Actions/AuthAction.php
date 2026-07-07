@@ -79,6 +79,7 @@ class AuthAction extends BaseController
             'alamat' => $this->request->getPost('alamat'),
             'id_kabkota' => $this->request->getPost('id_kabkota'),
             'id_puskesmas' => $this->request->getPost('id_puskesmas'),
+            'status_kehamilan' => $this->request->getPost('status_kehamilan') ?: 'pasca_melahirkan',
             'password_hash' => $passwordHash,
         ];
 
@@ -145,6 +146,7 @@ class AuthAction extends BaseController
             'nama' => $user['nama'],
             'no_telp' => $user['no_telp'],
             'role' => $user['role'],
+            'status_kehamilan' => $user['status_kehamilan'],
             'logged_in' => true,
         ]);
 

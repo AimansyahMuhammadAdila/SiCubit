@@ -36,7 +36,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
         </div>
     </header>
 
-    <div class="flex-1 overflow-y-auto no-scrollbar relative z-20 w-full">
+    <div class="flex-1 overflow-y-auto no-scrollbar relative z-20 w-full animate-slide-up">
         <div class="max-w-6xl mx-auto px-6 md:px-10 py-6 md:py-10 flex flex-col gap-8 md:gap-10 pb-32 md:pb-10 min-h-full">
 
             <!-- <?php if ($statusKehamilan !== 'hamil'): ?>
@@ -60,7 +60,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
                 </section>
             <?php endif; ?> -->
 
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
+            <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 w-full">
                 <a href="<?= base_url('riwayat') ?>"
                     class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
                     <div
@@ -73,8 +73,21 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
                     <span class="text-[10px] md:text-sm text-slate-400 mt-1">Pra, Hamil & Salin</span>
                 </a>
 
-                <?php if ($statusKehamilan === 'hamil'): ?>
-                    <a href="<?= base_url('assessment-kejiwaan') ?>"
+                <?php if ($statusKehamilan !== 'hamil'): ?>
+                    <a href="<?= base_url('laktasi/hasil') ?>"
+                        class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
+                        <div
+                            class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-primary transition-colors group-hover:scale-110 duration-300">
+                            <span
+                                class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">water_drop</span>
+                        </div>
+                        <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Evaluasi ASI</span>
+                        <span class="text-[10px] md:text-sm text-slate-400 mt-1">Cek Kelancaran</span>
+                    </a>
+                <?php endif; ?>
+
+                <?php if ($statusKehamilan === 'hamil' || $statusKehamilan === 'pasca_melahirkan'): ?>
+                    <a href="<?= base_url('assessment-kejiwaan/hasil') ?>"
                         class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
                         <div
                             class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 transition-colors group-hover:scale-110 duration-300">
@@ -82,18 +95,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
                                 class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">psychology</span>
                         </div>
                         <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Kondisi Kejiwaan</span>
-                        <span class="text-[10px] md:text-sm text-slate-400 mt-1">Assessment Ibu</span>
-                    </a>
-                <?php else: ?>
-                    <a href="<?= base_url('laktasi/cek') ?>"
-                        class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
-                        <div
-                            class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 transition-colors group-hover:scale-110 duration-300">
-                            <span
-                                class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">water_drop</span>
-                        </div>
-                        <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Cek Kelancaran</span>
-                        <span class="text-[10px] md:text-sm text-slate-400 mt-1">Evaluasi ASI</span>
+                        <span class="text-[10px] md:text-sm text-slate-400 mt-1">Screening EPDS</span>
                     </a>
                 <?php endif; ?>
 

@@ -21,6 +21,15 @@
             }
         }
     </script>
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(16px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
 </head>
 
 <body class="bg-bg-soft font-display min-h-screen flex overflow-x-hidden">
@@ -67,7 +76,7 @@
         </div>
     </aside>
 
-    <main class="flex-1 min-w-0 p-4 lg:p-10">
+    <main class="flex-1 min-w-0 p-4 lg:p-10 animate-slide-up">
         <div
             class="lg:hidden flex items-center justify-between mb-8 bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
             <button onclick="toggleSidebar()"

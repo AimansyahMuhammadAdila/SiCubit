@@ -19,7 +19,12 @@ class Dashboard extends BaseController
         $asiModel = new AsiModel();
         $latestAsi = $asiModel->getLatestByUser($userId);
 
-        // 3. Buat kumpulan Tips Acak agar dinamis
+        // 3. Ambil data status kehamilan dari DB
+        $db = \Config\Database::connect();
+        $user = $db->table('users')->where('id', $userId)->get()->getRowArray();
+        $statusKehamilan = $user['status_kehamilan'] ?? 'pasca_melahirkan';
+
+        // 4. Buat kumpulan Tips Acak agar dinamis
         $kumpulanTips = [
             [
                 'judul' => 'Jangan berkecil hati Bunda!',
@@ -40,11 +45,12 @@ class Dashboard extends BaseController
         ];
         $tipAcak = $kumpulanTips[array_rand($kumpulanTips)];
 
-        // 4. Kirim data ke View
+        // 5. Kirim data ke View
         $data = [
             'title' => 'Dashboard - SI CUBIT',
             'nama_ibu' => $namaIbu,
             'latestAsi' => $latestAsi,
+            'status_kehamilan' => $statusKehamilan,
             'tip' => $tipAcak
         ];
 

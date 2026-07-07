@@ -43,11 +43,33 @@
             #page-loader {
                 @apply fixed inset-0 flex items-center justify-center;
             }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(16px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes scaleUp {
+                from { transform: scale(0.97); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+            .animate-fade-in {
+                animation: fadeIn 0.3s ease-out forwards;
+            }
+            .animate-slide-up {
+                animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            .animate-scale-up {
+                animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
         }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased flex flex-col md:flex-row h-screen overflow-hidden">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased flex flex-col md:flex-row h-[100dvh] overflow-hidden">
 
     <nav class="order-last md:order-first w-full md:w-24 lg:w-64 bg-white/80 md:bg-white dark:bg-slate-900/80 backdrop-blur-xl md:backdrop-blur-none border-t md:border-t-0 md:border-r border-slate-100 dark:border-slate-800 p-4 md:py-8 flex md:flex-col justify-around md:justify-start items-center lg:items-start gap-4 z-30 flex-shrink-0">
 
@@ -62,7 +84,21 @@
             <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isBeranda ? 'font-variation-fill' : '' ?>">grid_view</span>
             <span class="text-[10px] lg:text-sm <?= $isBeranda ? 'font-bold' : 'font-medium' ?>">Beranda</span>
         </a>
-
+        
+        <?php $isHasilKejiwaan = url_is('assessment-kejiwaan*'); ?>
+        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isHasilKejiwaan ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
+            href="<?= base_url('assessment-kejiwaan/hasil') ?>">
+            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isHasilKejiwaan ? 'font-variation-fill' : '' ?>">psychology</span>
+            <span class="text-[10px] lg:text-sm <?= $isHasilKejiwaan ? 'font-bold' : 'font-medium' ?>">Kondisi Kejiwaan</span>
+        </a>
+        
+        <?php $isFaq = url_is('faq*'); ?>
+        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isFaq ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
+            href="<?= base_url('faq') ?>">
+            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isFaq ? 'font-variation-fill' : '' ?>">quiz</span>
+            <span class="text-[10px] lg:text-sm <?= $isFaq ? 'font-bold' : 'font-medium' ?>">FAQ Laktasi</span>
+        </a>
+        
         <?php $isChat = url_is('chat*'); ?>
         <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isChat ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
             href="<?= base_url('chat') ?>">
@@ -82,13 +118,6 @@
             href="<?= base_url('profil') ?>">
             <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isProfil ? 'font-variation-fill' : '' ?>">person</span>
             <span class="text-[10px] lg:text-sm <?= $isProfil ? 'font-bold' : 'font-medium' ?>">Profil</span>
-        </a>
-
-        <?php $isFaq = url_is('faq*'); ?>
-        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isFaq ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
-            href="<?= base_url('faq') ?>">
-            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isFaq ? 'font-variation-fill' : '' ?>">quiz</span>
-            <span class="text-[10px] lg:text-sm <?= $isFaq ? 'font-bold' : 'font-medium' ?>">FAQ Laktasi</span>
         </a>
 
     </nav>

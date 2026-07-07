@@ -21,6 +21,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('laktasi/cek', 'Laktasi::cek'); 
     $routes->get('form-bayi', 'Laktasi::formBayi');
     $routes->get('assessment-kejiwaan', 'Laktasi::kejiwaan');
+    $routes->get('laktasi/hasil', 'Laktasi::hasilAsi');
+    $routes->get('assessment-kejiwaan/hasil', 'Laktasi::hasilKejiwaan');
     $routes->get('profil', 'Profil::index');
     $routes->get('profil/edit', 'Profil::edit');
     $routes->get('statistik', 'Dashboard::statistik');
@@ -33,6 +35,7 @@ $routes->get('admin/logout', 'AuthAdmin::logout');
 $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->get('dashboard', 'Admin::index');
     $routes->get('data-ibu', 'Admin::dataIbu');
+    $routes->get('detail/(:num)', 'Admin::detail/$1');
 });
 
 // ---------------------------------------------------------------

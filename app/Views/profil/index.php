@@ -68,11 +68,16 @@
                             <?= !empty($ibu['alamat']) ? esc($ibu['alamat']) : '<span class="text-slate-400 italic">Belum diisi</span>' ?>
                         </p>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <p class="text-xs text-slate-400 font-medium mb-0.5">Jumlah Anak</p>
                             <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">
                                 <?= esc($ibu['jumlah_anak']) ?> Orang
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 font-medium mb-0.5">Status Kehamilan</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 uppercase text-xs">
+                                <?= str_replace('_', ' ', esc($ibu['status_kehamilan'] ?? 'pasca_melahirkan')) ?>
                             </p>
                         </div>
                     </div>

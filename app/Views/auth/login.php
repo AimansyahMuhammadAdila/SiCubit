@@ -2,46 +2,31 @@
 
 <?= $this->section('content') ?>
 
-<style type="text/tailwindcss">
+<style>
+    /* Style kustom eksternal untuk melengkapi Tailwind */
     .curvy-bg-mobile {
-        background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%);
-        border-bottom-left-radius: 3rem;
-        border-bottom-right-radius: 3rem;
+        background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%) !important;
+        border-bottom-left-radius: 3rem !important;
+        border-bottom-right-radius: 3rem !important;
     }
     .curvy-bg-desktop {
-        background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%);
-        border-top-right-radius: 4rem;
-        border-bottom-right-radius: 4rem;
+        background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%) !important;
+        border-top-right-radius: 4rem !important;
+        border-bottom-right-radius: 4rem !important;
     }
     .soft-input-shadow {
-        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.08);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.08) !important;
     }
     .illustration-container {
-        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05)) !important;
     }
 </style>
-<script id="tailwind-config">
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    "primary": "#4A90E2",
-                    "soft-blue": "#E3F2FD",
-                    "accent-blue": "#82B1FF",
-                    "warm-gray": "#7A7A7A",
-                },
-                fontFamily: { "sans": ["Plus Jakarta Sans", "sans-serif"] },
-            },
-        },
-    }
-</script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
 <div class="flex flex-col md:flex-row w-full min-h-screen bg-slate-50 font-sans text-slate-800">
 
     <div class="md:hidden curvy-bg-mobile relative h-72 w-full flex flex-col items-center justify-center px-6 pt-10 flex-shrink-0 z-10">
-        <a href="<?= base_url('/') ?>" class="absolute top-12 left-6 p-2 rounded-full bg-white/60 backdrop-blur-sm text-slate-600 hover:bg-white transition">
-            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+        <a href="<?= base_url('/') ?>" class="absolute top-12 left-6 p-2 rounded-full bg-white/60 backdrop-blur-sm text-slate-600 hover:bg-white transition flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl">arrow_back_ios_new</span>
         </a>
 
         <div class="illustration-container relative flex items-center justify-center w-full max-w-[240px] aspect-square mt-4">
@@ -57,7 +42,7 @@
     <div class="hidden md:flex curvy-bg-desktop w-5/12 relative flex-col items-center justify-center p-12 shadow-[10px_0_30px_rgba(0,0,0,0.02)] z-10">
         <div class="text-center mb-12">
             <div class="flex items-center justify-center gap-3 mb-4">
-                <span class="material-symbols-outlined text-5xl text-primary font-variation-fill">child_care</span>
+                <span class="material-symbols-outlined text-5xl text-primary" style="font-variation-settings: 'FILL' 1">child_care</span>
                 <span class="font-bold text-3xl text-primary">SI CUBIT</span>
             </div>
             <p class="text-slate-500 font-medium">Sistem Pemantauan Kesehatan Ibu & Bayi</p>
@@ -86,16 +71,18 @@
         </div>
 
         <form id="loginForm" class="space-y-5 max-w-md mx-auto md:mx-0 w-full">
+            <?= csrf_field() ?>
             <div class="space-y-4">
+                
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">phone</span>
-                    <input class="w-full pl-12 pr-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Nomor Telepon / WhatsApp" type="tel" name="no_telp" required />
+                    <input class="w-full pl-12 pr-5 py-3.5 bg-white border border-slate-200 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow text-slate-800 focus:outline-none" placeholder="Nomor Telepon / WhatsApp" type="tel" name="no_telp" required />
                 </div>
 
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">lock</span>
-                    <input class="w-full pl-12 pr-12 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Masukkan Password" type="password" name="password" required />
-                    <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 cursor-pointer hover:text-primary transition-colors">visibility_off</span>
+                    <input id="passwordInput" class="w-full pl-12 pr-12 py-3.5 bg-white border border-slate-200 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow text-slate-800 dark:bg-zinc-950/40 dark:border-white/10 dark:text-zinc-100 dark:placeholder:text-zinc-500 focus:outline-none" placeholder="Masukkan Password" type="password" name="password" required />
+                    <span id="togglePassword" class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-primary transition-colors select-none">visibility_off</span>
                 </div>
 
                 <div class="flex justify-end">
@@ -111,19 +98,55 @@
         </form>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.getElementById('loginForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const btn = document.getElementById('btnSubmit');
-        const formData = new FormData(this);
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById('loginForm');
+    const btn = document.getElementById('btnSubmit');
+    const passwordInput = document.getElementById('passwordInput');
+    const togglePassword = document.getElementById('togglePassword');
 
+    // Mekanisme Show / Hide Password
+    togglePassword.addEventListener('click', () => {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            togglePassword.textContent = 'visibility';
+            togglePassword.classList.replace('text-slate-400', 'text-primary');
+        } else {
+            passwordInput.type = 'password';
+            togglePassword.textContent = 'visibility_off';
+            togglePassword.classList.replace('text-primary', 'text-slate-400');
+        }
+    });
+
+    // Validasi Flashdata Session Error dari Backend CI4
+    <?php if (session()->getFlashdata('error_session')) : ?>
+        Swal.fire({
+            icon: 'warning',
+            title: 'Sesi Berakhir',
+            text: '<?= esc(session()->getFlashdata('error_session'), 'js') ?>',
+            confirmButtonColor: '#4A90E2',
+            confirmButtonText: 'Siap, Bunda'
+        });
+    <?php endif; ?>
+
+    // Submit AJAX Form Login
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
         btn.innerHTML = 'Loading...';
         btn.disabled = true;
+
+        const formData = new FormData(this);
+        const csrfToken = formData.get('<?= csrf_token() ?>');
 
         try {
             const response = await fetch('<?= base_url('api/login') ?>', {
                 method: 'POST',
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken
+                },
                 body: formData
             });
 
@@ -131,52 +154,28 @@
 
             try {
                 const result = JSON.parse(responseText);
-
                 if (result.status === 'success') {
-                    // Pop-up Sukses dengan SweetAlert
                     Swal.fire({
                         icon: 'success',
                         title: 'Login Berhasil!',
-                        text: 'Selamat datang, ' + result.data.nama,
+                        text: 'Selamat datang kembali, ' + (result.data.nama || 'Bunda'),
                         showConfirmButton: false,
-                        timer: 1500 // Akan menutup otomatis dalam 1.5 detik
-                    }).then(() => {
-                        // Redirect setelah pop-up tertutup
-                        window.location.href = '<?= base_url('dashboard') ?>';
-                    });
+                        timer: 1500
+                    }).then(() => { window.location.href = '<?= base_url('dashboard') ?>'; });
                 } else {
-                    // Pop-up Gagal dengan SweetAlert
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Login Gagal',
-                        text: result.message || 'Silakan cek kembali nomor telepon dan password Bunda.',
-                        confirmButtonColor: '#4A90E2'
-                    });
+                    Swal.fire({ icon: 'error', title: 'Login Gagal', text: result.message || 'Silakan cek kembali nomor telepon dan password Bunda.', confirmButtonColor: '#4A90E2' });
                 }
             } catch (parseError) {
-                console.error("Error dari server:", responseText);
-
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Terjadi error di backend! Cek console browser.',
-                    confirmButtonColor: '#4A90E2'
-                });
+                Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Terjadi gangguan pada sistem pusat backend.', confirmButtonColor: '#4A90E2' });
             }
-
         } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Koneksi Terputus',
-                text: 'Gagal menghubungi server. Cek koneksi internet atau URL API.',
-                confirmButtonColor: '#4A90E2'
-            });
-            console.error(error);
+            Swal.fire({ icon: 'error', title: 'Koneksi Terputus', text: 'Gagal menghubungi server. Pastikan jaringan internet Bunda aktif.', confirmButtonColor: '#4A90E2' });
         } finally {
             btn.innerHTML = 'Login ke Dashboard';
             btn.disabled = false;
         }
     });
+});
 </script>
 
 <?= $this->endSection() ?>

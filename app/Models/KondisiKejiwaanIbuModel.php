@@ -33,7 +33,28 @@ class KondisiKejiwaanIbuModel extends Model
         'perubahan_hubungan_suami',
         'skor_kejiwaan',
         'status_kejiwaan',
+        'epds_q1',
+        'epds_q2',
+        'epds_q3',
+        'epds_q4',
+        'epds_q5',
+        'epds_q6',
+        'epds_q7',
+        'epds_q8',
+        'epds_q9',
+        'epds_q10',
+        'epds_skor',
+        'epds_status',
     ];
+
+    public function __construct()
+    {
+        parent::__construct();
+        $db = \Config\Database::connect();
+        if (!$db->fieldExists('epds_skor', $this->table)) {
+            $db->query("ALTER TABLE {$this->table} ADD COLUMN epds_q1 INT DEFAULT 0, ADD COLUMN epds_q2 INT DEFAULT 0, ADD COLUMN epds_q3 INT DEFAULT 0, ADD COLUMN epds_q4 INT DEFAULT 0, ADD COLUMN epds_q5 INT DEFAULT 0, ADD COLUMN epds_q6 INT DEFAULT 0, ADD COLUMN epds_q7 INT DEFAULT 0, ADD COLUMN epds_q8 INT DEFAULT 0, ADD COLUMN epds_q9 INT DEFAULT 0, ADD COLUMN epds_q10 INT DEFAULT 0, ADD COLUMN epds_skor INT DEFAULT 0, ADD COLUMN epds_status VARCHAR(100) DEFAULT NULL");
+        }
+    }
 
     protected $validationRules = [
         'user_id'                  => 'required|integer',
@@ -52,6 +73,16 @@ class KondisiKejiwaanIbuModel extends Model
         'lelah_sulit_tidur'        => 'permit_empty|in_list[Ya,Tidak]',
         'mudah_tersinggung'        => 'permit_empty|in_list[Ya,Tidak]',
         'perubahan_hubungan_suami' => 'permit_empty|in_list[Ya,Tidak]',
+        'epds_q1'                  => 'permit_empty|integer',
+        'epds_q2'                  => 'permit_empty|integer',
+        'epds_q3'                  => 'permit_empty|integer',
+        'epds_q4'                  => 'permit_empty|integer',
+        'epds_q5'                  => 'permit_empty|integer',
+        'epds_q6'                  => 'permit_empty|integer',
+        'epds_q7'                  => 'permit_empty|integer',
+        'epds_q8'                  => 'permit_empty|integer',
+        'epds_q9'                  => 'permit_empty|integer',
+        'epds_q10'                 => 'permit_empty|integer',
     ];
 
     // ---------------------------------------------------------------
@@ -77,6 +108,30 @@ class KondisiKejiwaanIbuModel extends Model
     // ---------------------------------------------------------------
     // Service Logic — Hitung Skor Kondisi Kejiwaan
     // ---------------------------------------------------------------
+
+    /**
+     * Menghitung skor dan status EPDS.
+     */
+    public function hitungEpds(array $data): array
+    {
+        $skor = 0;
+        for ($i = 1; $i <= 10; $i++) {
+            $skor += (int)($data["epds_q$i"] ?? 0);
+        }
+
+        if ($skor <= 9) {
+            $status = 'Normal / adaptasi emosional ringan';
+        } elseif ($skor <= 12) {
+            $status = 'Kemungkinan baby blues';
+        } else {
+            $status = 'Kemungkinan depresi postpartum';
+        }
+
+        return [
+            'epds_skor'   => $skor,
+            'epds_status' => $status,
+        ];
+    }
 
     /**
      * Menghitung skor dan status kondisi kejiwaan ibu.

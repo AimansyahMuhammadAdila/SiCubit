@@ -29,6 +29,20 @@ class UserModel extends Model
         'password_hash'
     ];
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Self-healing database check: add status_kehamilan column if missing
+        $db = \Config\Database::connect();
+        if ($db->tableExists($this->table)) {
+            $fields = $db->getFieldNames($this->table);
+            if (!in_array('status_kehamilan', $fields)) {
+                $db->query("ALTER TABLE {$this->table} ADD COLUMN status_kehamilan ENUM('pra_kehamilan', 'hamil', 'pasca_melahirkan') DEFAULT NULL AFTER role");
+            }
+        }
+    }
+
     // ---------------------------------------------------------------
     // Validation Rules
     // ---------------------------------------------------------------

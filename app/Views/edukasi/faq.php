@@ -110,4 +110,85 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const faqDetails = document.querySelectorAll("details");
+    
+    faqDetails.forEach((el) => {
+        const summary = el.querySelector("summary");
+        
+        summary.addEventListener("click", (e) => {
+            e.preventDefault();
+            
+            if (el.open) {
+                el.style.overflow = "hidden";
+                const startHeight = el.offsetHeight;
+                const endHeight = summary.offsetHeight;
+                
+                const animation = el.animate([
+                    { height: `${startHeight}px` },
+                    { height: `${endHeight}px` }
+                ], {
+                    duration: 250,
+                    easing: "ease-out"
+                });
+                
+                animation.onfinish = () => {
+                    el.open = false;
+                    el.style.height = "";
+                    el.style.overflow = "";
+                };
+            } else {
+                // Close other open details for accordion effect (optional, let's do it for premium feel!)
+                faqDetails.forEach((other) => {
+                    if (other !== el && other.open) {
+                        other.style.overflow = "hidden";
+                        const otherStart = other.offsetHeight;
+                        const otherSummary = other.querySelector("summary");
+                        const otherEnd = otherSummary.offsetHeight;
+                        
+                        const otherAnim = other.animate([
+                            { height: `${otherStart}px` },
+                            { height: `${otherEnd}px` }
+                        ], {
+                            duration: 250,
+                            easing: "ease-out"
+                        });
+                        
+                        otherAnim.onfinish = () => {
+                            other.open = false;
+                            other.style.height = "";
+                            other.style.overflow = "";
+                        };
+                    }
+                });
+
+                el.open = true;
+                el.style.overflow = "hidden";
+                const endHeight = el.offsetHeight;
+                
+                el.open = false;
+                const startHeight = el.offsetHeight;
+                
+                el.open = true;
+                
+                const animation = el.animate([
+                    { height: `${startHeight}px` },
+                    { height: `${endHeight}px` }
+                ], {
+                    duration: 250,
+                    easing: "ease-out"
+                });
+                
+                animation.onfinish = () => {
+                    el.style.height = "";
+                    el.style.overflow = "";
+                };
+            }
+        });
+    });
+});
+</script>
+
 <?= $this->endSection() ?>

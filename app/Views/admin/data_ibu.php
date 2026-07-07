@@ -18,6 +18,15 @@
             }
         }
     </script>
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(16px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
 </head>
 <body class="bg-bg-soft font-display min-h-screen flex overflow-x-hidden">
 
@@ -58,7 +67,7 @@
         </div>
     </aside>
 
-    <main class="flex-1 min-w-0 p-4 lg:p-10">
+    <main class="flex-1 min-w-0 p-4 lg:p-10 animate-slide-up">
         <div class="lg:hidden flex items-center justify-between mb-8 bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
             <button onclick="toggleSidebar()" class="size-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600">
                 <span class="material-symbols-outlined text-xl">menu</span>
@@ -81,7 +90,7 @@
 
         <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 mb-8 flex flex-col md:flex-row gap-4">
             <div class="flex-1 relative">
-                <input type="text" placeholder="Cari berdasarkan NIK, Nama, atau No. Rekam Medis..." class="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-xs italic focus:ring-2 focus:ring-primary/20 transition-all"/>
+                <input type="text" id="searchInput" placeholder="Cari berdasarkan NIK, Nama, atau No. Rekam Medis..." class="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-xs italic focus:ring-2 focus:ring-primary/20 transition-all"/>
                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
             </div>
             <div class="flex gap-2">
@@ -105,59 +114,54 @@
                             <th class="px-10 py-6">Tindakan</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 text-slate-700">
-                        <tr class="hover:bg-slate-50/50 transition duration-300">
-                            <td class="px-10 py-7">
-                                <div class="flex items-center gap-4">
-                                    <div class="size-10 rounded-xl bg-blue-100 flex items-center justify-center font-bold text-primary">SA</div>
-                                    <div>
-                                        <p class="font-bold text-slate-800 text-sm italic uppercase tracking-tighter">Sarah Amelia</p>
-                                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">NIK: 6301XXXXXXXXXXXX</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-10 py-7 text-xs font-semibold italic text-slate-500">Banjarbaru Selatan</td>
-                            <td class="px-10 py-7 text-center">
-                                <span class="bg-green-100 text-green-700 text-[9px] font-black px-3 py-1.5 rounded-lg uppercase italic">Normal (IMT 22)</span>
-                            </td>
-                            <td class="px-10 py-7">
-                                <span class="flex items-center gap-2 text-[10px] font-bold text-slate-400 italic">
-                                    <span class="size-2 bg-green-500 rounded-full"></span> Terpantau Baik
-                                </span>
-                            </td>
-                            <td class="px-10 py-7">
-                                <a href="<?= base_url('admin/detail/1') ?>" class="text-[10px] font-black text-primary hover:underline italic tracking-widest uppercase">Lihat Rekam Medis</a>
-                            </td>
-                        </tr>
-                        <tr class="bg-rose-50/30 hover:bg-rose-50 transition duration-300 border-l-4 border-rose-500">
-                            <td class="px-10 py-7">
-                                <div class="flex items-center gap-4">
-                                    <div class="size-10 rounded-xl bg-rose-100 flex items-center justify-center font-bold text-rose-600">RN</div>
-                                    <div>
-                                        <p class="font-bold text-slate-800 text-sm italic uppercase tracking-tighter">Bunda Rina</p>
-                                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">NIK: 6305XXXXXXXXXXXX</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-10 py-7 text-xs font-semibold italic text-slate-500">Rantau, Tapin</td>
-                            <td class="px-10 py-7 text-center">
-                                <span class="bg-rose-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase italic shadow-sm">Kekurangan Gizi</span>
-                            </td>
-                            <td class="px-10 py-7">
-                                <span class="flex items-center gap-2 text-[10px] font-bold text-rose-600 italic">
-                                    <span class="size-2 bg-rose-500 rounded-full animate-ping"></span> Perlu Atensi
-                                </span>
-                            </td>
-                            <td class="px-10 py-7">
-                                <a href="#" class="text-[10px] font-black text-rose-600 hover:underline italic tracking-widest uppercase">Intervensi Medis</a>
-                            </td>
-                        </tr>
+                    <tbody id="usersTableBody" class="divide-y divide-slate-50 text-slate-700">
+                        <?php if (empty($users)): ?>
+                            <tr>
+                                <td colspan="5" class="px-10 py-10 text-center text-slate-400 italic">Belum ada data ibu terdaftar.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($users as $u): ?>
+                                <tr class="user-row hover:bg-slate-50/50 transition duration-300">
+                                    <td class="px-10 py-7">
+                                        <div class="flex items-center gap-4">
+                                            <div class="size-10 rounded-xl bg-blue-100 flex items-center justify-center font-bold text-primary">
+                                                <?= strtoupper(substr($u['nama'], 0, 2)) ?>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-slate-800 text-sm italic uppercase tracking-tighter user-name"><?= esc($u['nama']) ?></p>
+                                                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">WhatsApp: <?= esc($u['no_telp']) ?></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-10 py-7 text-xs font-semibold italic text-slate-500 user-domisili">
+                                        <?= esc($u['nama_puskesmas']) ?>, <?= esc($u['nama_kabkota']) ?>
+                                    </td>
+                                    <td class="px-10 py-7 text-center">
+                                        <span class="bg-blue-50 text-primary text-[9px] font-black px-3 py-1.5 rounded-lg uppercase italic">
+                                            <?= str_replace('_', ' ', strtoupper($u['status_kehamilan'] ?? 'PRANIKAH')) ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-10 py-7 text-center">
+                                        <?php if ($u['status_asi'] === 'Ya'): ?>
+                                            <span class="bg-green-100 text-green-700 text-[9px] font-black px-3 py-1.5 rounded-lg uppercase italic">ASI CUKUP</span>
+                                        <?php elseif ($u['status_asi'] === 'Tidak'): ?>
+                                            <span class="bg-rose-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase italic shadow-sm">ASI KURANG</span>
+                                        <?php else: ?>
+                                            <span class="bg-slate-100 text-slate-400 text-[9px] font-black px-3 py-1.5 rounded-lg uppercase italic">BELUM ISI</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="px-10 py-7">
+                                        <a href="<?= base_url('admin/detail/' . $u['id']) ?>" class="text-[10px] font-black text-primary hover:underline italic tracking-widest uppercase">Lihat Rekam Medis</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
             
             <div class="p-8 bg-slate-50/30 flex items-center justify-between border-t border-slate-50">
-                <p class="text-[10px] font-bold text-slate-400 uppercase italic">Menampilkan 2 dari 1,248 Bunda</p>
+                <p id="showingCount" class="text-[10px] font-bold text-slate-400 uppercase italic">Menampilkan <?= count($users) ?> Bunda</p>
                 <div class="flex gap-2">
                     <button class="size-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-white transition"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
                     <button class="size-8 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold">1</button>
@@ -187,6 +191,27 @@
                 overlay.classList.add('hidden');
             }
         }
+
+        // Live Search Filter
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.user-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const name = row.querySelector('.user-name').textContent.toLowerCase();
+                const domisili = row.querySelector('.user-domisili').textContent.toLowerCase();
+                
+                if (name.includes(query) || domisili.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('showingCount').textContent = `Menampilkan ${visibleCount} Bunda`;
+        });
     </script>
 </body>
 </html>

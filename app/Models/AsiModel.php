@@ -6,13 +6,13 @@ use CodeIgniter\Model;
 
 class AsiModel extends Model
 {
-    protected $table            = 'cek_kelancaran_asi';
-    protected $primaryKey       = 'id';
+    protected $table = 'cek_kelancaran_asi';
+    protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
-    protected $useTimestamps    = true;
-    protected $createdField     = 'created_at';
-    protected $updatedField     = 'updated_at';
+    protected $returnType = 'array';
+    protected $useTimestamps = true;
+    protected $createdField = 'created_at';
+    protected $updatedField = 'updated_at';
 
     protected $allowedFields = [
         'user_id',
@@ -35,23 +35,24 @@ class AsiModel extends Model
     ];
 
     protected $validationRules = [
-        'user_id'              => 'required|integer',
-        'tgl_pengisian'       => 'required|valid_date',
-        'kondisi_puting'      => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam,Menonjol,Pecah]',
-        'frekuensi_menyusui'  => 'required|integer|greater_than_equal_to[0]',
-        'lama_menyusui'       => 'required|integer|greater_than_equal_to[0]',
-        'frekuensi_bab_bayi'  => 'required|integer|greater_than_equal_to[0]',
-        'frekuensi_bak_bayi'  => 'required|integer|greater_than_equal_to[0]',
-        'support_suami_menyusui'      => 'permit_empty|in_list[Ya,Tidak]',
-        'support_suami_gizi'          => 'permit_empty|in_list[Ya,Tidak]',
-        'bayi_tidur_12jam'            => 'permit_empty|in_list[Ya,Tidak]',
+        'user_id' => 'required|integer',
+        'tgl_pengisian' => 'required|valid_date',
+        'kondisi_puting' => 'permit_empty|in_list[Normal,Lecet,Datar,Tenggelam,Menonjol,Pecah]',
+        'frekuensi_menyusui' => 'required|numeric',
+        'lama_menyusui' => 'required|numeric',
+        'frekuensi_bab_bayi' => 'required|numeric',
+        'frekuensi_bak_bayi' => 'required|numeric',
+        'support_suami_menyusui' => 'permit_empty|in_list[Ya,Tidak]',
+        'support_suami_gizi' => 'permit_empty|in_list[Ya,Tidak]',
+        'bayi_tidur_12jam' => 'permit_empty|in_list[Ya,Tidak]',
         'bayi_tenang_setelah_menyusu' => 'permit_empty|in_list[Ya,Tidak]',
-        'warna_urin_bayi'             => 'permit_empty|in_list[Jernih,Kuning Muda,Kuning Pekat]',
-        'payudara_penuh'              => 'permit_empty|in_list[Ya,Tidak]',
-        'volume_pumping'              => 'permit_empty|decimal',
-        'bb_naik_sesuai_usia'         => 'permit_empty|in_list[Ya,Tidak]',
-        'kondisi_lainnya'             => 'permit_empty|string',
-        'status_kecukupan_asi'        => 'required|in_list[Ya,Tidak]',
+        'warna_urin_bayi' => 'permit_empty|in_list[Jernih,Kuning Muda,Kuning Pekat]',
+        'payudara_penuh' => 'permit_empty|in_list[Ya,Tidak]',
+        'hasil_pumping' => 'permit_empty|numeric',
+        'volume_pumping' => 'permit_empty|numeric',
+        'bb_naik_sesuai_usia' => 'permit_empty|in_list[Ya,Tidak]',
+        'kondisi_lainnya' => 'permit_empty|string',
+        'status_kecukupan_asi' => 'permit_empty|in_list[Ya,Tidak]',
     ];
 
     // ---------------------------------------------------------------
@@ -60,22 +61,7 @@ class AsiModel extends Model
 
     /**
      * Menghitung status kecukupan ASI berdasarkan indikator klinis.
-     *
-     * Sistem penilaian berbasis skor:
-     *   - Frekuensi menyusui >= 8x/hari          → +2
-     *   - Lama menyusui >= 10 menit/sesi          → +2
-     *   - Frekuensi BAB bayi >= 3x/hari           → +1
-     *   - Frekuensi BAK bayi >= 6x/hari           → +2
-     *   - Bayi tenang setelah menyusu = Ya         → +1
-     *   - Bayi tidur >= 12 jam/hari = Ya           → +1
-     *   - Warna urin bayi jernih/kuning muda       → +1
-     *   - Payudara penuh sebelum menyusui = Ya     → +1
-     *   - Kondisi puting normal                    → +1
-     *
      * Skor maksimal = 12. Kecukupan ASI = "Ya" jika skor >= 7.
-     *
-     * @param array $data Data input dari form cek ASI
-     * @return string "Ya" atau "Tidak"
      */
     public function hitungKecukupanAsi(array $data): string
     {
@@ -96,7 +82,7 @@ class AsiModel extends Model
             $skor += 1;
         }
 
-        // 4. Frekuensi BAK bayi (minimal 6x/hari → indikator hidrasi cukup)
+        // 4. Frekuensi BAK bayi (minimal 6x/hari -> indikator hidrasi)
         if (isset($data['frekuensi_bak_bayi']) && (int) $data['frekuensi_bak_bayi'] >= 6) {
             $skor += 2;
         }
@@ -117,16 +103,16 @@ class AsiModel extends Model
         }
 
         // 8. Payudara terasa penuh sebelum menyusui
+        // FIX: Mengubah $data['payudara_full'] menjadi $data['payudara_penuh'] agar sinkron
         if (isset($data['payudara_penuh']) && $data['payudara_penuh'] === 'Ya') {
             $skor += 1;
         }
 
-        // 9. Kondisi puting normal (tidak ada masalah)
+        // 9. Kondisi puting normal
         if (isset($data['kondisi_puting']) && $data['kondisi_puting'] === 'Normal') {
             $skor += 1;
         }
 
-        // Threshold: skor >= 7 dari 12 → ASI cukup
         return $skor >= 7 ? 'Ya' : 'Tidak';
     }
 
@@ -136,29 +122,17 @@ class AsiModel extends Model
     public function getByUser(int $userId): array
     {
         return $this->where('user_id', $userId)
-                    ->orderBy('tgl_pengisian', 'DESC')
-                    ->findAll();
+            ->orderBy('tgl_pengisian', 'DESC')
+            ->findAll();
     }
 
     /**
-     * Ambil cek ASI terakhir.
+     * Ambil cek ASI terakhir untuk dashboard summary.
      */
     public function getLatestByUser(int $userId): ?array
     {
         return $this->where('user_id', $userId)
-                    ->orderBy('tgl_pengisian', 'DESC')
-                    ->first();
-    }
-
-    /**
-     * Ambil data cek ASI.
-     * Jika $id false, ambil semua. Jika ada id, ambil satu.
-     */
-    public function getCekAsi($id = false)
-    {
-        if ($id === false) {
-            return $this->findAll();
-        }
-        return $this->where(['id' => $id])->first();
+            ->orderBy('tgl_pengisian', 'DESC')
+            ->first();
     }
 }

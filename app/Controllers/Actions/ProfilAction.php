@@ -24,6 +24,7 @@ class ProfilAction extends BaseController
             'alamat' => 'permit_empty',
             'id_kabkota' => 'permit_empty',
             'id_puskesmas' => 'permit_empty',
+            'status_kehamilan' => 'permit_empty|in_list[pra_kehamilan,hamil,pasca_melahirkan]',
         ];
 
         // 3. Jalankan Validasi
@@ -44,6 +45,7 @@ class ProfilAction extends BaseController
             'alamat' => $this->request->getPost('alamat'),
             'id_kabkota' => $this->request->getPost('id_kabkota'),
             'id_puskesmas' => $this->request->getPost('id_puskesmas'),
+            'status_kehamilan' => $this->request->getPost('status_kehamilan'),
         ];
 
         // Jika Bunda mengisi password baru, maka perbarui juga passwordnya
@@ -62,7 +64,10 @@ class ProfilAction extends BaseController
         $userModel = new UserModel();
         // Di ProfilAction.php bagian update()
         if ($userModel->update($userId, $dataUpdate)) {
-            session()->set('nama', $dataUpdate['nama']);
+            session()->set([
+                'nama' => $dataUpdate['nama'],
+                'status_kehamilan' => $dataUpdate['status_kehamilan']
+            ]);
             return $this->response->setJSON([
                 'status' => 'success',
                 'message' => 'Data diri berhasil diperbarui.'

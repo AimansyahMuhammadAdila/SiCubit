@@ -40,6 +40,44 @@ class Admin extends BaseController
         return view('admin/data_ibu', $data);
     }
 
+    public function detail($id)
+    {
+        $db = \Config\Database::connect();
+        
+        // Find user by id
+        $user = $db->table('users')->where('id', $id)->get()->getRowArray();
+        if (!$user) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Ibu tidak ditemukan.");
+        }
+        
+        // Find Puskesmas & Kabkota names
+        $puskesmas = $db->table('puskesmas')->where('id', $user['id_puskesmas'])->get()->getRowArray();
+        $kabkota = $db->table('kabupaten_kota')->where('id', $user['id_kabkota'])->get()->getRowArray();
+        $user['nama_puskesmas'] = $puskesmas['nama'] ?? '-';
+        $user['nama_kabkota'] = $kabkota['nama'] ?? '-';
+
+        // Retrieve historical checks
+        $asiModel = new \App\Models\AsiModel();
+        $kejiwaanModel = new \App\Models\KondisiKejiwaanIbuModel();
+        $dataBayiModel = new \App\Models\DataBayiModel();
+        $persalinanModel = new \App\Models\RiwayatPersalinanModel();
+        $kehamilanModel = new \App\Models\RiwayatKehamilanModel();
+        $praKehamilanModel = new \App\Models\RiwayatPraKehamilanModel();
+
+        $data = [
+            'title' => 'Detail Informasi Ibu - SI CUBIT',
+            'user' => $user,
+            'riwayat_asi' => $asiModel->getByUser($id),
+            'riwayat_kejiwaan' => $kejiwaanModel->getByUser($id),
+            'riwayat_bayi' => $dataBayiModel->getByUser($id),
+            'persalinan' => $persalinanModel->where('user_id', $id)->orderBy('tgl_pengisian', 'DESC')->first(),
+            'kehamilan' => $kehamilanModel->where('user_id', $id)->orderBy('tgl_pengisian', 'DESC')->first(),
+            'pra_kehamilan' => $praKehamilanModel->where('user_id', $id)->orderBy('tgl_pengisian', 'DESC')->first(),
+        ];
+        
+        return view('admin/detail_ibu', $data);
+    }
+
     private function getLatestUsers()
     {
         $db = \Config\Database::connect();

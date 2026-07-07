@@ -68,6 +68,18 @@
                     </div>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Status Kehamilan</label>
+                    <div class="relative">
+                        <select class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 appearance-none text-slate-600" name="status_kehamilan" required>
+                            <option value="pra_kehamilan" <?= ($ibu['status_kehamilan'] ?? '') === 'pra_kehamilan' ? 'selected' : '' ?>>Pra Kehamilan (Pranikah)</option>
+                            <option value="hamil" <?= ($ibu['status_kehamilan'] ?? '') === 'hamil' ? 'selected' : '' ?>>Masa Kehamilan (Hamil)</option>
+                            <option value="pasca_melahirkan" <?= ($ibu['status_kehamilan'] ?? '') === 'pasca_melahirkan' ? 'selected' : '' ?>>Pasca Melahirkan (Menyusui)</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+
                 <div class="pt-4 mt-4 border-t border-slate-100">
                     <p class="text-xs text-rose-500 font-medium mb-3">* Kosongkan password jika tidak ingin mengubahnya.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
