@@ -10,5 +10,8 @@ class DatabaseSeeder extends Seeder
     {
         // Jalankan seeder gabungan
         $this->call('SiCubitSeeder');
+        $this->call('KabupatenKotaSeeder');
+        $this->call('PuskesmasSeeder');
+        $this->call('UserSeeder');
     }
 }

@@ -141,14 +141,21 @@ class AuthAction extends BaseController
 
         // Set session
         $session = session();
-        $session->set([
+        $sessionData = [
             'user_id' => $user['id'],
             'nama' => $user['nama'],
             'no_telp' => $user['no_telp'],
             'role' => $user['role'],
             'status_kehamilan' => $user['status_kehamilan'],
             'logged_in' => true,
-        ]);
+        ];
+
+        // Jika role admin/bidan, set flag is_admin agar bisa akses panel admin
+        if ($user['role'] === 'admin' || $user['role'] === 'bidan') {
+            $sessionData['is_admin'] = true;
+        }
+
+        $session->set($sessionData);
 
         return $this->response->setJSON([
             'status' => 'success',

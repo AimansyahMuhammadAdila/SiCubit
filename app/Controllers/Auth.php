@@ -25,7 +25,7 @@ class Auth extends BaseController
             'title' => 'Login - SI CUBIT'
         ];
         
-        return view('auth/login_baru', $data);
+        return view('auth/login', $data);
     }
 
     public function register()

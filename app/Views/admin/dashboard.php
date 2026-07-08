@@ -69,7 +69,7 @@
                     <p class="text-[10px] text-slate-400 italic">Pusk. Banjarbaru</p>
                 </div>
             </div>
-            <a href="<?= base_url('admin/login') ?>"
+            <a href="<?= base_url('admin/logout') ?>"
                 class="flex items-center justify-center gap-2 py-3 w-full bg-rose-50 text-rose-600 font-bold text-xs rounded-xl hover:bg-rose-100 transition">
                 <span class="material-symbols-outlined text-sm">logout</span> KELUAR SISTEM
             </a>

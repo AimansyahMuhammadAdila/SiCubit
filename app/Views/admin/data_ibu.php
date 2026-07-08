@@ -61,7 +61,7 @@
                     <p class="text-[10px] text-slate-400 italic">Pusk. Banjarbaru</p>
                 </div>
             </div>
-            <a href="<?= base_url('admin/login') ?>" class="flex items-center justify-center gap-2 py-3 w-full bg-rose-50 text-rose-600 font-bold text-xs rounded-xl hover:bg-rose-100 transition">
+            <a href="<?= base_url('admin/logout') ?>" class="flex items-center justify-center gap-2 py-3 w-full bg-rose-50 text-rose-600 font-bold text-xs rounded-xl hover:bg-rose-100 transition">
                 <span class="material-symbols-outlined text-sm">logout</span> KELUAR SISTEM
             </a>
         </div>
@@ -93,11 +93,18 @@
                 <input type="text" id="searchInput" placeholder="Cari berdasarkan NIK, Nama, atau No. Rekam Medis..." class="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-xs italic focus:ring-2 focus:ring-primary/20 transition-all"/>
                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
             </div>
-            <div class="flex gap-2">
-                <select class="bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 px-6 py-4 focus:ring-2 focus:ring-primary/20">
-                    <option>Semua Wilayah</option>
-                    <option>Banjarbaru Selatan</option>
-                    <option>Rantau</option>
+            <div class="flex flex-col md:flex-row gap-2">
+                <select id="filterKabkota" class="bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 px-6 py-4 focus:ring-2 focus:ring-primary/20 w-40 md:w-auto">
+                    <option value="">SEMUA WILAYAH</option>
+                    <?php foreach ($wilayah as $w): ?>
+                        <option value="<?= esc($w['id']) ?>"><?= strtoupper(esc($w['nama'])) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select id="filterPuskesmas" class="bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 px-6 py-4 focus:ring-2 focus:ring-primary/20 w-40 md:w-auto">
+                    <option value="" data-kabkota="">SEMUA PUSKESMAS</option>
+                    <?php foreach ($puskesmas as $p): ?>
+                        <option value="<?= esc($p['id']) ?>" data-kabkota="<?= esc($p['id_kabkota']) ?>"><?= strtoupper(esc($p['nama'])) ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>
@@ -121,7 +128,7 @@
                             </tr>
                         <?php else: ?>
                             <?php foreach ($users as $u): ?>
-                                <tr class="user-row hover:bg-slate-50/50 transition duration-300">
+                                <tr class="user-row hover:bg-slate-50/50 transition duration-300" data-kabkota="<?= esc($u['id_kabkota']) ?>" data-puskesmas="<?= esc($u['id_puskesmas']) ?>">
                                     <td class="px-10 py-7">
                                         <div class="flex items-center gap-4">
                                             <div class="size-10 rounded-xl bg-blue-100 flex items-center justify-center font-bold text-primary">
@@ -160,12 +167,19 @@
                 </table>
             </div>
             
-            <div class="p-8 bg-slate-50/30 flex items-center justify-between border-t border-slate-50">
-                <p id="showingCount" class="text-[10px] font-bold text-slate-400 uppercase italic">Menampilkan <?= count($users) ?> Bunda</p>
-                <div class="flex gap-2">
-                    <button class="size-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-white transition"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
-                    <button class="size-8 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold">1</button>
-                    <button class="size-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-white transition"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+            <div class="p-8 bg-slate-50/30 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-slate-50">
+                <div class="flex items-center gap-3">
+                    <p id="showingCount" class="text-[10px] font-bold text-slate-400 uppercase italic">Menampilkan <?= count($users) ?> Bunda</p>
+                    <div class="w-px h-4 bg-slate-200 hidden md:block"></div>
+                    <select id="perPage" class="bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-500 py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-primary/20">
+                        <option value="5">5 / Halaman</option>
+                        <option value="10">10 / Halaman</option>
+                        <option value="20" selected>20 / Halaman</option>
+                        <option value="50">50 / Halaman</option>
+                    </select>
+                </div>
+                <div id="paginationControls" class="flex gap-2">
+                    <!-- Pagination buttons injected via JS -->
                 </div>
             </div>
         </div>
@@ -192,25 +206,136 @@
             }
         }
 
-        // Live Search Filter
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
+        // Live Search, Dropdown Filter, & Pagination
+        const searchInput = document.getElementById('searchInput');
+        const filterKabkota = document.getElementById('filterKabkota');
+        const filterPuskesmas = document.getElementById('filterPuskesmas');
+        const perPageSelect = document.getElementById('perPage');
+        
+        let currentPage = 1;
+        let rowsPerPage = parseInt(perPageSelect.value) || 20;
+
+        perPageSelect.addEventListener('change', function() {
+            rowsPerPage = parseInt(this.value);
+            currentPage = 1;
+            filterData();
+        });
+
+        function changePage(page) {
+            currentPage = page;
+            filterData();
+        }
+
+        function renderPagination(totalVisible, totalPages) {
+            const container = document.getElementById('paginationControls');
+            container.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Prev button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `size-8 rounded-lg border border-slate-200 flex items-center justify-center transition ${currentPage === 1 ? 'text-slate-300 bg-slate-50 cursor-not-allowed' : 'text-slate-500 hover:bg-white cursor-pointer'}`;
+            prevBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_left</span>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => changePage(currentPage - 1);
+            container.appendChild(prevBtn);
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `size-8 rounded-lg text-xs font-bold transition flex items-center justify-center ${currentPage === i ? 'bg-primary text-white shadow-md' : 'border border-slate-200 text-slate-500 hover:bg-white'}`;
+                    pageBtn.textContent = i;
+                    pageBtn.onclick = () => changePage(i);
+                    container.appendChild(pageBtn);
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    const dots = document.createElement('span');
+                    dots.className = 'size-8 flex items-center justify-center text-slate-400 text-xs';
+                    dots.textContent = '...';
+                    container.appendChild(dots);
+                }
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `size-8 rounded-lg border border-slate-200 flex items-center justify-center transition ${currentPage === totalPages ? 'text-slate-300 bg-slate-50 cursor-not-allowed' : 'text-slate-500 hover:bg-white cursor-pointer'}`;
+            nextBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_right</span>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => changePage(currentPage + 1);
+            container.appendChild(nextBtn);
+        }
+
+        function filterData() {
+            const query = searchInput.value.toLowerCase().trim();
+            const kabkotaVal = filterKabkota.value;
+            const puskesmasVal = filterPuskesmas.value;
+            
             const rows = document.querySelectorAll('.user-row');
-            let visibleCount = 0;
+            let matchedRows = [];
 
             rows.forEach(row => {
                 const name = row.querySelector('.user-name').textContent.toLowerCase();
                 const domisili = row.querySelector('.user-domisili').textContent.toLowerCase();
+                const rowKabkota = row.getAttribute('data-kabkota');
+                const rowPuskesmas = row.getAttribute('data-puskesmas');
                 
-                if (name.includes(query) || domisili.includes(query)) {
-                    row.style.display = '';
-                    visibleCount++;
+                const matchSearch = name.includes(query) || domisili.includes(query);
+                const matchKabkota = kabkotaVal === '' || rowKabkota === kabkotaVal;
+                const matchPuskesmas = puskesmasVal === '' || rowPuskesmas === puskesmasVal;
+                
+                if (matchSearch && matchKabkota && matchPuskesmas) {
+                    matchedRows.push(row);
                 } else {
                     row.style.display = 'none';
                 }
             });
 
-            document.getElementById('showingCount').textContent = `Menampilkan ${visibleCount} Bunda`;
+            const totalVisible = matchedRows.length;
+            const totalPages = Math.ceil(totalVisible / rowsPerPage);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (totalPages === 0) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            
+            matchedRows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('showingCount').textContent = `Menampilkan ${totalVisible} Bunda`;
+            renderPagination(totalVisible, totalPages);
+        }
+
+        // Initialize display
+        filterData();
+
+        searchInput.addEventListener('input', () => { currentPage = 1; filterData(); });
+        filterPuskesmas.addEventListener('change', () => { currentPage = 1; filterData(); });
+        
+        // Cascade dropdown: When KabKota changes, filter Puskesmas options
+        filterKabkota.addEventListener('change', function() {
+            currentPage = 1;
+            
+            // Show/hide options in Puskesmas dropdown
+            const puskesmasOptions = filterPuskesmas.querySelectorAll('option');
+            
+            puskesmasOptions.forEach(opt => {
+                if (opt.value === "") {
+                    opt.style.display = ''; // Always show "SEMUA PUSKESMAS"
+                } else if (!kabkotaId || opt.getAttribute('data-kabkota') === kabkotaId) {
+                    opt.style.display = '';
+                } else {
+                    opt.style.display = 'none';
+                }
+            });
+            
+            // Reset puskesmas selection
+            filterPuskesmas.value = "";
+            filterData();
         });
     </script>
 </body>

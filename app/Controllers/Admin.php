@@ -22,8 +22,8 @@ class Admin extends BaseController
         $data = [
             'title'        => 'Panel Kendali Bidan - SI CUBIT',
             'totalIbu'     => $db->table('users')->where('role', 'user')->countAllResults(),
-            'perluCek'     => $db->table('riwayat_kehamilan')->where('status_validasi', 'pending')->countAllResults(),
-            'resikoTinggi' => $db->table('riwayat_kehamilan')->where('kategori_resiko', 'Tinggi')->countAllResults(),
+            'perluCek'     => $db->table('riwayat_kehamilan')->countAllResults(),
+            'resikoTinggi' => $db->table('kondisi_kejiwaan_ibu')->where('status_kejiwaan', 'Berisiko')->countAllResults(),
             // Ambil data ibu terbaru dengan join wilayah
             'users'        => $this->getLatestUsers()
         ];
@@ -33,9 +33,12 @@ class Admin extends BaseController
 
     public function dataIbu()
     {
+        $db = \Config\Database::connect();
         $data = [
-            'title' => 'Data Ibu & Anak - SI CUBIT',
-            'users' => $this->getLatestUsers()
+            'title'     => 'Data Ibu & Anak - SI CUBIT',
+            'users'     => $this->getLatestUsers(),
+            'wilayah'   => $db->table('kabupaten_kota')->orderBy('nama', 'ASC')->get()->getResultArray(),
+            'puskesmas' => $db->table('puskesmas')->orderBy('nama', 'ASC')->get()->getResultArray()
         ];
         return view('admin/data_ibu', $data);
     }

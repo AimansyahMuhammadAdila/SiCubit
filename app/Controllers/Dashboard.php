@@ -12,6 +12,12 @@ class Dashboard extends BaseController
             return redirect()->to(base_url('login'));
         }
 
+        // 1b. Jika role admin/bidan, arahkan ke dashboard admin
+        $role = $session->get('role');
+        if ($role === 'admin' || $role === 'bidan') {
+            return redirect()->to(base_url('admin/dashboard'));
+        }
+
         $userId = $session->get('user_id');
         $namaIbu = $session->get('nama'); // Ambil nama dari session
 
@@ -63,8 +69,8 @@ class Dashboard extends BaseController
 
         // 1. Hitung Statistik
         $totalIbu = $db->table('users')->where('role', 'user')->countAllResults();
-        $perluCek = $db->table('riwayat_kehamilan')->where('status_validasi', 'pending')->countAllResults();
-        $resikoTinggi = $db->table('riwayat_kehamilan')->where('kategori_resiko', 'Tinggi')->countAllResults();
+        $perluCek = $db->table('riwayat_kehamilan')->countAllResults();
+        $resikoTinggi = $db->table('kondisi_kejiwaan_ibu')->where('status_kejiwaan', 'Berisiko')->countAllResults();
 
         // 2. Ambil Data Tabel (JOIN dengan Puskesmas dan Kabkota)
         $builder = $db->table('users');

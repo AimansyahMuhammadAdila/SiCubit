@@ -117,7 +117,7 @@
                             <label class="text-slate-900 dark:text-slate-100 text-sm font-semibold"
                                 for="password">Password</label>
                             <a class="text-primary text-sm font-semibold hover:underline italic"
-                                href="<?= base_url('admin/forgot-password') ?>">Lupa Password?</a>
+                                href="<?= base_url('lupa-password') ?>">Lupa Password?</a>
                         </div>
                         <div class="relative flex items-stretch">
                             <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">

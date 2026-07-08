@@ -9,6 +9,7 @@
 
 <script id="tailwind-config">
     tailwind.config = {
+        darkMode: 'class',
         theme: {
             extend: {
                 colors: {
@@ -24,15 +25,127 @@
     }
 </script>
 
+<script>
+    // Auto dark/light mode based on system preference
+    (function() {
+        function applyTheme() {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        applyTheme();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+    })();
+</script>
+
 <style type="text/tailwindcss">
-    body {
+    /* ── Dark mode ── */
+    .dark body {
         background-color: #0A0A0F;
     }
-    .app-bg {
+    .dark .app-bg {
         background:
             radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91, 141, 239, 0.18), transparent),
             radial-gradient(ellipse 60% 40% at 90% 20%, rgba(139, 92, 246, 0.12), transparent),
             #0A0A0F;
+    }
+    .dark .gradient-text {
+        background: linear-gradient(90deg, #5B8DEF 0%, #8B5CF6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .dark .gradient-btn {
+        background: linear-gradient(90deg, #5B8DEF 0%, #8B5CF6 100%);
+        box-shadow: 0 10px 30px -8px rgba(91, 141, 239, 0.45);
+    }
+    .dark .gradient-btn:hover {
+        box-shadow: 0 14px 36px -6px rgba(91, 141, 239, 0.55);
+    }
+    .dark .icon-badge {
+        background: radial-gradient(circle at 30% 30%, #ffffff, #eef2ff);
+        box-shadow: 0 0 0 10px rgba(91, 141, 239, 0.08), 0 20px 40px -12px rgba(91, 141, 239, 0.35);
+    }
+    .dark .dark-card {
+        background: #13131A;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .dark .dark-input {
+        background: #16161E;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .dark .dark-input:focus-within {
+        border-color: rgba(91, 141, 239, 0.6);
+        box-shadow: 0 0 0 4px rgba(91, 141, 239, 0.12);
+        background: #16161E;
+    }
+    .dark select.dark-select option {
+        background: #16161E;
+        color: #f1f5f9;
+    }
+    .dark .tab-active {
+        background: linear-gradient(90deg, #5B8DEF 0%, #8B5CF6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .dark .tab-inactive {
+        color: #64748b;
+    }
+    .dark .tab-inactive:hover {
+        color: #94a3b8;
+    }
+    .dark .back-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #cbd5e1;
+    }
+    .dark .back-btn:hover {
+        color: #ffffff;
+    }
+    .dark .hero-subtitle {
+        color: #8A8A94;
+    }
+    .dark .form-subtitle {
+        color: #8A8A94;
+    }
+    .dark .link-secondary {
+        color: #64748b;
+    }
+    .dark .toggle-pass-icon {
+        color: #64748b;
+    }
+    .dark .toggle-pass-icon:hover {
+        color: #5B8DEF;
+    }
+    .dark .input-icon {
+        color: #4b5563;
+    }
+    .dark .input-text {
+        color: #f1f5f9;
+    }
+    .dark .input-text::placeholder {
+        color: #64748b;
+    }
+    .dark .select-text {
+        color: #cbd5e1;
+    }
+    .dark .select-arrow {
+        color: #64748b;
+    }
+
+    /* ── Light mode ── */
+    body {
+        background-color: #f8fafc;
+    }
+    .app-bg {
+        background:
+            radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91, 141, 239, 0.08), transparent),
+            radial-gradient(ellipse 60% 40% at 90% 20%, rgba(139, 92, 246, 0.05), transparent),
+            #f8fafc;
     }
     .gradient-text {
         background: linear-gradient(90deg, #5B8DEF 0%, #8B5CF6 100%);
@@ -42,36 +155,95 @@
     }
     .gradient-btn {
         background: linear-gradient(90deg, #5B8DEF 0%, #8B5CF6 100%);
-        box-shadow: 0 10px 30px -8px rgba(91, 141, 239, 0.45);
+        box-shadow: 0 10px 30px -8px rgba(91, 141, 239, 0.3);
+    }
+    .gradient-btn:hover {
+        box-shadow: 0 14px 36px -6px rgba(91, 141, 239, 0.4);
     }
     .icon-badge {
         background: radial-gradient(circle at 30% 30%, #ffffff, #eef2ff);
-        box-shadow: 0 0 0 10px rgba(91, 141, 239, 0.08), 0 20px 40px -12px rgba(91, 141, 239, 0.35);
+        box-shadow: 0 0 0 10px rgba(91, 141, 239, 0.06), 0 20px 40px -12px rgba(91, 141, 239, 0.2);
     }
     .dark-card {
-        background: #13131A;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.06);
     }
     .dark-input {
-        background: #16161E;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #f1f5f9;
+        border: 1px solid rgba(0, 0, 0, 0.08);
         transition: border-color .15s ease, box-shadow .15s ease;
     }
     .dark-input:focus-within {
         border-color: rgba(91, 141, 239, 0.6);
-        box-shadow: 0 0 0 4px rgba(91, 141, 239, 0.12);
+        box-shadow: 0 0 0 4px rgba(91, 141, 239, 0.1);
+        background: #ffffff;
     }
     select.dark-select option {
-        background: #16161E;
-        color: #f1f5f9;
+        background: #ffffff;
+        color: #1e293b;
     }
+    .tab-active {
+        background: linear-gradient(90deg, #5B8DEF 0%, #8B5CF6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .tab-inactive {
+        color: #94a3b8;
+    }
+    .tab-inactive:hover {
+        color: #64748b;
+    }
+    .back-btn {
+        background: rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        color: #64748b;
+    }
+    .back-btn:hover {
+        color: #1e293b;
+        background: rgba(0, 0, 0, 0.06);
+    }
+    .hero-subtitle {
+        color: #64748b;
+    }
+    .form-subtitle {
+        color: #64748b;
+    }
+    .link-secondary {
+        color: #94a3b8;
+    }
+    .toggle-pass-icon {
+        color: #94a3b8;
+    }
+    .toggle-pass-icon:hover {
+        color: #5B8DEF;
+    }
+    .input-icon {
+        color: #94a3b8;
+    }
+    .input-text {
+        color: #1e293b;
+    }
+    .input-text::placeholder {
+        color: #94a3b8;
+    }
+    .select-text {
+        color: #475569;
+    }
+    .select-arrow {
+        color: #94a3b8;
+    }
+
+    /* ── Shared ── */
+    .app-bg { min-height: 100vh; }
 </style>
 
-<div class="app-bg flex flex-col md:flex-row w-full min-h-screen text-slate-100 font-sans relative">
+<div class="app-bg flex flex-col md:flex-row w-full min-h-screen font-sans relative">
 
     <!-- Mobile top hero -->
     <div class="md:hidden relative w-full flex flex-col items-center justify-center px-6 pt-14 pb-6 flex-shrink-0 z-10">
-        <a href="<?= base_url('/') ?>" class="absolute top-6 left-6 p-2 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white transition flex items-center justify-center">
+        <a href="<?= base_url('/') ?>" class="absolute top-6 left-6 p-2 rounded-full back-btn transition flex items-center justify-center">
             <span class="material-symbols-outlined text-xl">arrow_back_ios_new</span>
         </a>
 
@@ -82,7 +254,7 @@
         <div class="flex items-center justify-center gap-2">
             <span class="font-extrabold text-lg gradient-text">SI CUBIT</span>
         </div>
-        <p class="text-warm-gray text-xs text-center mt-1 max-w-xs">Langkah Awal Memantau Tumbuh Kembang Si Kecil</p>
+        <p class="hero-subtitle text-xs text-center mt-1 max-w-xs">Langkah Awal Memantau Tumbuh Kembang Si Kecil</p>
     </div>
 
     <!-- Desktop left hero -->
@@ -92,90 +264,90 @@
                 <span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1">child_care</span>
                 <span class="font-extrabold text-2xl tracking-wide gradient-text">SI CUBIT</span>
             </div>
-            <p class="text-warm-gray text-sm font-medium">Langkah Awal Memantau Tumbuh Kembang Si Kecil</p>
+            <p class="hero-subtitle text-sm font-medium">Langkah Awal Memantau Tumbuh Kembang Si Kecil</p>
         </div>
 
         <div class="relative flex items-center justify-center w-44 h-44 rounded-[2rem] icon-badge mb-6">
             <span class="material-symbols-outlined text-[84px] text-primary">family_restroom</span>
         </div>
 
-        <p class="text-warm-gray text-sm text-center mt-2 max-w-sm">Daftarkan diri Bunda untuk mulai memantau perkembangan laktasi dan kesehatan.</p>
+        <p class="hero-subtitle text-sm text-center mt-2 max-w-sm">Daftarkan diri Bunda untuk mulai memantau perkembangan laktasi dan kesehatan.</p>
     </div>
 
     <!-- Form panel -->
-    <div class="flex-1 px-6 sm:px-10 md:px-16 lg:px-24 py-10 md:py-16 relative z-20 flex flex-col justify-center min-h-screen">
+    <div class="flex-1 px-6 sm:px-10 md:px-16 lg:px-24 pb-10 pt-2 md:py-16 relative z-20 flex flex-col justify-start md:justify-center">
 
         <div class="dark-card rounded-3xl p-8 md:p-10 max-w-xl mx-auto w-full">
 
             <div class="text-center md:text-left mb-8">
-                <h1 class="text-2xl font-extrabold text-white">Buat Akun Baru</h1>
-                <p class="text-warm-gray text-sm mt-2">Daftarkan diri Bunda untuk mulai memantau perkembangan laktasi dan kesehatan.</p>
+                <h1 class="text-2xl font-extrabold dark:text-white text-slate-900">Buat Akun Baru</h1>
+                <p class="form-subtitle text-sm mt-2">Daftarkan diri Bunda untuk mulai memantau perkembangan laktasi dan kesehatan.</p>
             </div>
 
-            <div class="flex justify-center md:justify-start gap-8 mb-8 border-b border-white/10">
-                <a href="<?= base_url('login') ?>" class="pb-3 text-slate-500 font-medium text-sm hover:text-slate-300 transition-colors">Login</a>
-                <a href="<?= base_url('register') ?>" class="pb-3 gradient-text font-bold border-b-2 border-primary text-sm transition-colors">Registration</a>
+            <div class="flex justify-center md:justify-start gap-8 mb-8 border-b dark:border-white/10 border-slate-200">
+                <a href="<?= base_url('login') ?>" class="pb-3 tab-inactive font-medium text-sm transition-colors">Login</a>
+                <a href="<?= base_url('register') ?>" class="pb-3 tab-active font-bold border-b-2 border-primary text-sm transition-colors">Registration</a>
             </div>
 
             <form id="registerForm" class="space-y-5 w-full">
                 <div class="space-y-4">
                     <div class="relative dark-input rounded-2xl">
-                        <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100" placeholder="Nama Lengkap Ibu" type="text" name="nama" required />
+                        <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text" placeholder="Nama Lengkap Ibu" type="text" name="nama" required />
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="relative dark-input rounded-2xl">
-                            <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100" placeholder="Umur (Tahun)" type="number" name="umur" required />
+                            <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text" placeholder="Umur (Tahun)" type="number" name="umur" required />
                         </div>
                         <div class="relative dark-input rounded-2xl">
-                            <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100" placeholder="Jumlah Anak" type="number" name="jumlah_anak" />
+                            <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text" placeholder="Jumlah Anak" type="number" name="jumlah_anak" />
                         </div>
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100" placeholder="Pekerjaan" type="text" name="pekerjaan" />
+                        <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text" placeholder="Pekerjaan" type="text" name="pekerjaan" />
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100" placeholder="Nomor Telepon / WhatsApp" type="tel" name="no_telp" required />
+                        <input class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text" placeholder="Nomor Telepon / WhatsApp" type="tel" name="no_telp" required />
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <textarea class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100 resize-none" rows="2" placeholder="Alamat Lengkap" name="alamat"></textarea>
+                        <textarea class="w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text resize-none" rows="2" placeholder="Alamat Lengkap" name="alamat"></textarea>
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <select id="selectKabkota" class="dark-select w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none text-slate-300 appearance-none disabled:text-slate-600" name="id_kabkota" required>
+                        <select id="selectKabkota" class="dark-select w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none select-text appearance-none disabled:opacity-50" name="id_kabkota" required>
                             <option value="" disabled selected>Memuat Kab/Kota...</option>
                         </select>
-                        <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">expand_more</span>
+                        <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 select-arrow pointer-events-none">expand_more</span>
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <select id="selectPuskesmas" class="dark-select w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none text-slate-300 appearance-none disabled:text-slate-600" name="id_puskesmas" required disabled>
+                        <select id="selectPuskesmas" class="dark-select w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none select-text appearance-none disabled:opacity-50" name="id_puskesmas" required disabled>
                             <option value="" disabled selected>Pilih Kab/Kota Terlebih Dahulu</option>
                         </select>
-                        <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">expand_more</span>
+                        <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 select-arrow pointer-events-none">expand_more</span>
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <select class="dark-select w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none text-slate-300 appearance-none" name="status_kehamilan" required>
+                        <select class="dark-select w-full px-5 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none select-text appearance-none" name="status_kehamilan" required>
                             <option value="" disabled selected>Pilih Status Kehamilan Bunda</option>
                             <option value="pra_kehamilan">Pra Kehamilan (Pranikah)</option>
                             <option value="hamil">Masa Kehamilan (Hamil)</option>
                             <option value="pasca_melahirkan">Pasca Melahirkan (Menyusui)</option>
                         </select>
-                        <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">expand_more</span>
+                        <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 select-arrow pointer-events-none">expand_more</span>
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <input id="regPassword" class="w-full px-5 pr-12 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100" placeholder="Buat Password" type="password" name="password" required />
-                        <span class="toggle-pass material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer hover:text-primary transition-colors select-none" data-target="regPassword">visibility_off</span>
+                        <input id="regPassword" class="w-full px-5 pr-12 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text" placeholder="Buat Password" type="password" name="password" required />
+                        <span class="toggle-pass material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 toggle-pass-icon cursor-pointer transition-colors select-none" data-target="regPassword">visibility_off</span>
                     </div>
 
                     <div class="relative dark-input rounded-2xl">
-                        <input id="regPasswordConfirm" class="w-full px-5 pr-12 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none placeholder:text-slate-500 text-slate-100" placeholder="Konfirmasi Password" type="password" name="konfirmasi_password" required />
-                        <span class="toggle-pass material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer hover:text-primary transition-colors select-none" data-target="regPasswordConfirm">visibility_off</span>
+                        <input id="regPasswordConfirm" class="w-full px-5 pr-12 py-3.5 bg-transparent rounded-2xl text-sm focus:outline-none input-text" placeholder="Konfirmasi Password" type="password" name="konfirmasi_password" required />
+                        <span class="toggle-pass material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 toggle-pass-icon cursor-pointer transition-colors select-none" data-target="regPasswordConfirm">visibility_off</span>
                     </div>
                 </div>
 
@@ -186,7 +358,7 @@
                 </div>
             </form>
 
-            <p class="text-center text-slate-500 text-xs mt-6">
+            <p class="text-center link-secondary text-xs mt-6">
                 Sudah punya akun? <a href="<?= base_url('login') ?>" class="text-primary font-semibold hover:underline">Login di sini</a>
             </p>
         </div>
@@ -197,6 +369,14 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
 
+    // Detect dark mode for SweetAlert styling
+    const isDark = () => document.documentElement.classList.contains('dark');
+    const swalTheme = () => ({
+        background: isDark() ? '#13131A' : '#ffffff',
+        color: isDark() ? '#f1f5f9' : '#1e293b',
+        confirmButtonColor: '#5B8DEF'
+    });
+
     // 0. Toggle show/hide password (semua field password)
     document.querySelectorAll('.toggle-pass').forEach(toggle => {
         toggle.addEventListener('click', () => {
@@ -204,11 +384,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (input.type === 'password') {
                 input.type = 'text';
                 toggle.textContent = 'visibility';
-                toggle.classList.replace('text-slate-500', 'text-primary');
+                toggle.style.color = '#5B8DEF';
             } else {
                 input.type = 'password';
                 toggle.textContent = 'visibility_off';
-                toggle.classList.replace('text-primary', 'text-slate-500');
+                toggle.style.color = '';
             }
         });
     });
@@ -267,9 +447,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         Swal.fire({
             title: 'Memproses Pendaftaran...',
             allowOutsideClick: false,
-            background: '#13131A',
-            color: '#f1f5f9',
-            didOpen: () => { Swal.showLoading(); }
+            didOpen: () => { Swal.showLoading(); },
+            ...swalTheme()
         });
 
         btn.disabled = true;
@@ -287,9 +466,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     icon: 'success',
                     title: 'Pendaftaran Berhasil!',
                     text: 'Akun Bunda sudah aktif, silakan login.',
-                    confirmButtonColor: '#5B8DEF',
-                    background: '#13131A',
-                    color: '#f1f5f9'
+                    ...swalTheme()
                 }).then(() => {
                     window.location.href = '<?= base_url('login') ?>';
                 });
@@ -308,9 +485,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     icon: 'error',
                     title: 'Gagal Mendaftar',
                     html: errorHtml,
-                    confirmButtonColor: '#5B8DEF',
-                    background: '#13131A',
-                    color: '#f1f5f9'
+                    ...swalTheme()
                 });
             }
         } catch (error) {
@@ -318,9 +493,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 icon: 'error',
                 title: 'Koneksi Bermasalah',
                 text: 'Terjadi kesalahan pada server. Coba lagi nanti.',
-                confirmButtonColor: '#5B8DEF',
-                background: '#13131A',
-                color: '#f1f5f9'
+                ...swalTheme()
             });
         } finally {
             btn.disabled = false;
