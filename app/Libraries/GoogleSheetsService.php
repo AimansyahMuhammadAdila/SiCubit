@@ -153,6 +153,7 @@ class GoogleSheetsService
             'Content-Type: application/json',
             'Content-Length: ' . strlen($jsonPayload)
         ]);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); // Paksa HTTP/1.1 untuk cegah HTTP/2 stream reset error dari server Google
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) SiCubit/1.0');
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
