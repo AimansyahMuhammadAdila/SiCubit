@@ -13,60 +13,65 @@
             </div>
             <div>
                 <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Kondisi Kejiwaan Ibu</h1>
-                <p class="text-xs text-slate-600 font-medium">Bunda, mari sejenak pahami kondisi emosional dan kesehatan mental Bunda</p>
+                <p class="text-xs text-slate-600 font-medium">Lengkapi screening emosional (EPDS) dan gejala cemas & fisik secara bertahap</p>
             </div>
         </div>
     </div>
 
-    <div class="flex-1 overflow-y-auto no-scrollbar relative z-10 animate-slide-up">
-        <div class="max-w-4xl mx-auto pb-24">
+    <div id="scrollContainer" class="flex-1 overflow-y-auto no-scrollbar relative z-10 scroll-smooth animate-slide-up">
+        <div class="max-w-4xl mx-auto pb-28">
             
-            <!-- Tab Switcher -->
-            <div class="flex p-1 bg-slate-200/60 dark:bg-slate-800 rounded-2xl max-w-md mx-auto mb-10 shadow-inner border border-slate-200 dark:border-slate-700">
-                <button id="tabBtnEpds" class="flex-1 py-3 text-sm font-bold rounded-xl bg-white dark:bg-slate-700 shadow-sm text-primary transition-all">
-                    Screening EPDS
-                </button>
-                <button id="tabBtnKecemasan" class="flex-1 py-3 text-sm font-bold rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-all">
-                    Gejala Cemas & Fisik
-                </button>
+            <!-- Step Progress Indicator -->
+            <div class="flex items-center justify-between mb-8 relative px-6 md:px-24">
+                <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-slate-200 dark:bg-slate-700 rounded-full -z-10"></div>
+                <div id="progressLine" class="absolute left-6 top-1/2 -translate-y-1/2 w-[0%] h-1 bg-primary rounded-full -z-10 transition-all duration-500"></div>
+                
+                <div class="flex flex-col items-center gap-1.5 step-indicator cursor-pointer" data-step="1">
+                    <div class="size-8 rounded-full flex items-center justify-center font-bold text-sm bg-primary text-white transition-colors duration-300 shadow-md flex-shrink-0">1</div>
+                    <span class="text-[10px] md:text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors whitespace-nowrap">Screening EPDS</span>
+                </div>
+                <div class="flex flex-col items-center gap-1.5 step-indicator cursor-pointer" data-step="2">
+                    <div class="size-8 rounded-full flex items-center justify-center font-bold text-sm bg-slate-200 text-slate-400 dark:bg-slate-700 transition-colors duration-300 flex-shrink-0">2</div>
+                    <span class="text-[10px] md:text-xs font-bold text-slate-400 transition-colors whitespace-nowrap">Gejala Cemas & Fisik</span>
+                </div>
             </div>
 
-            <!-- VIEW 1: EPDS FORM -->
-            <div id="containerEpds" class="block animate-fade-in">
-                <div class="bg-blue-50/70 dark:bg-slate-800/60 border border-blue-200 dark:border-slate-700 rounded-3xl p-5 md:p-6 mb-8 text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed shadow-sm space-y-3">
-                    <div class="flex items-center gap-2 font-black text-primary dark:text-blue-400 text-sm md:text-base uppercase tracking-tight">
-                        <span class="material-symbols-outlined text-xl">psychology</span>
-                        EDINBURGH POSTNATAL DEPRESSION SCALE (EPDS)
-                    </div>
-                    <p class="font-medium text-slate-700 dark:text-slate-200">
-                        <strong>Petunjuk Pengisian:</strong> Lingkari atau pilih jawaban yang paling sesuai dengan perasaan ibu selama 3-7 hari setelah melahirkan.
-                    </p>
-                    
-                    <div class="border-t border-blue-200/80 dark:border-slate-700 pt-3">
-                        <span class="font-bold text-slate-800 dark:text-slate-100 text-xs block mb-2">Interpretasi Skor EPDS:</span>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <div class="p-3 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700">
-                                <span class="font-black text-emerald-600 block text-xs">Total Skor 0–9</span>
-                                <span class="font-medium text-slate-700 dark:text-slate-200 text-xs">Normal / adaptasi emosional ringan</span>
-                            </div>
-                            <div class="p-3 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700">
-                                <span class="font-black text-amber-600 block text-xs">Total Skor 10–12</span>
-                                <span class="font-medium text-slate-700 dark:text-slate-200 text-xs">Kemungkinan baby blues</span>
-                            </div>
-                            <div class="p-3 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700">
-                                <span class="font-black text-rose-600 block text-xs">Total Skor ≥13</span>
-                                <span class="font-medium text-slate-700 dark:text-slate-200 text-xs">Kemungkinan depresi postpartum</span>
+            <form id="formKejiwaan" action="<?= base_url('api/kondisi-kejiwaan') ?>" method="POST" class="space-y-6 md:space-y-8 relative w-full">
+                <?= csrf_field() ?>
+                <input type="hidden" name="tgl_pengisian" value="<?= date('Y-m-d') ?>">
+
+                <!-- STEP 1: EPDS FORM -->
+                <div id="step-1" class="form-step transition-all duration-500 scale-100 opacity-100 w-full space-y-6">
+                    <div class="bg-blue-50/70 dark:bg-slate-800/60 border border-blue-200 dark:border-slate-700 rounded-3xl p-5 md:p-6 text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed shadow-sm space-y-3">
+                        <div class="flex items-center gap-2 font-black text-primary dark:text-blue-400 text-sm md:text-base uppercase tracking-tight">
+                            <span class="material-symbols-outlined text-xl">psychology</span>
+                            EDINBURGH POSTNATAL DEPRESSION SCALE (EPDS)
+                        </div>
+                        <p class="font-medium text-slate-700 dark:text-slate-200">
+                            <strong>Petunjuk Pengisian:</strong> Lingkari atau pilih jawaban yang paling sesuai dengan perasaan ibu selama 3-7 hari setelah melahirkan.
+                        </p>
+                        
+                        <div class="border-t border-blue-200/80 dark:border-slate-700 pt-3">
+                            <span class="font-bold text-slate-800 dark:text-slate-100 text-xs block mb-2">Interpretasi Skor EPDS:</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="p-3 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700">
+                                    <span class="font-black text-emerald-600 block text-xs">Total Skor 0–9</span>
+                                    <span class="font-medium text-slate-700 dark:text-slate-200 text-xs">Normal / adaptasi emosional ringan</span>
+                                </div>
+                                <div class="p-3 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700">
+                                    <span class="font-black text-amber-600 block text-xs">Total Skor 10–12</span>
+                                    <span class="font-medium text-slate-700 dark:text-slate-200 text-xs">Kemungkinan baby blues</span>
+                                </div>
+                                <div class="p-3 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700">
+                                    <span class="font-black text-rose-600 block text-xs">Total Skor ≥13</span>
+                                    <span class="font-medium text-slate-700 dark:text-slate-200 text-xs">Kemungkinan depresi postpartum</span>
+                                </div>
                             </div>
                         </div>
+                        <p class="text-[11px] text-rose-600 dark:text-rose-400 font-bold leading-relaxed pt-1">
+                            * Catatan: Jika skor ≥10 ATAU pertanyaan no. 10 dijawab ya (ada pikiran menyakiti diri) maka memerlukan perhatian dan rujukan segera. Dan lakukan rujukan ke tenaga profesional kesehatan jiwa.
+                        </p>
                     </div>
-                    <p class="text-[11px] text-rose-600 dark:text-rose-400 font-bold leading-relaxed pt-1">
-                        * Catatan: Jika skor ≥10 ATAU pertanyaan no. 10 dijawab ya (ada pikiran menyakiti diri) maka memerlukan perhatian dan rujukan segera. Dan lakukan rujukan ke tenaga profesional kesehatan jiwa.
-                    </p>
-                </div>
-
-                <form id="formEpds" action="<?= base_url('api/kondisi-kejiwaan') ?>" method="POST" class="flex flex-col gap-6">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="tgl_pengisian" value="<?= date('Y-m-d') ?>">
 
                     <?php
                     $epdsQuestions = [
@@ -182,24 +187,10 @@
                         </div>
                     </div>
                     <?php endforeach; ?>
+                </div>
 
-                    <div class="flex justify-end gap-4 items-center mt-6">
-                        <button type="reset" class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                            Reset
-                        </button>
-                        <button type="submit" class="px-8 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-dark transition-colors shadow-md shadow-blue-100 dark:shadow-none flex items-center gap-2">
-                            <span class="material-symbols-outlined text-xl">send</span> Kirim Screening EPDS
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- VIEW 2: ORIGINAL SOMATIC ANXIETY FORM -->
-            <div id="containerKecemasan" class="hidden animate-fade-in">
-                <form id="formKejiwaanIbu" action="<?= base_url('api/kondisi-kejiwaan') ?>" method="POST" class="flex flex-col gap-6 md:gap-8">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="tgl_pengisian" value="<?= date('Y-m-d') ?>">
-
+                <!-- STEP 2: SOMATIC ANXIETY FORM -->
+                <div id="step-2" class="form-step transition-all duration-500 blur-sm opacity-40 pointer-events-none select-none scale-[0.98] w-full space-y-6">
                     <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-700/80 flex flex-col gap-4">
                         <div class="flex items-start gap-3">
                             <span class="p-2 bg-amber-50 dark:bg-slate-700 text-amber-500 rounded-xl font-bold text-sm">1</span>
@@ -313,17 +304,25 @@
                             </label>
                         </div>
                     </div>
+                </div>
 
-                    <div class="flex justify-end gap-4 items-center">
-                        <button type="reset" class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                            Reset
+                <!-- FIXED NAVIGATION BAR -->
+                <div class="fixed bottom-[84px] md:bottom-4 left-4 right-4 md:left-[270px] lg:left-[310px] z-40 transition-all duration-300">
+                    <div class="max-w-4xl mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.08)] flex justify-between items-center">
+                        <button type="button" id="btnPrev" class="hidden px-6 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                            Kembali
                         </button>
-                        <button type="submit" class="px-8 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-dark transition-colors shadow-md shadow-blue-100 dark:shadow-none flex items-center gap-2">
-                            <span class="material-symbols-outlined text-xl">send</span> Kirim Gejala Cemas & Fisik
+                        <div class="flex-1"></div>
+                        <button type="button" id="btnNext" class="px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-xs md:text-sm hover:bg-primary-dark transition-colors shadow-md shadow-primary/20">
+                            Selanjutnya
+                        </button>
+                        <button type="submit" id="btnSubmit" class="hidden px-6 py-2.5 rounded-xl bg-green-500 text-white font-bold text-xs md:text-sm hover:bg-green-600 transition-colors shadow-md flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-lg">save</span> Simpan Screening Kejiwaan
                         </button>
                     </div>
-                </form>
-            </div>
+                </div>
+
+            </form>
 
         </div>
     </div>
@@ -332,132 +331,177 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // ==========================================
-    // TAB SWITCH LOGIC
-    // ==========================================
-    const tabBtnEpds = document.getElementById("tabBtnEpds");
-    const tabBtnKecemasan = document.getElementById("tabBtnKecemasan");
-    const containerEpds = document.getElementById("containerEpds");
-    const containerKecemasan = document.getElementById("containerKecemasan");
+    const form = document.getElementById("formKejiwaan");
+    const steps = document.querySelectorAll(".form-step");
+    const indicators = document.querySelectorAll(".step-indicator");
+    const progressLine = document.getElementById("progressLine");
 
-    tabBtnEpds.addEventListener("click", () => {
-        tabBtnEpds.classList.replace("text-slate-500", "text-primary");
-        tabBtnEpds.classList.add("bg-white", "shadow-sm", "dark:bg-slate-700");
-        tabBtnEpds.classList.remove("hover:text-slate-700", "dark:text-slate-400");
-        
-        tabBtnKecemasan.classList.replace("text-primary", "text-slate-500");
-        tabBtnKecemasan.classList.remove("bg-white", "shadow-sm", "dark:bg-slate-700");
-        tabBtnKecemasan.classList.add("hover:text-slate-700", "dark:text-slate-400");
-        
-        containerEpds.classList.replace("hidden", "block");
-        containerKecemasan.classList.replace("block", "hidden");
-    });
+    const btnNext = document.getElementById("btnNext");
+    const btnPrev = document.getElementById("btnPrev");
+    const btnSubmit = document.getElementById("btnSubmit");
 
-    tabBtnKecemasan.addEventListener("click", () => {
-        tabBtnKecemasan.classList.replace("text-slate-500", "text-primary");
-        tabBtnKecemasan.classList.add("bg-white", "shadow-sm", "dark:bg-slate-700");
-        tabBtnKecemasan.classList.remove("hover:text-slate-700", "dark:text-slate-400");
-        
-        tabBtnEpds.classList.replace("text-primary", "text-slate-500");
-        tabBtnEpds.classList.remove("bg-white", "shadow-sm", "dark:bg-slate-700");
-        tabBtnEpds.classList.add("hover:text-slate-700", "dark:text-slate-400");
-        
-        containerKecemasan.classList.replace("hidden", "block");
-        containerEpds.classList.replace("block", "hidden");
-    });
+    let currentStep = 1;
+    const totalSteps = steps.length;
 
-    // ==========================================
-    // SUBMIT ACTIONS WITH SWEETALERT2
-    // ==========================================
-    const submitForm = async (formElement, redirectUrl) => {
-        const loader = document.getElementById("page-loader");
-        if (loader) {
-            loader.style.display = "flex";
-            loader.style.opacity = "1";
+    function validateCurrentStep() {
+        const currentFormStep = steps[currentStep - 1];
+        const inputs = currentFormStep.querySelectorAll("input, select, textarea");
+        let isValid = true;
+        for (let input of inputs) {
+            if (input.type === 'hidden') continue;
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                isValid = false;
+                break;
+            }
         }
+        return isValid;
+    }
 
-        const formData = new FormData(formElement);
+    async function saveStepDataSilent() {
+        const formData = new FormData(form);
 
         // Map checklist ketegangan fisik checkboxes to individual Yes/No fields
-        if (formElement.id === "formKejiwaanIbu") {
-            const checklistItems = [
-                'gelisah', 'gemetar', 'tidak_dapat_rileks', 'ketegangan_otot', 
-                'sakit_kepala', 'jantung_berdebar', 'berkeringat_berlebihan', 
-                'sesak_napas', 'kepala_terasa_ringan', 'keluhan_ulu_hati'
-            ];
-            
-            // Set all checklist items default to Tidak
-            checklistItems.forEach(item => {
-                formData.set(item, 'Tidak');
-            });
-            
-            // Set checked items to Ya
-            const checkedBoxes = formElement.querySelectorAll("input[name='ketegangan_fisik[]']:checked");
-            checkedBoxes.forEach(box => {
-                const val = box.value;
-                if (val === 'nyeri_ulu_hati') {
-                    formData.set('keluhan_ulu_hati', 'Ya');
-                } else {
-                    formData.set(val, 'Ya');
-                }
-            });
-            
-            formData.delete('ketegangan_fisik[]');
-        }
+        const checklistItems = [
+            'gelisah', 'gemetar', 'tidak_dapat_rileks', 'ketegangan_otot', 
+            'sakit_kepala', 'jantung_berdebar', 'berkeringat_berlebihan', 
+            'sesak_napas', 'kepala_terasa_ringan', 'keluhan_ulu_hati'
+        ];
+        
+        checklistItems.forEach(item => {
+            formData.set(item, 'Tidak');
+        });
+        
+        const checkedBoxes = form.querySelectorAll("input[name='ketegangan_fisik[]']:checked");
+        checkedBoxes.forEach(box => {
+            const val = box.value;
+            if (val === 'nyeri_ulu_hati') {
+                formData.set('keluhan_ulu_hati', 'Ya');
+            } else {
+                formData.set(val, 'Ya');
+            }
+        });
+        formData.delete('ketegangan_fisik[]');
 
         try {
-            const response = await fetch(formElement.action, {
-                method: "POST",
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
-                },
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: { "X-Requested-With": "XMLHttpRequest" },
                 body: formData
             });
-
             const result = await response.json();
+            return (result.status === 'success' || result.success === true);
+        } catch (error) {
+            console.error("Auto-save gagal:", error);
+            return false;
+        }
+    }
 
-            if (response.ok && result.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Screening kejiwaan Bunda berhasil disimpan.',
-                    confirmButtonColor: '#2b7cee'
-                }).then(() => {
-                    window.location.href = redirectUrl;
-                });
+    function updateWizard() {
+        steps.forEach((step, index) => {
+            if (index + 1 === currentStep) {
+                step.classList.remove("hidden", "blur-sm", "opacity-40", "pointer-events-none", "select-none", "scale-[0.98]");
+                step.classList.add("block", "scale-100", "opacity-100");
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: result.message || 'Terjadi masalah di server backend.'
-                });
-                if (loader) {
-                    loader.style.opacity = "0";
-                    setTimeout(() => loader.style.display = "none", 200);
+                step.classList.remove("block", "scale-100", "opacity-100");
+                step.classList.add("hidden");
+            }
+        });
+
+        if (currentStep === 1) btnPrev.classList.add("hidden"); else btnPrev.classList.remove("hidden");
+
+        if (currentStep === totalSteps) {
+            btnNext.classList.add("hidden"); 
+            btnSubmit.classList.remove("hidden");
+        } else {
+            btnNext.classList.remove("hidden"); 
+            btnSubmit.classList.add("hidden");
+        }
+
+        progressLine.style.width = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
+
+        indicators.forEach((indicator, index) => {
+            const circle = indicator.querySelector("div");
+            const text = indicator.querySelector("span");
+
+            if (index + 1 <= currentStep) {
+                circle.classList.replace("bg-slate-200", "bg-primary");
+                circle.classList.replace("text-slate-400", "text-white");
+                text.classList.replace("text-slate-400", "text-slate-700");
+            } else {
+                circle.classList.replace("bg-primary", "bg-slate-200");
+                circle.classList.replace("text-white", "text-slate-400");
+                text.classList.replace("text-slate-700", "text-slate-400");
+            }
+        });
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const scrollContainer = document.getElementById("scrollContainer");
+        if (scrollContainer) scrollContainer.scrollTop = 0;
+    }
+
+    updateWizard();
+
+    indicators.forEach((indicator) => {
+        indicator.addEventListener("click", () => {
+            const stepNum = parseInt(indicator.getAttribute("data-step"));
+            if (stepNum && stepNum !== currentStep) {
+                if (stepNum < currentStep || validateCurrentStep()) {
+                    currentStep = stepNum;
+                    updateWizard();
                 }
             }
-        } catch (error) {
-            console.error("Error submit screening:", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Koneksi Gagal',
-                text: 'Terjadi kendala saat menghubungi server. Periksa kembali jaringan Anda.'
-            });
-            if (loader) {
-                loader.style.opacity = "0";
-                setTimeout(() => loader.style.display = "none", 200);
-            }
-        }
-    };
-
-    document.getElementById("formEpds").addEventListener("submit", function(e) {
-        e.preventDefault();
-        submitForm(this, "<?= base_url('assessment-kejiwaan/hasil') ?>");
+        });
     });
 
-    document.getElementById("formKejiwaanIbu").addEventListener("submit", function(e) {
+    btnNext.addEventListener("click", async () => {
+        if (validateCurrentStep()) {
+            btnNext.disabled = true;
+            btnNext.innerHTML = 'Menyimpan...';
+
+            const isSaved = await saveStepDataSilent();
+            
+            btnNext.disabled = false;
+            btnNext.innerHTML = 'Selanjutnya';
+
+            if (isSaved) {
+                currentStep++;
+                updateWizard();
+            } else {
+                Swal.fire({
+                    icon: 'error', title: 'Gagal Menyimpan', text: 'Gagal mengamankan data langkah ini ke server.'
+                });
+            }
+        }
+    });
+
+    btnPrev.addEventListener("click", () => {
+        if (currentStep > 1) {
+            currentStep--; 
+            updateWizard();
+        }
+    });
+
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
-        submitForm(this, "<?= base_url('assessment-kejiwaan/hasil') ?>");
+        if (!validateCurrentStep()) return;
+
+        Swal.fire({
+            title: 'Memfinalisasi Data...', text: 'Mohon tunggu sebentar', allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        const isFinalSaved = await saveStepDataSilent();
+
+        if (isFinalSaved) {
+            Swal.fire({
+                icon: 'success', title: 'Berhasil Disimpan!', text: 'Seluruh screening kondisi kejiwaan Bunda telah disimpan.', confirmButtonColor: '#162065'
+            }).then(() => {
+                window.location.href = '<?= base_url('assessment-kejiwaan/hasil') ?>'; 
+            });
+        } else {
+            Swal.fire({ icon: 'error', title: 'Oops...', text: 'Gagal melakukan sinkronisasi final.' });
+        }
     });
 });
 </script>

@@ -66,7 +66,36 @@ class Laktasi extends BaseController
         $userId = session('user_id');
         $kejiwaanModel = new KondisiKejiwaanIbuModel();
         
-        $latest = $kejiwaanModel->getLatestByUser($userId);
+        $allRecords = $kejiwaanModel->getByUser($userId);
+        $latest = !empty($allRecords) ? $allRecords[0] : null;
+
+        if ($latest) {
+            // Gabungkan nilai EPDS jika record paling atas belum memilikinya
+            if (!isset($latest['epds_skor']) || $latest['epds_skor'] === null) {
+                foreach ($allRecords as $rec) {
+                    if (isset($rec['epds_skor']) && $rec['epds_skor'] !== null && $rec['epds_skor'] > 0) {
+                        $latest['epds_skor'] = $rec['epds_skor'];
+                        $latest['epds_status'] = $rec['epds_status'];
+                        $latest['epds_q10'] = $rec['epds_q10'];
+                        for ($i = 1; $i <= 10; $i++) {
+                            $latest["epds_q$i"] = $rec["epds_q$i"];
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Gabungkan nilai Gejala Cemas & Fisik jika record paling atas belum memilikinya
+            if (!isset($latest['skor_kejiwaan']) || $latest['skor_kejiwaan'] === null) {
+                foreach ($allRecords as $rec) {
+                    if (isset($rec['skor_kejiwaan']) && $rec['skor_kejiwaan'] !== null) {
+                        $latest['skor_kejiwaan'] = $rec['skor_kejiwaan'];
+                        $latest['status_kejiwaan'] = $rec['status_kejiwaan'];
+                        break;
+                    }
+                }
+            }
+        }
         
         $data = [
             'title' => 'Hasil Screening Kejiwaan - SI CUBIT',

@@ -62,7 +62,7 @@ class ProfilAction extends BaseController
 
         // Simpan ke Database
         $userModel = new UserModel();
-        // Di ProfilAction.php bagian update()
+        $userModel->skipValidation(true);
         if ($userModel->update($userId, $dataUpdate)) {
             session()->set([
                 'nama' => $dataUpdate['nama'],
@@ -73,10 +73,9 @@ class ProfilAction extends BaseController
                 'message' => 'Data diri berhasil diperbarui.'
             ]);
         } else {
-            // TAMBAHKAN INI UNTUK DEBUGGING:
             return $this->response->setJSON([
                 'status' => 'error',
-                'message' => 'Database reject: ' . json_encode($userModel->errors())
+                'message' => 'Gagal memperbarui data profil.'
             ]);
         }
     }

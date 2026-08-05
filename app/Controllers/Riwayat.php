@@ -8,7 +8,12 @@ class Riwayat extends BaseController
     {
         if (!session()->get('logged_in')) return redirect()->to(base_url('login'));
 
-        $data = ['title' => 'Riwayat Medis Ibu - SI CUBIT'];
+        $statusKehamilan = session()->get('status_kehamilan') ?? 'pasca_melahirkan';
+
+        $data = [
+            'title' => 'Riwayat Medis Ibu - SI CUBIT',
+            'status_kehamilan' => $statusKehamilan
+        ];
         return view('riwayat/index', $data);
     }
 } 

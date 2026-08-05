@@ -21,115 +21,92 @@ class KondisiKejiwaanAction extends BaseController
     public function save(): ResponseInterface
     {
         $postData = $this->request->getPost();
+        $userId   = session('user_id');
 
-        // Check if it is EPDS form or the original checklist
-        if (isset($postData['epds_q1'])) {
-            $rules = [
-                'tgl_pengisian' => 'required|valid_date',
-                'epds_q1'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q2'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q3'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q4'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q5'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q6'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q7'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q8'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q9'       => 'required|integer|in_list[0,1,2,3]',
-                'epds_q10'      => 'required|integer|in_list[0,1,2,3]',
-            ];
-
-            if (!$this->validate($rules)) {
-                return $this->response->setJSON([
-                    'status'  => 'error',
-                    'message' => 'Validasi gagal.',
-                    'errors'  => $this->validator->getErrors(),
-                ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
-            $userId = session('user_id');
-            $hasilEpds = $this->kejiwaanModel->hitungEpds($postData);
-
-            $data = array_merge($postData, [
-                'user_id'     => $userId,
-                'epds_skor'   => $hasilEpds['epds_skor'],
-                'epds_status' => $hasilEpds['epds_status'],
-            ]);
-
-            $insertId = $this->kejiwaanModel->insert($data, true);
-            if (!$insertId) {
-                return $this->response->setJSON([
-                    'status'  => 'error',
-                    'message' => 'Gagal menyimpan data EPDS.',
-                    'errors'  => $this->kejiwaanModel->errors(),
-                ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
-            }
-
+        if (!$userId) {
             return $this->response->setJSON([
-                'status'  => 'success',
-                'message' => 'Data EPDS berhasil disimpan.',
-                'data'    => [
-                    'id'          => $insertId,
-                    'epds_skor'   => $hasilEpds['epds_skor'],
-                    'epds_status' => $hasilEpds['epds_status'],
-                ],
-            ])->setStatusCode(ResponseInterface::HTTP_CREATED);
-
-        } else {
-            $rules = [
-                'tgl_pengisian'            => 'required|valid_date',
-                'khawatir_berlebihan'      => 'permit_empty|in_list[Ya,Tidak]',
-                'gelisah'                  => 'permit_empty|in_list[Ya,Tidak]',
-                'gemetar'                  => 'permit_empty|in_list[Ya,Tidak]',
-                'tidak_dapat_rileks'       => 'permit_empty|in_list[Ya,Tidak]',
-                'ketegangan_otot'          => 'permit_empty|in_list[Ya,Tidak]',
-                'sakit_kepala'             => 'permit_empty|in_list[Ya,Tidak]',
-                'jantung_berdebar'         => 'permit_empty|in_list[Ya,Tidak]',
-                'berkeringat_berlebihan'   => 'permit_empty|in_list[Ya,Tidak]',
-                'sesak_napas'              => 'permit_empty|in_list[Ya,Tidak]',
-                'kepala_terasa_ringan'     => 'permit_empty|in_list[Ya,Tidak]',
-                'keluhan_ulu_hati'         => 'permit_empty|in_list[Ya,Tidak]',
-                'lelah_sulit_tidur'        => 'permit_empty|in_list[Ya,Tidak]',
-                'mudah_tersinggung'        => 'permit_empty|in_list[Ya,Tidak]',
-                'perubahan_hubungan_suami' => 'permit_empty|in_list[Ya,Tidak]',
-            ];
-
-            if (!$this->validate($rules)) {
-                return $this->response->setJSON([
-                    'status'  => 'error',
-                    'message' => 'Validasi gagal.',
-                    'errors'  => $this->validator->getErrors(),
-                ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
-            $userId   = session('user_id');
-
-            // Hitung skor dan status kejiwaan secara otomatis
-            $hasilScreening = $this->kejiwaanModel->hitungKondisiKejiwaan($postData);
-
-            $data = array_merge($postData, [
-                'user_id'         => $userId,
-                'skor_kejiwaan'   => $hasilScreening['skor_kejiwaan'],
-                'status_kejiwaan' => $hasilScreening['status_kejiwaan'],
-            ]);
-
-            if (!$this->kejiwaanModel->insert($data, false)) {
-                return $this->response->setJSON([
-                    'status'  => 'error',
-                    'message' => 'Gagal menyimpan data kondisi kejiwaan.',
-                    'errors'  => $this->kejiwaanModel->errors(),
-                ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
-            }
-
-            return $this->response->setJSON([
-                'status'  => 'success',
-                'message' => 'Data kondisi kejiwaan berhasil disimpan.',
-                'data'    => [
-                    'id'              => $this->kejiwaanModel->getInsertID(),
-                    'skor_kejiwaan'   => $hasilScreening['skor_kejiwaan'],
-                    'status_kejiwaan' => $hasilScreening['status_kejiwaan'],
-                ],
-            ])->setStatusCode(ResponseInterface::HTTP_CREATED);
+                'status'  => 'error',
+                'message' => 'Sesi login telah berakhir. Silakan login kembali.',
+            ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
         }
+
+        $tglPengisian = $postData['tgl_pengisian'] ?? date('Y-m-d');
+        $data = [
+            'user_id'       => $userId,
+            'tgl_pengisian' => $tglPengisian,
+        ];
+
+        // 1. Jika ada input EPDS
+        if (isset($postData['epds_q1'])) {
+            $hasilEpds = $this->kejiwaanModel->hitungEpds($postData);
+            $data['epds_skor']   = $hasilEpds['epds_skor'];
+            $data['epds_status'] = $hasilEpds['epds_status'];
+            for ($i = 1; $i <= 10; $i++) {
+                if (isset($postData["epds_q$i"])) {
+                    $data["epds_q$i"] = (int)$postData["epds_q$i"];
+                }
+            }
+        }
+
+        // 2. Jika ada input Gejala Cemas & Fisik
+        $somaticFields = [
+            'khawatir_berlebihan', 'gelisah', 'gemetar', 'tidak_dapat_rileks',
+            'ketegangan_otot', 'sakit_kepala', 'jantung_berdebar',
+            'berkeringat_berlebihan', 'sesak_napas', 'kepala_terasa_ringan',
+            'keluhan_ulu_hati', 'lelah_sulit_tidur', 'mudah_tersinggung',
+            'perubahan_hubungan_suami'
+        ];
+
+        $hasSomaticInput = false;
+        foreach ($somaticFields as $field) {
+            if (isset($postData[$field])) {
+                $hasSomaticInput = true;
+                $data[$field] = $postData[$field];
+            }
+        }
+
+        if ($hasSomaticInput) {
+            $hasilScreening = $this->kejiwaanModel->hitungKondisiKejiwaan($postData);
+            $data['skor_kejiwaan']   = $hasilScreening['skor_kejiwaan'];
+            $data['status_kejiwaan'] = $hasilScreening['status_kejiwaan'];
+        }
+
+        // Cek record lama untuk pengisian hari ini
+        $existingRecord = $this->kejiwaanModel
+                               ->where('user_id', $userId)
+                               ->where('tgl_pengisian', $tglPengisian)
+                               ->orderBy('id', 'DESC')
+                               ->first();
+
+        if ($existingRecord) {
+            $this->kejiwaanModel->skipValidation(true);
+            $execution = $this->kejiwaanModel->update($existingRecord['id'], $data);
+            $insertId  = $existingRecord['id'];
+        } else {
+            $this->kejiwaanModel->skipValidation(true);
+            $execution = $this->kejiwaanModel->insert($data, false);
+            $insertId  = $this->kejiwaanModel->getInsertID();
+        }
+
+        if (!$execution) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Gagal menyimpan data kondisi kejiwaan.',
+                'errors'  => $this->kejiwaanModel->errors(),
+            ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Data kondisi kejiwaan berhasil disinkronisasi.',
+            'data'    => [
+                'id'              => $insertId,
+                'epds_skor'       => $data['epds_skor'] ?? null,
+                'epds_status'     => $data['epds_status'] ?? null,
+                'skor_kejiwaan'   => $data['skor_kejiwaan'] ?? null,
+                'status_kejiwaan' => $data['status_kejiwaan'] ?? null,
+            ],
+        ])->setStatusCode(ResponseInterface::HTTP_CREATED);
     }
 
     // ---------------------------------------------------------------

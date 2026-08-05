@@ -427,27 +427,33 @@
         const containerBayi = document.getElementById("containerBayi");
         const containerAsi = document.getElementById("containerAsi");
 
-        tabBtnBayi.addEventListener("click", () => {
-            tabBtnBayi.classList.replace("text-slate-500", "text-primary");
-            tabBtnBayi.classList.add("bg-white", "shadow-sm", "dark:bg-slate-700");
-            tabBtnBayi.classList.remove("hover:text-slate-700", "dark:text-slate-400");
-            tabBtnAsi.classList.replace("text-primary", "text-slate-500");
-            tabBtnAsi.classList.remove("bg-white", "shadow-sm", "dark:bg-slate-700");
-            tabBtnAsi.classList.add("hover:text-slate-700", "dark:text-slate-400");
-            containerBayi.classList.replace("hidden", "block");
-            containerAsi.classList.replace("block", "hidden");
-        });
+        function switchTab(activeTab) {
+            if (activeTab === 'bayi') {
+                tabBtnBayi.className = "flex-1 py-3 text-sm font-black rounded-xl bg-[#162065] text-white shadow-md transition-all";
+                tabBtnAsi.className = "flex-1 py-3 text-sm font-bold rounded-xl text-slate-600 dark:text-slate-400 hover:text-[#162065] transition-all";
+                
+                containerBayi.classList.remove("hidden");
+                containerBayi.classList.add("block");
+                containerAsi.classList.remove("block");
+                containerAsi.classList.add("hidden");
+            } else {
+                tabBtnAsi.className = "flex-1 py-3 text-sm font-black rounded-xl bg-[#162065] text-white shadow-md transition-all";
+                tabBtnBayi.className = "flex-1 py-3 text-sm font-bold rounded-xl text-slate-600 dark:text-slate-400 hover:text-[#162065] transition-all";
+                
+                containerAsi.classList.remove("hidden");
+                containerAsi.classList.add("block");
+                containerBayi.classList.remove("block");
+                containerBayi.classList.add("hidden");
+            }
+        }
 
-        tabBtnAsi.addEventListener("click", () => {
-            tabBtnAsi.classList.replace("text-slate-500", "text-primary");
-            tabBtnAsi.classList.add("bg-white", "shadow-sm", "dark:bg-slate-700");
-            tabBtnAsi.classList.remove("hover:text-slate-700", "dark:text-slate-400");
-            tabBtnBayi.classList.replace("text-primary", "text-slate-500");
-            tabBtnBayi.classList.remove("bg-white", "shadow-sm", "dark:bg-slate-700");
-            tabBtnBayi.classList.add("hover:text-slate-700", "dark:text-slate-400");
-            containerAsi.classList.replace("hidden", "block");
-            containerBayi.classList.replace("block", "hidden");
-        });
+        tabBtnBayi.addEventListener("click", () => switchTab('bayi'));
+        tabBtnAsi.addEventListener("click", () => switchTab('asi'));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'asi') {
+            switchTab('asi');
+        }
 
         // ==========================================
         // LOGIKA UMUM WIZARD ENGINE

@@ -241,8 +241,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     const btnNext = document.getElementById("btnNext");
     const btnPrev = document.getElementById("btnPrev");
     const btnSubmit = document.getElementById("btnSubmit");
+
+    const statusKehamilan = "<?= $status_kehamilan ?? session()->get('status_kehamilan') ?? 'pasca_melahirkan' ?>";
+    
+    let maxStep = 3;
+    if (statusKehamilan === 'pra_kehamilan') {
+        maxStep = 1;
+    } else if (statusKehamilan === 'hamil') {
+        maxStep = 2;
+    } else {
+        maxStep = 3;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramStep = parseInt(urlParams.get('step'));
     
     let currentStep = 1;
+    if (paramStep && paramStep >= 1 && paramStep <= maxStep) {
+        currentStep = paramStep;
+    }
+
     const totalSteps = steps.length;
 
     function validateCurrentStep() {
@@ -273,8 +291,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             formData.set("riwayat_penyakit", "Tidak Ada");
         }
 
-
-
         try {
             const response = await fetch('<?= base_url('api/save-riwayat') ?>', {
                 method: 'POST',
@@ -292,42 +308,65 @@ document.addEventListener('DOMContentLoaded', async function() {
     function updateWizard() {
         steps.forEach((step, index) => {
             if (index + 1 === currentStep) {
-                step.classList.remove("blur-sm", "opacity-50", "pointer-events-none", "select-none", "scale-[0.98]");
-                step.classList.add("scale-100", "opacity-100");
+                step.classList.remove("hidden", "blur-sm", "opacity-40", "pointer-events-none", "select-none", "scale-[0.98]");
+                step.classList.add("block", "scale-100", "opacity-100");
             } else {
-                step.classList.add("blur-sm", "opacity-50", "pointer-events-none", "select-none", "scale-[0.98]");
-                step.classList.remove("scale-100", "opacity-100");
+                step.classList.remove("block", "scale-100", "opacity-100");
+                step.classList.add("hidden");
             }
         });
 
         if (currentStep === 1) btnPrev.classList.add("hidden"); else btnPrev.classList.remove("hidden");
 
-        if (currentStep === totalSteps) {
-            btnNext.classList.add("hidden"); btnSubmit.classList.remove("hidden");
+        if (currentStep === maxStep) {
+            btnNext.classList.add("hidden"); 
+            btnSubmit.classList.remove("hidden");
         } else {
-            btnNext.classList.remove("hidden"); btnSubmit.classList.add("hidden");
+            btnNext.classList.remove("hidden"); 
+            btnSubmit.classList.add("hidden");
         }
 
-        progressLine.style.width = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
+        progressLine.style.width = `${((currentStep - 1) / 2) * 100}%`;
 
         indicators.forEach((indicator, index) => {
             const circle = indicator.querySelector("div");
             const text = indicator.querySelector("span");
-            if (index + 1 <= currentStep) {
-                circle.classList.replace("bg-slate-200", "bg-primary");
-                circle.classList.replace("text-slate-400", "text-white");
-                text.classList.replace("text-slate-400", "text-slate-700");
+
+            if (index + 1 <= maxStep) {
+                if (index + 1 <= currentStep) {
+                    circle.classList.replace("bg-slate-200", "bg-primary");
+                    circle.classList.replace("text-slate-400", "text-white");
+                    text.classList.replace("text-slate-400", "text-slate-700");
+                } else {
+                    circle.classList.replace("bg-primary", "bg-slate-200");
+                    circle.classList.replace("text-white", "text-slate-400");
+                    text.classList.replace("text-slate-700", "text-slate-400");
+                }
             } else {
-                circle.classList.replace("bg-primary", "bg-slate-200");
-                circle.classList.replace("text-white", "text-slate-400");
-                text.classList.replace("text-slate-700", "text-slate-400");
+                circle.classList.add("bg-slate-200", "text-slate-400");
+                text.classList.add("text-slate-400");
             }
         });
 
-        setTimeout(() => {
-            steps[currentStep - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 150);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const scrollContainer = document.getElementById("scrollContainer");
+        if (scrollContainer) scrollContainer.scrollTop = 0;
     }
+
+    // Inisialisasi awal wizard UI
+    updateWizard();
+
+    indicators.forEach((indicator) => {
+        indicator.addEventListener("click", () => {
+            const stepNum = parseInt(indicator.getAttribute("data-step"));
+            if (stepNum && stepNum <= maxStep && stepNum !== currentStep) {
+                if (stepNum < currentStep || validateCurrentStep()) {
+                    currentStep = stepNum;
+                    updateWizard();
+                }
+            }
+        });
+    });
 
     btnNext.addEventListener("click", async () => {
         if (validateCurrentStep()) {
@@ -340,8 +379,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             btnNext.innerHTML = 'Selanjutnya';
 
             if (isSaved) {
-                currentStep++;
-                updateWizard();
+                if (currentStep < maxStep) {
+                    currentStep++;
+                    updateWizard();
+                }
             } else {
                 Swal.fire({
                     icon: 'error', title: 'Gagal Menyimpan', text: 'Gagal mengamankan data langkah ini ke server.'
@@ -351,7 +392,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     btnPrev.addEventListener("click", () => {
-        currentStep--; updateWizard();
+        if (currentStep > 1) {
+            currentStep--; 
+            updateWizard();
+        }
     });
 
     form.addEventListener('submit', async function(e) {
@@ -367,7 +411,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (isFinalSaved) {
             Swal.fire({
-                icon: 'success', title: 'Semua Terpanen!', text: 'Seluruh riwayat medis Bunda sukses diabadikan.', confirmButtonColor: '#2b7cee'
+                icon: 'success', title: 'Berhasil Disimpan!', text: 'Seluruh data riwayat medis Bunda telah disimpan.', confirmButtonColor: '#162065'
             }).then(() => {
                 window.location.href = '<?= base_url('dashboard') ?>'; 
             });

@@ -32,7 +32,7 @@ class DataBayiModel extends Model
     protected $validationRules = [
         'user_id'               => 'required|integer',
         'tgl_pengisian'         => 'required|valid_date',
-        'golongan_darah'        => 'permit_empty|in_list[A,B,AB,O]',
+        'golongan_darah'        => 'permit_empty|in_list[A,B,AB,O,Belum Tahu]',
         'bb'                    => 'permit_empty|decimal',
         'pb'                    => 'permit_empty|decimal',
         'lingkar_kepala'        => 'permit_empty|decimal',
