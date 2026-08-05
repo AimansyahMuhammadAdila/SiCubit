@@ -199,7 +199,8 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    var data = JSON.parse(e.postData.contents);
+    var contents = (e && e.postData) ? e.postData.contents : "";
+    var data = contents ? JSON.parse(contents) : {};
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheetName = data.sheet_name || "Sheet Utama";
     
@@ -208,63 +209,77 @@ function doPost(e) {
       sheet = ss.insertSheet(sheetName);
     }
     
-    sheet.clear();
+    sheet.clearContents();
+    sheet.clearFormats();
     
-    // 1. DOKUMEN HEADER & KPI CARDS
+    // 1. DOKUMEN HEADER
     sheet.getRange("A1").setValue("PANEL KENDALI MONITORING KESEHATAN IBU & ANAK (SI CUBIT)");
     sheet.getRange("A1").setFontSize(14).setFontWeight("bold").setFontColor("#0F172A");
     
-    sheet.getRange("A2").setValue("Update Terakhir: " + data.summary_stats.last_update);
+    var lastUpdateStr = (data.summary_stats && data.summary_stats.last_update) ? data.summary_stats.last_update : "";
+    sheet.getRange("A2").setValue("Update Terakhir: " + lastUpdateStr);
     sheet.getRange("A2").setFontSize(9).setFontItalic(true).setFontColor("#64748B");
     
-    // KPI Cards
-    sheet.getRange("A4").setValue("TOTAL IBU");
-    sheet.getRange("A5").setValue(data.summary_stats.total_ibu);
-    sheet.getRange("A4:A5").setBackground("#EFF6FF").setFontColor("#1E40AF").setHorizontalAlignment("center");
-    sheet.getRange("A4").setFontSize(9).setFontWeight("bold");
-    sheet.getRange("A5").setFontSize(14).setFontWeight("bold");
+    // 2. KPI CARDS
+    if (data.summary_stats) {
+      sheet.getRange("A4").setValue("TOTAL IBU");
+      sheet.getRange("A5").setValue(data.summary_stats.total_ibu || 0);
+      sheet.getRange("A4:A5").setBackground("#EFF6FF").setFontColor("#1E40AF").setHorizontalAlignment("center");
+      sheet.getRange("A4").setFontSize(9).setFontWeight("bold");
+      sheet.getRange("A5").setFontSize(14).setFontWeight("bold");
 
-    sheet.getRange("C4").setValue("ASI LANCAR");
-    sheet.getRange("C5").setValue(data.summary_stats.asi_lancar);
-    sheet.getRange("C4:C5").setBackground("#ECFDF5").setFontColor("#065F46").setHorizontalAlignment("center");
-    sheet.getRange("C4").setFontSize(9).setFontWeight("bold");
-    sheet.getRange("C5").setFontSize(14).setFontWeight("bold");
+      sheet.getRange("C4").setValue("ASI LANCAR");
+      sheet.getRange("C5").setValue(data.summary_stats.asi_lancar || 0);
+      sheet.getRange("C4:C5").setBackground("#ECFDF5").setFontColor("#065F46").setHorizontalAlignment("center");
+      sheet.getRange("C4").setFontSize(9).setFontWeight("bold");
+      sheet.getRange("C5").setFontSize(14).setFontWeight("bold");
 
-    sheet.getRange("E4").setValue("KEJIWAAN BERISIKO");
-    sheet.getRange("E5").setValue(data.summary_stats.kejiwaan_berisiko);
-    sheet.getRange("E4:E5").setBackground("#FEF2F2").setFontColor("#991B1B").setHorizontalAlignment("center");
-    sheet.getRange("E4").setFontSize(9).setFontWeight("bold");
-    sheet.getRange("E5").setFontSize(14).setFontWeight("bold");
+      sheet.getRange("E4").setValue("KEJIWAAN BERISIKO");
+      sheet.getRange("E5").setValue(data.summary_stats.kejiwaan_berisiko || 0);
+      sheet.getRange("E4:E5").setBackground("#FEF2F2").setFontColor("#991B1B").setHorizontalAlignment("center");
+      sheet.getRange("E4").setFontSize(9).setFontWeight("bold");
+      sheet.getRange("E5").setFontSize(14).setFontWeight("bold");
+    }
     
-    // 2. TABEL MAIN HEADERS
+    // 3. TABEL HEADERS
     var startRow = 7;
-    var headers = data.headers;
-    sheet.getRange(startRow, 1, 1, headers.length).setValues([headers]);
-    sheet.getRange(startRow, 1, 1, headers.length)
-         .setBackground("#0F172A")
-         .setFontColor("#FFFFFF")
-         .setFontWeight("bold")
-         .setHorizontalAlignment("center")
-         .setVerticalAlignment("middle");
-    sheet.setRowHeight(startRow, 30);
+    var headers = data.headers || [];
+    if (headers && headers.length > 0) {
+      var headerRange = sheet.getRange(startRow, 1, 1, headers.length);
+      headerRange.setValues([headers]);
+      headerRange.setBackground("#0F172A");
+      headerRange.setFontColor("#FFFFFF");
+      headerRange.setFontWeight("bold");
+      headerRange.setHorizontalAlignment("center");
+      headerRange.setVerticalAlignment("middle");
+      sheet.setRowHeight(startRow, 30);
+    }
     
-    // 3. BARIS DATA
-    var rows = data.rows;
+    // 4. BARIS DATA
+    var rows = data.rows || [];
     if (rows && rows.length > 0) {
       var rowArray = [];
       for (var i = 0; i < rows.length; i++) {
         var r = rows[i];
         rowArray.push([
-          r.no, r.tgl_daftar, r.nama_ibu, r.umur, r.no_telp,
-          r.puskesmas, r.kabkota, r.status_kehamilan,
-          r.status_asi, r.status_kejiwaan, r.jumlah_anak, r.alamat
+          r.no || (i + 1),
+          r.tgl_daftar || "",
+          r.nama_ibu || "",
+          r.umur || "",
+          r.no_telp || "",
+          r.puskesmas || "",
+          r.kabkota || "",
+          r.status_kehamilan || "",
+          r.status_asi || "",
+          r.status_kejiwaan || "",
+          r.jumlah_anak || 0,
+          r.alamat || ""
         ]);
       }
       
       var dataRange = sheet.getRange(startRow + 1, 1, rowArray.length, headers.length);
       dataRange.setValues(rowArray);
       
-      // Zebra Striping & Alignment
       for (var j = 0; j < rowArray.length; j++) {
         var currentRowIndex = startRow + 1 + j;
         var rowRange = sheet.getRange(currentRowIndex, 1, 1, headers.length);
@@ -272,7 +287,6 @@ function doPost(e) {
           rowRange.setBackground("#F8FAFC");
         }
         
-        // Color Badges per Column
         var asiCell = sheet.getRange(currentRowIndex, 9);
         var asiVal = asiCell.getValue();
         if (asiVal === "Cukup") {
@@ -291,15 +305,16 @@ function doPost(e) {
       }
     }
     
-    // Auto Resize Columns
-    for (var col = 1; col <= headers.length; col++) {
+    // 5. AUTO RESIZE & FREEZE
+    var numCols = headers.length > 0 ? headers.length : 12;
+    for (var col = 1; col <= numCols; col++) {
       sheet.autoResizeColumn(col);
     }
     sheet.setFrozenRows(startRow);
     
     return ContentService.createTextOutput(JSON.stringify({result: "success", sheet: sheetName}))
                          .setMimeType(ContentService.MimeType.JSON);
-   } catch (err) {
+  } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({result: "error", error: err.toString()}))
                          .setMimeType(ContentService.MimeType.JSON);
   }
