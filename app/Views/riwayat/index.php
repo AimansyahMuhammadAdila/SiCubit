@@ -368,27 +368,82 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
 
-    btnNext.addEventListener("click", async () => {
-        if (validateCurrentStep()) {
-            btnNext.disabled = true;
-            btnNext.innerHTML = 'Menyimpan...';
+    async function handleSaveAndPromptNext(stepNumber) {
+        if (!validateCurrentStep()) return;
 
-            const isSaved = await saveStepDataSilent();
-            
-            btnNext.disabled = false;
-            btnNext.innerHTML = 'Selanjutnya';
+        Swal.fire({
+            title: 'Menyimpan Data...',
+            text: 'Mohon tunggu sebentar',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
 
-            if (isSaved) {
-                if (currentStep < maxStep) {
-                    currentStep++;
-                    updateWizard();
-                }
-            } else {
-                Swal.fire({
-                    icon: 'error', title: 'Gagal Menyimpan', text: 'Gagal mengamankan data langkah ini ke server.'
-                });
-            }
+        const isSaved = await saveStepDataSilent();
+
+        if (!isSaved) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Menyimpan',
+                text: 'Terjadi kendala saat menyimpan data ke server.'
+            });
+            return;
         }
+
+        if (stepNumber === 1) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Riwayat Pra Kehamilan Berhasil Disimpan!',
+                text: 'Apakah Bunda ingin melanjutkan mengisi Riwayat Kehamilan Saat Ini atau kembali ke menu utama?',
+                showDenyButton: true,
+                confirmButtonText: 'Lanjut Isi Riwayat Kehamilan',
+                denyButtonText: 'Kembali ke Menu Utama',
+                confirmButtonColor: '#162065',
+                denyButtonColor: '#64748b',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (maxStep < 2) maxStep = 2;
+                    currentStep = 2;
+                    updateWizard();
+                } else {
+                    window.location.href = '<?= base_url('dashboard') ?>';
+                }
+            });
+        } else if (stepNumber === 2) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Riwayat Kehamilan Berhasil Disimpan!',
+                text: 'Apakah Bunda ingin melanjutkan mengisi Riwayat Persalinan atau kembali ke menu utama?',
+                showDenyButton: true,
+                confirmButtonText: 'Lanjut Isi Riwayat Persalinan',
+                denyButtonText: 'Kembali ke Menu Utama',
+                confirmButtonColor: '#162065',
+                denyButtonColor: '#64748b',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (maxStep < 3) maxStep = 3;
+                    currentStep = 3;
+                    updateWizard();
+                } else {
+                    window.location.href = '<?= base_url('dashboard') ?>';
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil Disimpan!',
+                text: 'Seluruh data riwayat medis Bunda telah disimpan.',
+                confirmButtonColor: '#162065',
+                allowOutsideClick: false
+            }).then(() => {
+                window.location.href = '<?= base_url('dashboard') ?>';
+            });
+        }
+    }
+
+    btnNext.addEventListener("click", () => {
+        handleSaveAndPromptNext(currentStep);
     });
 
     btnPrev.addEventListener("click", () => {
@@ -398,26 +453,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
-        if (!validateCurrentStep()) return;
-
-        Swal.fire({
-            title: 'Memfinalisasi Data...', text: 'Mohon tunggu sebentar', allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
-
-        const isFinalSaved = await saveStepDataSilent();
-
-        if (isFinalSaved) {
-            Swal.fire({
-                icon: 'success', title: 'Berhasil Disimpan!', text: 'Seluruh data riwayat medis Bunda telah disimpan.', confirmButtonColor: '#162065'
-            }).then(() => {
-                window.location.href = '<?= base_url('dashboard') ?>'; 
-            });
-        } else {
-            Swal.fire({ icon: 'error', title: 'Oops...', text: 'Gagal melakukan sinkronisasi final.' });
-        }
+        handleSaveAndPromptNext(currentStep);
     });
 });
 </script>
