@@ -132,36 +132,45 @@ class GoogleSheetsService
         }
 
         $payload = $this->getMonthlyExportData();
+        $jsonPayload = json_encode($payload);
 
-        $client = \Config\Services::curlrequest();
-        try {
-            $response = $client->request('POST', $webhookUrl, [
-                'json' => $payload,
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ],
-                'timeout' => 15,
-                'allow_redirects' => true
-            ]);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $webhookUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_POSTREDIR, CURL_REDIR_POST_ALL); // Wajib agar metode POST tidak berubah jadi GET saat redirect Google
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($jsonPayload)
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-            $statusCode = $response->getStatusCode();
-            if ($statusCode >= 200 && $statusCode < 300) {
-                $this->settingModel->setVal('last_synced_at', date('Y-m-d H:i:s'));
-                return [
-                    'success' => true,
-                    'message' => 'Berhasil menyinkronkan data ke Google Sheets pada sheet tab "' . $payload['sheet_name'] . '"!',
-                    'timestamp' => date('d M Y H:i:s')
-                ];
-            } else {
-                return [
-                    'success' => false,
-                    'message' => 'Gagal mengirim ke Webhook. HTTP Response Code: ' . $statusCode
-                ];
-            }
-        } catch (\Exception $e) {
+        $responseBody = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlErr) {
             return [
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat menyambung ke Webhook Google: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan saat menyambung ke Webhook Google: ' . $curlErr
+            ];
+        }
+
+        if ($httpCode >= 200 && $httpCode < 400) {
+            $this->settingModel->setVal('last_synced_at', date('Y-m-d H:i:s'));
+            return [
+                'success' => true,
+                'message' => 'Berhasil menyinkronkan data ke Google Sheets pada sheet tab "' . $payload['sheet_name'] . '"!',
+                'timestamp' => date('d M Y H:i:s')
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengirim ke Webhook Google. HTTP Response Code: ' . $httpCode . ' (Penyebab: Pastikan Webhook Apps Script telah di-deploy sebagai Web App dengan akses "Anyone")'
             ];
         }
     }
@@ -172,6 +181,11 @@ class GoogleSheetsService
     public static function getAppsScriptCode(): string
     {
         return <<<'GS'
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({result: "success", message: "SI CUBIT Webhook Active"}))
+                       .setMimeType(ContentService.MimeType.JSON);
+}
+
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
