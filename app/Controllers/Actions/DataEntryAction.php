@@ -222,14 +222,24 @@ class DataEntryAction extends BaseController
             }
         }
 
-        // Update status_kehamilan user secara otomatis berdasarkan data riwayat yang diisi
+        // Update status_kehamilan user secara otomatis berdasarkan current_step / data riwayat yang diisi
+        $currentStepReq = $this->request->getPost('current_step');
         $newStatus = null;
-        if (($caraPersalinan !== null && $caraPersalinan !== '') || ($umurKehamilanSalin !== null && $umurKehamilanSalin !== '')) {
-            $newStatus = 'pasca_melahirkan';
-        } elseif (($kehamilanKe !== null && $kehamilanKe !== '') || ($umurKehamilan !== null && $umurKehamilan !== '')) {
-            $newStatus = 'hamil';
-        } elseif ($bbSebelumHamil !== null || $riwayatPenyakit !== null || $riwayatAbortus !== null) {
+
+        if ($currentStepReq == 1) {
             $newStatus = 'pra_kehamilan';
+        } elseif ($currentStepReq == 2) {
+            $newStatus = 'hamil';
+        } elseif ($currentStepReq == 3) {
+            $newStatus = 'pasca_melahirkan';
+        } else {
+            if (($caraPersalinan !== null && $caraPersalinan !== '') || ($umurKehamilanSalin !== null && $umurKehamilanSalin !== '')) {
+                $newStatus = 'pasca_melahirkan';
+            } elseif (($kehamilanKe !== null && $kehamilanKe !== '') || ($umurKehamilan !== null && $umurKehamilan !== '')) {
+                $newStatus = 'hamil';
+            } elseif ($bbSebelumHamil !== null || $riwayatPenyakit !== null || $riwayatAbortus !== null) {
+                $newStatus = 'pra_kehamilan';
+            }
         }
 
         if ($newStatus) {

@@ -280,6 +280,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     async function saveStepDataSilent() {
         const formData = new FormData(form);
+        formData.set('current_step', currentStep);
 
         const checkedPenyakit = form.querySelectorAll('input[name="riwayat_penyakit[]"]:checked');
         if (checkedPenyakit.length > 0) {
