@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Datang di Jagoan Hosting</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@300;700;800&family=Vollkorn:wght@700;800&display=swap"
+    rel="stylesheet">
+    
+    
+    <style>
+        :root {
+            --primary-orange: #FF6B00; 
+            --soft-orange-bg: #F1B62D; 
+            --whatsapp-green: #25D366;
+            --dark-text: #282828;
+            --light-gray-text: #666; /* Menambahkan light-gray-text */
+            --card-border: #E0E0E0; /* Menambahkan card-border */
+        }
+
+        body {
+            /* Mengganti font family default body ke Karla agar lebih konsisten */
+            font-family: 'Karla', sans-serif;
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('https://asset.jagoanhosting.com/wp-content/uploads/2025/11/Default-Page-8-bg.webp');
+            color: var(--dark-text);
+            padding: 30px 10px;
+            background-size: cover; /* Pastikan background image sesuai */
+            background-position: center;
+        }
+        
+        /* --- HEADER (Logo dan Judul Utama) --- */
+        .header-content {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-jh {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        
+        .main-greeting {
+            font-family: 'Vollkorn', serif;
+            font-size: 38px;
+            width: 600px;
+            max-width: 100%; /* Batas width agar responsif */
+            font-weight: 700;
+            margin: 10px 0 5px 0;
+        }
+        
+        .main-greeting span {
+            color: var(--primary-orange);
+        }
+        
+        .sub-greeting {
+            font-family: 'Karla', sans-serif; /* Menggunakan 'Karla' */
+            font-size: 18px;
+            color: var(--light-gray-text);
+            margin-top: 15px;
+        }
+
+        /* --- Bagian Kartu Panduan (Main Grid) --- */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .guide-card {
+            background-color: #F9F9F9;
+            padding: 30px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .card-icon-area {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            font-size: 40px;
+            color: var(--dark-text);
+        }
+        
+        .card-title {
+            font-family: 'Karla', sans-serif; 
+            font-weight: 700; /* Ditetapkan ke 800 (Extra-Bold) */
+            font-size: 16px;
+            margin-top: -10px;
+            margin-bottom: 10px; /* Tambahkan margin agar ada jarak ke deskripsi */
+            color: var(--dark-text);
+        }
+        
+        .card-description {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--light-gray-text);
+            flex-grow: 1; 
+            margin-top: 0px;
+            margin-bottom: 20px; /* Jarak ke tombol */
+        }
+
+        .card-button {
+            background-color: #FFC000; 
+            color: #282828;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 28px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            width: auto;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .card-button:hover {
+            background-color: #F1B62D;
+        }
+
+        /* --- Footer Bantuan WhatsApp --- */
+        .help-footer {
+            max-width: 1100px;
+            /* width: 100%; */
+            background-color: #E6FFE6;
+            border-radius: 12px;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #C4EBC4;
+        }
+
+        .help-text-area {
+            display: flex;
+            align-items: center;
+        }
+        
+        .help-icon {
+            font-size: 30px;
+            margin-right: 15px;
+            color: var(--dark-text);
+        }
+        
+        .help-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--dark-text);
+        }
+        
+        .help-description {
+            font-size: 14px;
+            color: var(--dark-text);
+            margin-top: 5px;
+        }
+
+        .whatsapp-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--whatsapp-green);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 70px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            width: fit-content;
+            margin-top:-10px;
+        }
+
+        .whatsapp-button:hover {
+            background-color: #1DA851;
+        }
+        
+        .whatsapp-icon {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        /* Media Query untuk tampilan responsif */
+        @media (max-width: 1000px) {
+            .guide-grid {
+                grid-template-columns: repeat(2, 1fr); 
+            }
+            .main-greeting {
+                width: 100%;
+            }
+            .help-footer {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            .help-text-area {
+                flex-direction: column;
+            }
+            .help-icon {
+                margin: 0 0 10px 0;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .guide-grid {
+                grid-template-columns: 1fr; 
+            }
+            .main-greeting {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-content">
+       <img src="https://asset.jagoanhosting.com/wp-content/uploads/2024/01/cropped-cropped-logo-JH-e1704162514796-1.png" alt="Logo Jagoan Hosting" class="logo-jh"> 
+       <h1 class="main-greeting">Selamat! Kamu Telah Menjadi Bagian dari <span>Jagoan Hosting</span></h1>
+       <p class="sub-greeting">Yuk, kelola Hostingmu dan mulai dengan :</p>
+    </div>
+
+    <div class="guide-grid">
+        
+        <div class="guide-card">
+            <div class="card-icon-area">
+                <span class="card-icon"><img src="https://www.jagoanhosting.com/wp-content/uploads/2023/08/login-cpanel.png" alt="login cpanel" width="50px"></span> </div>
+            <h3 class="card-title">Login ke Cpanel</h3>
+            <p class="card-description">
+                Anda dapat login ke panel hosting melalui link atau member area
+            </p>
+            <a href="https://www.youtube.com/watch?v=TlBcuvjNtsg&t=4s" class="card-button" rel="noopener noreferrer nofollow">Cara Login Panel</a>
+        </div>
+        
+        <div class="guide-card">
+            <div class="card-icon-area">
+                <span class="card-icon"><img src="https://www.jagoanhosting.com/wp-content/uploads/2023/08/install-ssl.png" alt="install ssl" width="50px"></span> </div>
+            <h3 class="card-title">Install SSL</h3>
+            <p class="card-description">
+                SSL akan auto aktif setelah 1 jam, ikuti cara nya disini untuk lebih cepat
+            </p>
+            <a href="https://www.youtube.com/watch?v=mMSGB7UD_Fs" class="card-button" rel="noopener noreferrer nofollow">Cara Install SSL</a>
+        </div>
+
+        <div class="guide-card">
+            <div class="card-icon-area">
+                <span class="card-icon"><img src="https://www.jagoanhosting.com/wp-content/uploads/2023/08/install-wordpress.png" alt="install WP" width="50px"></span> </div>
+            <h3 class="card-title">Install Wordpress</h3>
+            <p class="card-description">
+                Selanjutnya Anda dapat melakukan instalasi / upload file aplikasi website
+            </p>
+            <a href="https://www.youtube.com/watch?v=lRBGDhw4GsY&t=8s" class="card-button" rel="noopener noreferrer nofollow">Cara Install WP</a>
+        </div>
+
+        <div class="guide-card">
+            <div class="card-icon-area">
+                <span class="card-icon"><img src="https://asset.jagoanhosting.com/wp-content/uploads/2025/11/upload-wp-icon.webp" alt="install WP" width="50px"></span> </div>
+            <h3 class="card-title">Upload Website ke Hosting JH</h3>
+            <p class="card-description">
+                Pindahkan semua data websitemu pakai cara yang mudah
+            </p>
+            <a href="https://www.youtube.com/watch?v=lB10rX4fV6o" class="card-button" rel="noopener noreferrer nofollow">Cara Upload Website</a>
+        </div>
+
+    </div>
+
+    <div class="help-footer">
+        <div class="help-text-area">
+            <span class="help-icon"><img src="https://asset.jagoanhosting.com/wp-content/uploads/2025/11/wa-icon-default-page.webp" alt="WA icon" width="50px"></span>
+            <div>
+                <h4 class="help-title">Butuh bantuan tim kami?</h4>
+                <p class="help-description">
+                    Jika butuh bantuan Kamu juga dapat menghubungi tim support Jagoan Hosting kapanpun 24/7
+                </p>
+            </div>
+        </div>
+        
+        <a href="https://api.whatsapp.com/send?phone=6285179778470" class="whatsapp-button" target="_blank" rel="noopener noreferrer nofollow">
+            <span class="whatsapp-icon"><img src="https://asset.jagoanhosting.com/wp-content/uploads/2025/11/logo-WA-white2.webp" alt="Logo WA Putih" width="20px" ></span>
+            Chat WhatsApp Sekarang
+        </a>
+    </div>
+</body>
+</html>

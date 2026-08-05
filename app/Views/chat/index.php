@@ -2,33 +2,22 @@
 
 <?= $this->section('content') ?>
 
-<div class="flex flex-col h-screen w-full bg-slate-50 dark:bg-slate-900 relative">
+<div class="flex flex-col h-full w-full">
 
-    <header class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 md:px-8 md:py-4 flex items-center justify-between flex-shrink-0 z-20 shadow-sm">
-        <div class="flex items-center gap-3 md:gap-4">
-            <a href="<?= base_url('dashboard') ?>" class="md:hidden size-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-100">
-                <span class="material-symbols-outlined text-xl">arrow_back</span>
-            </a>
-            
-            <div class="relative">
-                <div class="size-10 md:size-12 rounded-full bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center text-white shadow-md">
-                    <span class="material-symbols-outlined font-variation-fill">smart_toy</span>
-                </div>
-                <div class="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
+    <div class="mb-4">
+        <a href="<?= base_url('dashboard') ?>" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 backdrop-blur border border-white/60 text-[#162065] font-extrabold text-xs shadow-sm hover:bg-white transition mb-3">
+            <span class="material-symbols-outlined text-base">arrow_back</span> Kembali
+        </a>
+        <div class="flex items-center gap-3">
+            <div class="size-12 rounded-2xl bg-[#162065] p-1.5 flex items-center justify-center shadow-md">
+                <img src="<?= base_url('uploads/Bidan_Pintar.png') ?>" alt="Bidan Pintar" class="w-full h-full object-contain filter drop-shadow">
             </div>
-            
             <div>
-                <h1 class="font-bold text-base md:text-lg text-slate-800 dark:text-white leading-tight">Bidan AI</h1>
-                <p class="text-[10px] md:text-xs text-green-500 font-medium flex items-center gap-1">
-                    Selalu aktif membantu Bunda
-                </p>
+                <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Bidan Pintar (Asisten AI)</h1>
+                <p class="text-xs text-slate-600 font-medium">Konsultasi interaktif & panduan kesehatan ibu dan anak 24/7</p>
             </div>
         </div>
-        
-        <button class="text-slate-400 hover:text-primary transition p-2">
-            <span class="material-symbols-outlined">more_vert</span>
-        </button>
-    </header>
+    </div>
 
     <div class="flex-1 overflow-y-auto no-scrollbar p-4 md:p-8 space-y-6" id="chatContainer">
         

@@ -25,8 +25,23 @@ class UserModel extends Model
         'id_kabkota',
         'id_puskesmas',
         'role',
+        'status_kehamilan',
         'password_hash'
     ];
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Self-healing database check: add status_kehamilan column if missing
+        $db = \Config\Database::connect();
+        if ($db->tableExists($this->table)) {
+            $fields = $db->getFieldNames($this->table);
+            if (!in_array('status_kehamilan', $fields)) {
+                $db->query("ALTER TABLE {$this->table} ADD COLUMN status_kehamilan ENUM('pra_kehamilan', 'hamil', 'pasca_melahirkan') DEFAULT NULL AFTER role");
+            }
+        }
+    }
 
     // ---------------------------------------------------------------
     // Validation Rules
@@ -37,6 +52,7 @@ class UserModel extends Model
         'umur' => 'permit_empty|integer|greater_than[0]|less_than[100]',
         'no_telp' => 'required|min_length[8]|max_length[20]|is_unique[users.no_telp,id,{id}]',
         'password_hash' => 'required',
+        'status_kehamilan' => 'permit_empty|in_list[pra_kehamilan,hamil,pasca_melahirkan]',
     ];
 
     protected $validationMessages = [

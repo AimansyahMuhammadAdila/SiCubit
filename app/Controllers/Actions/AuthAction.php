@@ -26,10 +26,10 @@ class AuthAction extends BaseController
         // Validasi input
         $rules = [
             'nama' => 'required|min_length[3]|max_length[100]',
-            'umur' => 'required|integer|greater_than[0]|less_than[100]',
+            'umur' => 'permit_empty|integer|greater_than[0]|less_than[100]',
             'no_telp' => 'required|min_length[8]|max_length[20]|is_unique[users.no_telp]',
             'password' => 'required|min_length[6]',
-            'konfirmasi_password' => 'required|matches[password]',
+            'konfirmasi_password' => 'permit_empty|matches[password]',
             'pekerjaan' => 'permit_empty|max_length[100]',
             'jumlah_anak' => 'permit_empty|integer|greater_than_equal_to[0]',
             'alamat' => 'permit_empty',
@@ -79,6 +79,7 @@ class AuthAction extends BaseController
             'alamat' => $this->request->getPost('alamat'),
             'id_kabkota' => $this->request->getPost('id_kabkota'),
             'id_puskesmas' => $this->request->getPost('id_puskesmas'),
+            'status_kehamilan' => $this->request->getPost('status_kehamilan') ?: 'pasca_melahirkan',
             'password_hash' => $passwordHash,
         ];
 
@@ -104,6 +105,15 @@ class AuthAction extends BaseController
 
     public function login(): ResponseInterface
     {
+        // Rate Limiter: Maksimal 15 percobaan login per menit per IP
+        $throttler = \Config\Services::throttler();
+        if ($throttler->check(md5($this->request->getIPAddress() . 'login'), 15, MINUTE) === false) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Terlalu banyak percobaan login. Silakan tunggu 1 menit.',
+            ])->setStatusCode(429);
+        }
+
         $rules = [
             'no_telp' => 'required',
             'password' => 'required',
@@ -140,13 +150,21 @@ class AuthAction extends BaseController
 
         // Set session
         $session = session();
-        $session->set([
+        $sessionData = [
             'user_id' => $user['id'],
             'nama' => $user['nama'],
             'no_telp' => $user['no_telp'],
             'role' => $user['role'],
+            'status_kehamilan' => $user['status_kehamilan'],
             'logged_in' => true,
-        ]);
+        ];
+
+        // Jika role admin/bidan, set flag is_admin agar bisa akses panel admin
+        if ($user['role'] === 'admin' || $user['role'] === 'bidan') {
+            $sessionData['is_admin'] = true;
+        }
+
+        $session->set($sessionData);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -254,6 +272,15 @@ class AuthAction extends BaseController
     }
     public function adminLogin(): ResponseInterface
     {
+        // Rate Limiter: Maksimal 10 percobaan login admin per menit per IP
+        $throttler = \Config\Services::throttler();
+        if ($throttler->check(md5($this->request->getIPAddress() . 'adminLogin'), 10, MINUTE) === false) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Terlalu banyak percobaan login admin. Silakan tunggu 1 menit.',
+            ])->setStatusCode(429);
+        }
+
         $email = $this->request->getPost('email'); // Bisa NIP atau Email
         $password = $this->request->getPost('password');
 

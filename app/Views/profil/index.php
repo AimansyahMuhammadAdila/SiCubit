@@ -2,17 +2,29 @@
 
 <?= $this->section('content') ?>
 
-<header
-    class="relative bg-gradient-to-br from-primary via-blue-500 to-blue-600 pt-8 md:pt-6 pb-24 md:pb-20 px-6 md:px-10 rounded-b-[2.5rem] md:rounded-none md:rounded-bl-[2.5rem] shadow-lg shadow-blue-100 dark:shadow-none overflow-hidden flex-shrink-0">
-    <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-    <div class="absolute left-10 bottom-0 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+<div class="flex flex-col h-full w-full">
 
-    <div class="relative z-10 flex items-center justify-between mb-2 text-white">
-        <h1 class="font-bold text-xl md:text-2xl">Profil Bunda</h1>
+    <div class="mb-4">
+        <a href="<?= base_url('dashboard') ?>" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 backdrop-blur border border-white/60 text-[#162065] font-extrabold text-xs shadow-sm hover:bg-white transition mb-3">
+            <span class="material-symbols-outlined text-base">arrow_back</span> Kembali
+        </a>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="size-12 rounded-2xl bg-[#162065] p-1.5 flex items-center justify-center shadow-md">
+                    <img src="<?= base_url('uploads/Profil.png') ?>" alt="Profil" class="w-full h-full object-contain filter drop-shadow">
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Profil Bunda</h1>
+                    <p class="text-xs text-slate-600 font-medium">Informasi data diri dan pengaturan akun</p>
+                </div>
+            </div>
+            <a href="<?= base_url('profil/edit') ?>" class="bg-[#162065] hover:bg-[#101850] text-white px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-wider shadow-md transition flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">edit</span> Edit
+            </a>
+        </div>
     </div>
-</header>
 
-<div class="flex-1 overflow-y-auto no-scrollbar -mt-16 md:-mt-12 px-6 md:px-10 pb-32 md:pb-10 relative z-20">
+    <div class="flex-1 overflow-y-auto no-scrollbar relative z-20 pb-24">
     <div class="max-w-4xl mx-auto">
 
         <div
@@ -68,11 +80,16 @@
                             <?= !empty($ibu['alamat']) ? esc($ibu['alamat']) : '<span class="text-slate-400 italic">Belum diisi</span>' ?>
                         </p>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <p class="text-xs text-slate-400 font-medium mb-0.5">Jumlah Anak</p>
                             <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">
                                 <?= esc($ibu['jumlah_anak']) ?> Orang
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 font-medium mb-0.5">Status Kehamilan</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 uppercase text-xs">
+                                <?= str_replace('_', ' ', esc($ibu['status_kehamilan'] ?? 'pasca_melahirkan')) ?>
                             </p>
                         </div>
                     </div>

@@ -16,7 +16,18 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://localhost/SiCubit/';
+    public string $baseURL = 'https://sicubit.id/';
+
+    public function __construct()
+    {
+        parent::__construct();
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+            $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+            $scriptDir = rtrim($scriptDir, '/') . '/';
+            $this->baseURL = $scheme . '://' . $_SERVER['HTTP_HOST'] . $scriptDir;
+        }
+    }
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.

@@ -4,17 +4,24 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<header class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 pt-8 pb-4 px-6 md:px-10 flex items-center gap-4 flex-shrink-0 relative z-20">
-    <a href="<?= base_url('dashboard') ?>" class="size-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition">
-        <span class="material-symbols-outlined">arrow_back</span>
-    </a>
-    <div>
-        <h1 class="font-bold text-xl text-slate-800 dark:text-white">Statistik Laktasi</h1>
-        <p class="text-xs text-slate-500">Pantauan grafik kelancaran ASI 7 hari terakhir</p>
-    </div>
-</header>
+<div class="flex flex-col h-full w-full">
 
-<div class="flex-1 overflow-y-auto no-scrollbar p-6 md:p-10 relative z-10 pb-32">
+    <div class="mb-4">
+        <a href="<?= base_url('dashboard') ?>" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 backdrop-blur border border-white/60 text-[#162065] font-extrabold text-xs shadow-sm hover:bg-white transition mb-3">
+            <span class="material-symbols-outlined text-base">arrow_back</span> Kembali
+        </a>
+        <div class="flex items-center gap-3">
+            <div class="size-12 rounded-2xl bg-[#162065] text-white flex items-center justify-center font-bold shadow-md">
+                <span class="material-symbols-outlined text-2xl">monitoring</span>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Statistik Laktasi</h1>
+                <p class="text-xs text-slate-600 font-medium">Pantauan grafik frekuensi & kecukupan ASI 7 hari terakhir</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto no-scrollbar relative z-10 pb-24">
     <div class="max-w-5xl mx-auto space-y-6">
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">

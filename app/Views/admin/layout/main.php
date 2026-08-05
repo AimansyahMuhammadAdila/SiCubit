@@ -46,7 +46,7 @@
             </a>
         </nav>
         <div class="p-4 border-t border-slate-800">
-            <a href="<?= base_url('login') ?>"
+            <a href="<?= base_url('admin/logout') ?>"
                 class="flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-900/20 rounded-xl transition"><span
                     class="material-symbols-outlined">logout</span> Keluar</a>
         </div>

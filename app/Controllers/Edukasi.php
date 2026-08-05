@@ -27,4 +27,14 @@ class Edukasi extends BaseController
 
         return view('edukasi/video', $data);
     }
+    public function faq()
+    {
+        // Menyiapkan data yang akan dikirim ke view
+        $data = [
+            'title' => 'FAQ Laktasi - SiCubit'
+        ];
+
+        // Memanggil file view yang baru saja kita buat (app/Views/edukasi/faq.php)
+        return view('edukasi/faq', $data);
+    }
 }

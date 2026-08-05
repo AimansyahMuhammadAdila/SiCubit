@@ -2,176 +2,156 @@
 
 <?= $this->section('content') ?>
 
-<div class="flex flex-col h-full w-full overflow-hidden">
-    <header
-        class="relative bg-gradient-to-br from-primary via-blue-500 to-blue-600 pt-12 md:pt-10 pb-12 md:pb-16 px-6 md:px-10 rounded-b-[2.5rem] md:rounded-none md:rounded-bl-[2.5rem] shadow-lg shadow-blue-100 dark:shadow-none flex-shrink-0">
-        <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-        <div class="absolute left-10 bottom-0 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+<?php 
+$statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'pasca_melahirkan'; 
+?>
 
-        <div class="relative z-10 flex items-center justify-between max-w-6xl mx-auto">
-            <div class="flex items-center gap-4">
-                <div
-                    class="size-14 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white overflow-hidden shadow-sm">
-                    <span class="material-symbols-outlined text-4xl font-variation-fill">face_3</span>
-                </div>
-                <div>
-                    <h1 class="text-white font-bold text-xl md:text-2xl leading-tight">Halo Bunda
-                        <?= esc(strtok($nama_ibu, " ")) ?>,</h1>
-                    <p class="text-blue-50 text-sm md:text-base opacity-90">Bagaimana kabar si kecil hari ini?</p>
-                </div>
+<div class="w-full flex flex-col gap-6 md:gap-8">
+
+    <!-- GREETING & AVATAR HEADER (ADAPTIVE MOBILE & DESKTOP) -->
+    <div class="relative bg-white/40 backdrop-blur-md p-5 sm:p-6 md:p-8 rounded-3xl border border-white/60 shadow-sm flex items-center justify-between gap-4 overflow-hidden">
+        <!-- Sparkle BG Decorative Icons -->
+        <span class="material-symbols-outlined absolute -right-3 -top-3 text-7xl text-white/50 animate-pulse pointer-events-none">auto_awesome</span>
+        
+        <div class="flex items-center gap-4 sm:gap-6 z-10">
+            <div class="size-16 sm:size-20 md:size-24 rounded-full bg-white p-1 border-2 border-[#162065] shadow-md flex-shrink-0 overflow-hidden">
+                <img src="<?= base_url('uploads/Logo.png') ?>" alt="Avatar Bunda" class="w-full h-full object-contain">
             </div>
-            <button
-                class="size-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-white/30 transition shadow-sm">
-                <span class="material-symbols-outlined text-2xl">notifications</span>
-            </button>
+
+            <div>
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#162065]/10 text-[#162065] text-[11px] font-black uppercase tracking-wider mb-1">
+                    <span class="size-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <?= esc(str_replace('_', ' ', strtoupper($statusKehamilan))) ?>
+                </div>
+                <h2 class="text-[#162065] font-black text-xl sm:text-2xl md:text-3xl leading-tight">
+                    Halo Bunda.......
+                </h2>
+                <p class="text-slate-800 font-bold text-xs sm:text-sm md:text-base mt-0.5">
+                    Selamat datang di <span class="text-[#162065] font-black">SiCubit</span>
+                </p>
+            </div>
         </div>
-    </header>
 
-    <div class="flex-1 overflow-y-auto no-scrollbar relative z-20 w-full">
-        <div
-            class="max-w-6xl mx-auto px-6 md:px-10 py-6 md:py-10 flex flex-col gap-8 md:gap-10 pb-32 md:pb-10 min-h-full">
+        <a href="<?= base_url('profil') ?>" class="hidden sm:flex items-center gap-2 bg-white/80 hover:bg-white text-[#162065] px-4 py-2.5 rounded-2xl text-xs font-black shadow-sm transition border border-white/80 whitespace-nowrap">
+            <span class="material-symbols-outlined text-lg">person</span> Lihat Profil
+        </a>
+    </div>
 
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
-                <a href="<?= base_url('riwayat') ?>"
-                    class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
-                    <div
-                        class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 transition-colors group-hover:scale-110 duration-300">
-                        <span
-                            class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">history_edu</span>
-                    </div>
-                    <span
-                        class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Riwayat</span>
-                    <span class="text-[10px] md:text-sm text-slate-400 mt-1">Pra, Hamil & Salin</span>
-                </a>
-                <a href="<?= base_url('laktasi/cek') ?>"
-                    class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
-                    <div
-                        class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 transition-colors group-hover:scale-110 duration-300">
-                        <span
-                            class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">water_drop</span>
-                    </div>
-                    <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Cek
-                        Kelancaran</span>
-                    <span class="text-[10px] md:text-sm text-slate-400 mt-1">Evaluasi ASI</span>
-                </a>
-                <a href="<?= base_url('edukasi/video') ?>"
-                    class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
-                    <div
-                        class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-500 transition-colors group-hover:scale-110 duration-300">
-                        <span
-                            class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">smart_display</span>
-                    </div>
-                    <span class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Ruang
-                        Edukasi</span>
-                    <span class="text-[10px] md:text-sm text-slate-400 mt-1">Artikel & Video</span>
-                </a>
-                <a href="<?= base_url('statistik') ?>"
-                    class="group flex flex-col items-center justify-center p-5 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 text-center h-full">
-                    <div
-                        class="w-14 h-14 md:w-20 md:h-20 mb-3 md:mb-5 rounded-2xl bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center text-teal-500 transition-colors group-hover:scale-110 duration-300">
-                        <span
-                            class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill">bar_chart</span>
-                    </div>
-                    <span
-                        class="text-sm md:text-lg font-bold text-slate-700 dark:text-slate-100 leading-tight">Statistik</span>
-                    <span class="text-[10px] md:text-sm text-slate-400 mt-1">Grafik Kelancaran</span>
-                </a>
-            </section>
+    <!-- MAIN MENU CONTAINER (ADAPTIVE GRID: 3 COLS MOBILE -> 6 COLS DESKTOP) -->
+    <div class="bg-[#162065] text-white p-5 sm:p-6 md:p-8 rounded-[2.5rem] shadow-2xl shadow-indigo-950/40 border border-white/10 relative overflow-hidden">
+        <!-- Decorative Glow -->
+        <div class="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 flex-1 mt-auto">
+        <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 md:gap-6 text-center relative z-10">
+            
+            <!-- 1. Riwayat Pra Kehamilan -->
+            <a href="<?= base_url('riwayat') ?>" 
+               class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
+                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <img src="<?= base_url('uploads/Riwayat_Pra_Kehamilan.png') ?>" alt="Riwayat Pra Kehamilan" class="w-full h-full object-contain filter drop-shadow">
+                </div>
+                <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
+                    Riwayat<br>Pra Kehamilan
+                </span>
+            </a>
 
-                <section class="flex flex-col h-full">
-                    <div class="flex items-center justify-between mb-4 px-1">
-                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-lg">Update Terakhir</h3>
-                        <a href="<?= base_url('statistik') ?>"
-                            class="text-sm font-semibold text-primary hover:underline">Lengkapnya</a>
-                    </div>
+            <!-- 2. Riwayat Kehamilan -->
+            <a href="<?= base_url('riwayat') ?>" 
+               class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
+                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <img src="<?= base_url('uploads/Riwayat_Kehamilan.png') ?>" alt="Riwayat Kehamilan" class="w-full h-full object-contain filter drop-shadow">
+                </div>
+                <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
+                    Riwayat<br>Kehamilan
+                </span>
+            </a>
 
-                    <?php if (!empty($latestAsi)): ?>
-                        <?php
-                        // Logika untuk menentukan warna & icon berdasarkan status kecukupan ASI
-                        $isCukup = ($latestAsi['status_kecukupan_asi'] === 'Ya');
-                        $statusText = $isCukup ? 'Kebutuhan ASI Terpenuhi' : 'Perhatian: ASI Kurang Lancar';
-                        $iconColor = $isCukup ? 'text-primary' : 'text-rose-500';
-                        $iconSymbol = $isCukup ? 'check_circle' : 'warning';
-                        ?>
-                        <div
-                            class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100 dark:border-slate-700 rounded-3xl p-5 md:p-6 flex items-center gap-4 hover:bg-blue-50 transition-colors flex-1 shadow-sm">
-                            <div
-                                class="size-14 md:size-16 bg-white dark:bg-slate-700 rounded-2xl flex flex-shrink-0 items-center justify-center shadow-sm <?= $iconColor ?>">
-                                <span
-                                    class="material-symbols-outlined text-3xl md:text-4xl font-variation-fill"><?= $iconSymbol ?></span>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Evaluasi ASI
-                                </p>
-                                <h4
-                                    class="font-bold text-slate-900 dark:text-white text-base md:text-lg leading-tight mb-1">
-                                    <?= $statusText ?></h4>
-                                <p class="text-xs md:text-sm text-slate-500 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">calendar_today</span>
-                                    <?= date('d M Y', strtotime($latestAsi['tgl_pengisian'])) ?>
-                                </p>
-                            </div>
-                            <a href="<?= base_url('laktasi/cek') ?>"
-                                class="size-10 md:size-12 rounded-full flex-shrink-0 bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
-                                <span class="material-symbols-outlined text-xl md:text-2xl">edit</span>
-                            </a>
-                        </div>
-                    <?php else: ?>
-                        <div
-                            class="bg-slate-50 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 rounded-3xl p-5 md:p-6 flex items-center gap-4 flex-1 shadow-sm">
-                            <div
-                                class="size-14 md:size-16 bg-slate-200 dark:bg-slate-700 rounded-2xl flex flex-shrink-0 items-center justify-center text-slate-400">
-                                <span class="material-symbols-outlined text-3xl md:text-4xl">inventory_2</span>
-                            </div>
-                            <div class="flex-1">
-                                <h4
-                                    class="font-bold text-slate-700 dark:text-slate-300 text-base md:text-lg leading-tight mb-1">
-                                    Belum Ada Data</h4>
-                                <p class="text-xs md:text-sm text-slate-500">Bunda belum pernah mengisi evaluasi ASI.</p>
-                            </div>
-                            <a href="<?= base_url('laktasi/cek') ?>"
-                                class="px-4 py-2 text-sm rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors shadow-sm">
-                                Mulai Isi
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                </section>
+            <!-- 3. Riwayat Persalinan -->
+            <a href="<?= base_url('riwayat') ?>" 
+               class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
+                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <img src="<?= base_url('uploads/Riwayat_Persalinan.png') ?>" alt="Riwayat Persalinan" class="w-full h-full object-contain filter drop-shadow">
+                </div>
+                <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
+                    Riwayat<br>Persalinan
+                </span>
+            </a>
 
-                <section class="flex flex-col h-full">
-                    <div class="flex items-center justify-between mb-4 px-1 lg:hidden">
-                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-lg">Tips Edukasi</h3>
-                    </div>
-                    <div class="hidden lg:flex items-center justify-between mb-4 px-1 opacity-0 pointer-events-none">
-                        <h3 class="font-bold text-lg">Spacer</h3>
-                    </div>
+            <!-- 4. Ruang Edukasi -->
+            <a href="<?= base_url('edukasi/video') ?>" 
+               class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
+                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <img src="<?= base_url('uploads/Ruang_Edukasi.png') ?>" alt="Ruang Edukasi" class="w-full h-full object-contain filter drop-shadow">
+                </div>
+                <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
+                    Ruang Edukasi
+                </span>
+            </a>
 
-                    <a href="<?= base_url('edukasi/video') ?>" class="block h-full group">
-                        <div style="background-color:#2b7cee;"
-                            class="rounded-3xl p-6 md:p-8 text-white flex gap-4 items-center relative overflow-hidden h-full flex-1 shadow-md group-hover:shadow-lg transition-all active:scale-[0.98]">
-                            <div
-                                class="absolute top-1/2 -translate-y-1/2 right-2 md:right-8 p-2 opacity-20 transition-transform group-hover:scale-110 group-hover:rotate-12 duration-500">
-                                <span class="material-symbols-outlined text-[80px] md:text-[120px]">lightbulb</span>
-                            </div>
-                            <div class="relative z-10">
-                                <span
-                                    class="bg-white/20 text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full mb-3 md:mb-4 inline-block tracking-wide">TIP
-                                    EDUKASI</span>
-                                <h4 class="font-bold text-xl md:text-2xl leading-snug mb-2"><?= esc($tip['judul']) ?>
-                                </h4>
-                                <p
-                                    class="text-sm md:text-base text-indigo-100 max-w-[85%] md:max-w-[75%] leading-relaxed">
-                                    <?= esc($tip['isi']) ?></p>
-                            </div>
-                        </div>
-                    </a>
+            <!-- 5. Bidan Pintar (Chat AI) -->
+            <a href="<?= base_url('chat') ?>" 
+               class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
+                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <img src="<?= base_url('uploads/Bidan_Pintar.png') ?>" alt="Bidan Pintar" class="w-full h-full object-contain filter drop-shadow">
+                </div>
+                <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
+                    Bidan Pintar
+                </span>
+            </a>
 
-                </section>
+            <!-- 6. Cek Kelancaran ASI & Assessment -->
+            <a href="<?= base_url('laktasi/cek') ?>" 
+               class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
+                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl bg-white/10 flex items-center justify-center text-amber-300 border border-white/20 transition-transform group-hover:scale-110">
+                    <span class="material-symbols-outlined text-3xl sm:text-4xl">water_drop</span>
+                </div>
+                <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
+                    Kalkulator<br>Pertumbuhan
+                </span>
+            </a>
 
-            </div>
         </div>
     </div>
+
+    <!-- QUICK ACTIONS & CARDS GRID (ADAPTIVE 2-COLUMN DESKTOP GRID) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        
+        <!-- CARD 1: PANTAU TUMBUH KEMBANG -->
+        <div class="bg-white/90 backdrop-blur-md rounded-3xl p-5 border border-white/60 shadow-lg flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="size-12 rounded-2xl bg-[#162065] text-white flex items-center justify-center font-bold flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl">medical_services</span>
+                </div>
+                <div>
+                    <h4 class="font-black text-[#162065] text-sm sm:text-base">Pantau Tumbuh Kembang</h4>
+                    <p class="text-[11px] text-slate-500 font-medium leading-tight">Pemeriksaan berkala si kecil & Bunda</p>
+                </div>
+            </div>
+            <a href="<?= base_url('laktasi/cek') ?>" 
+               class="bg-[#162065] hover:bg-[#101850] text-white px-4 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition shadow-md whitespace-nowrap">
+                Mulai Cek
+            </a>
+        </div>
+
+        <!-- CARD 2: KONDISI KEJIWAAN EPDS -->
+        <div class="bg-white/90 backdrop-blur-md rounded-3xl p-5 border border-white/60 shadow-lg flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="size-12 rounded-2xl bg-[#162065] text-white flex items-center justify-center font-bold flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl">psychology</span>
+                </div>
+                <div>
+                    <h4 class="font-black text-[#162065] text-sm sm:text-base">Screening EPDS</h4>
+                    <p class="text-[11px] text-slate-500 font-medium leading-tight">Cek kondisi emosional & mental Bunda</p>
+                </div>
+            </div>
+            <a href="<?= base_url('assessment-kejiwaan') ?>" 
+               class="bg-[#162065] hover:bg-[#101850] text-white px-4 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition shadow-md whitespace-nowrap">
+                Cek EPDS
+            </a>
+        </div>
+
+    </div>
+
 </div>
 
 <?= $this->endSection() ?>

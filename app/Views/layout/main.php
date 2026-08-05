@@ -7,138 +7,148 @@
     <title><?= esc($title ?? 'SI CUBIT') ?></title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#2b7cee",
-                        "primary-light": "#e0f2ff",
-                        "primary-dark": "#1a5bb8",
-                        "background-light": "#f8fafc",
-                        "background-dark": "#0f172a",
+                        "primary": "#162065",
+                        "primary-navy": "#101850",
+                        "primary-blue": "#1e2b80",
                     },
                     fontFamily: {
-                        "display": ["Epilogue", "sans-serif"]
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
                     },
                 },
             },
         }
     </script>
 
-    <style type="text/tailwindcss">
-        @layer base {
-            html, body {
-                @apply m-0 p-0 overflow-x-hidden;
-            }
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: url('<?= base_url('uploads/Background.jpg') ?>');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
-        @layer utilities {
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-            
-            #page-loader {
-                @apply fixed inset-0 flex items-center justify-center;
-            }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .app-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-sizing: border-box;
         }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased flex flex-col md:flex-row h-screen overflow-hidden">
+<body class="text-slate-800 antialiased min-h-screen w-full">
 
-    <nav class="order-last md:order-first w-full md:w-24 lg:w-64 bg-white/80 md:bg-white dark:bg-slate-900/80 backdrop-blur-xl md:backdrop-blur-none border-t md:border-t-0 md:border-r border-slate-100 dark:border-slate-800 p-4 md:py-8 flex md:flex-col justify-around md:justify-start items-center lg:items-start gap-4 z-30 flex-shrink-0">
+    <!-- ADAPTIVE FULL SCREEN CONTAINER (MOBILE, TABLET, DESKTOP, ULTRA WIDE) -->
+    <div class="app-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
 
-        <div class="hidden lg:flex items-center gap-2 mb-8 px-4 w-full">
-            <span class="material-symbols-outlined text-primary text-3xl font-variation-fill">child_care</span>
-            <span class="font-bold text-xl text-primary">SI CUBIT</span>
-        </div>
-
-        <?php $isBeranda = url_is('/') || url_is('dashboard*'); ?>
-        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isBeranda ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
-            href="<?= base_url('dashboard') ?>">
-            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isBeranda ? 'font-variation-fill' : '' ?>">grid_view</span>
-            <span class="text-[10px] lg:text-sm <?= $isBeranda ? 'font-bold' : 'font-medium' ?>">Beranda</span>
-        </a>
-
-        <?php $isChat = url_is('chat*'); ?>
-        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isChat ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
-            href="<?= base_url('chat') ?>">
-            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isChat ? 'font-variation-fill' : '' ?>">chat_bubble</span>
-            <span class="text-[10px] lg:text-sm <?= $isChat ? 'font-bold' : 'font-medium' ?>">Chat AI</span>
-        </a>
-
-        <?php $isEdukasi = url_is('edukasi*'); ?>
-        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isEdukasi ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
-            href="<?= base_url('edukasi/video') ?>">
-            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isEdukasi ? 'font-variation-fill' : '' ?>">menu_book</span>
-            <span class="text-[10px] lg:text-sm <?= $isEdukasi ? 'font-bold' : 'font-medium' ?>">Edukasi</span>
-        </a>
-
-        <?php $isProfil = url_is('profil*'); ?>
-        <a class="flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 group w-full lg:px-4 lg:py-3 lg:rounded-xl transition-colors <?= $isProfil ? 'text-primary lg:bg-primary-light dark:lg:bg-primary-900/30' : 'text-slate-400 hover:text-primary lg:hover:bg-primary-light dark:lg:hover:bg-primary-900/20' ?>"
-            href="<?= base_url('profil') ?>">
-            <span class="material-symbols-outlined text-[28px] lg:text-2xl <?= $isProfil ? 'font-variation-fill' : '' ?>">person</span>
-            <span class="text-[10px] lg:text-sm <?= $isProfil ? 'font-bold' : 'font-medium' ?>">Profil</span>
-        </a>
-
-    </nav>
-
-    <main class="flex-1 flex flex-col h-full overflow-hidden relative z-20">
-        <?= $this->renderSection('content') ?>
-    </main>
-
-    <div id="page-loader" class="fixed top-0 left-0 w-full h-full z-[9999] bg-white dark:bg-slate-900 flex items-center justify-center transition-opacity duration-500" style="opacity: 1; display: flex;">
-        <div class="flex flex-col items-center justify-center">
-            <div class="relative flex items-center justify-center w-28 h-28">
-                <div class="absolute inset-0 bg-blue-100 dark:bg-slate-800 rounded-full animate-pulse opacity-60"></div>
-                <svg class="w-16 h-16 text-primary relative z-10 animate-bounce" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2.5-9c.83 0 1.5-.67 1.5-1.5S10.33 8 9.5 8 8 8.67 8 9.5 8.83 11 9.5 11zm5 0c.83 0 1.5-.67 1.5-1.5S15.83 8 15 8s-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-2.5 4c-2.28 0-4.22-1.66-5-4h10c-.78 2.34-2.72 4-5 4z" />
-                </svg>
+        <!-- TOP HEADER LOGO & DESKTOP ADAPTIVE NAV BAR -->
+        <header class="w-full pt-2 flex items-center justify-between z-30 flex-shrink-0 mb-6 gap-4">
+            
+            <!-- Left: Logo Pill Kemenkes (DIPERBESAR) -->
+            <div class="bg-white/95 backdrop-blur-md px-5 sm:px-6 py-2.5 rounded-full shadow-lg border border-white/80 flex items-center gap-2.5">
+                <img src="<?= base_url('uploads/Poltekkes.png') ?>" alt="Kemenkes Poltekkes Banjarmasin" class="h-10 sm:h-12 md:h-14 object-contain max-w-[240px] sm:max-w-[280px] md:max-w-[320px]">
             </div>
-            <div class="mt-6 text-center">
-                <p class="text-primary font-black text-xl tracking-[0.2em] animate-pulse">SI CUBIT</p>
-                <p class="text-slate-400 text-[10px] mt-1 font-medium">Memuat kebahagiaan Bunda...</p>
+            
+            <!-- Center: Desktop & Tablet Inline Navigation (>= 768px) -->
+            <?php 
+                $isBeranda = url_is('/') || url_is('dashboard*'); 
+                $isKunjungan = url_is('laktasi*') || url_is('form-bayi*') || url_is('assessment-kejiwaan*'); 
+                $isRiwayat = url_is('riwayat*') || url_is('statistik*'); 
+                $isProfil = url_is('profil*'); 
+            ?>
+            <nav class="hidden md:flex items-center gap-2 bg-[#162065] text-white px-4 py-2 rounded-full shadow-lg border border-white/10 backdrop-blur-md">
+                <a href="<?= base_url('dashboard') ?>" 
+                   class="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all <?= $isBeranda ? 'bg-white/20 text-white shadow-sm' : 'text-blue-100 hover:text-white hover:bg-white/10' ?>">
+                    <img src="<?= base_url('uploads/Home.png') ?>" alt="Beranda" class="size-4 object-contain">
+                    <span>Beranda</span>
+                </a>
+                <a href="<?= base_url('laktasi/cek') ?>" 
+                   class="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all <?= $isKunjungan ? 'bg-white/20 text-white shadow-sm' : 'text-blue-100 hover:text-white hover:bg-white/10' ?>">
+                    <img src="<?= base_url('uploads/Kunjungan.png') ?>" alt="Kunjungan" class="size-4 object-contain">
+                    <span>Kunjungan</span>
+                </a>
+                <a href="<?= base_url('riwayat') ?>" 
+                   class="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all <?= $isRiwayat ? 'bg-white/20 text-white shadow-sm' : 'text-blue-100 hover:text-white hover:bg-white/10' ?>">
+                    <img src="<?= base_url('uploads/Riwayat.png') ?>" alt="Riwayat" class="size-4 object-contain">
+                    <span>Riwayat</span>
+                </a>
+                <a href="<?= base_url('profil') ?>" 
+                   class="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all <?= $isProfil ? 'bg-white/20 text-white shadow-sm' : 'text-blue-100 hover:text-white hover:bg-white/10' ?>">
+                    <img src="<?= base_url('uploads/Profil.png') ?>" alt="Profil" class="size-4 object-contain">
+                    <span>Profil</span>
+                </a>
+            </nav>
+
+            <!-- Right: Notification Bell & Action -->
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button class="size-10 sm:size-11 rounded-full bg-[#162065] text-white flex items-center justify-center shadow-lg shadow-indigo-900/30 hover:bg-[#101850] transition">
+                        <span class="material-symbols-outlined text-xl sm:text-2xl">notifications</span>
+                    </button>
+                    <span class="absolute top-0 right-0 size-2.5 sm:size-3 bg-rose-500 rounded-full border-2 border-white"></span>
+                </div>
             </div>
-        </div>
+        </header>
+
+        <!-- MAIN CONTENT SECTION -->
+        <main class="flex-1 w-full relative z-20 flex flex-col justify-start pb-24 md:pb-12">
+            <?= $this->renderSection('content') ?>
+        </main>
+
+        <!-- MOBILE BOTTOM NAVIGATION BAR (< 768px) -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto px-4 pb-4">
+            <div class="bg-[#162065] text-white rounded-3xl p-2.5 shadow-2xl shadow-indigo-950/60 border border-white/10 flex items-center justify-around backdrop-blur-lg">
+                
+                <a href="<?= base_url('dashboard') ?>" 
+                   class="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all duration-200 <?= $isBeranda ? 'bg-white/20 font-bold scale-105' : 'opacity-80 hover:opacity-100' ?>">
+                    <img src="<?= base_url('uploads/Home.png') ?>" alt="Beranda" class="size-6 object-contain mb-0.5 filter drop-shadow">
+                    <span class="text-[10px] font-bold tracking-tight">Beranda</span>
+                </a>
+
+                <a href="<?= base_url('laktasi/cek') ?>" 
+                   class="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all duration-200 <?= $isKunjungan ? 'bg-white/20 font-bold scale-105' : 'opacity-80 hover:opacity-100' ?>">
+                    <img src="<?= base_url('uploads/Kunjungan.png') ?>" alt="Kunjungan" class="size-6 object-contain mb-0.5 filter drop-shadow">
+                    <span class="text-[10px] font-bold tracking-tight">Kunjungan</span>
+                </a>
+
+                <a href="<?= base_url('riwayat') ?>" 
+                   class="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all duration-200 <?= $isRiwayat ? 'bg-white/20 font-bold scale-105' : 'opacity-80 hover:opacity-100' ?>">
+                    <img src="<?= base_url('uploads/Riwayat.png') ?>" alt="Riwayat" class="size-6 object-contain mb-0.5 filter drop-shadow">
+                    <span class="text-[10px] font-bold tracking-tight">Riwayat</span>
+                </a>
+
+                <a href="<?= base_url('profil') ?>" 
+                   class="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all duration-200 <?= $isProfil ? 'bg-white/20 font-bold scale-105' : 'opacity-80 hover:opacity-100' ?>">
+                    <img src="<?= base_url('uploads/Profil.png') ?>" alt="Profil" class="size-6 object-contain mb-0.5 filter drop-shadow">
+                    <span class="text-[10px] font-bold tracking-tight">Profil</span>
+                </a>
+
+            </div>
+        </nav>
+
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const loader = document.getElementById("page-loader");
-
-            if (!loader) return;
-
-            // Fade out saat halaman selesai dimuat
-            window.addEventListener("load", () => {
-                loader.style.opacity = "0";
-                setTimeout(() => {
-                    loader.style.display = "none";
-                }, 200); 
-            });
-
-            // Tampilkan loader saat link diklik (kecuali link kosong/tab baru)
-            document.querySelectorAll("a").forEach(link => {
-                link.addEventListener("click", function (e) {
-                    const href = this.getAttribute("href");
-
-                    if (!href || href.startsWith("#") || href.startsWith("javascript") || this.target === "_blank") {
-                        return;
-                    }
-
-                    e.preventDefault();
-                    loader.style.display = "flex";
-                    // Sedikit delay agar display:flex ter-render sebelum opacity berubah
-                    requestAnimationFrame(() => {
-                        loader.style.opacity = "1";
-                    });
-
-                    window.location.assign(href);
-                });
-            });
-        });
-    </script>
 </body>
 </html>

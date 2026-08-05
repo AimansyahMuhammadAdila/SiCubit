@@ -2,257 +2,161 @@
 
 <?= $this->section('content') ?>
 
-<style type="text/tailwindcss">
-    .curvy-bg-mobile {
-        background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%);
-        border-bottom-left-radius: 3rem;
-        border-bottom-right-radius: 3rem;
+<style>
+    .gold-border {
+        border: 2.5px solid #D4AF37;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
     }
-    .curvy-bg-desktop {
-        background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%);
-        border-top-right-radius: 4rem;
-        border-bottom-right-radius: 4rem;
-    }
-    .soft-input-shadow {
-        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.08);
-    }
-    .illustration-container {
-        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+    .full-app-container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        padding: 1.5rem;
+        box-sizing: border-box;
     }
 </style>
-<script id="tailwind-config">
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    "primary": "#4A90E2",
-                    "soft-blue": "#E3F2FD",
-                    "accent-blue": "#82B1FF",
-                    "warm-gray": "#7A7A7A",
-                },
-                fontFamily: { "sans": ["Plus Jakarta Sans", "sans-serif"] },
-            },
-        },
-    }
-</script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-<div class="flex flex-col md:flex-row w-full min-h-screen bg-slate-50 font-sans text-slate-800 relative">
+<div class="full-app-container">
 
-    <div class="md:hidden curvy-bg-mobile relative h-72 w-full flex flex-col items-center justify-center px-6 pt-10 flex-shrink-0 z-10">
-        <a href="<?= base_url('/') ?>" class="absolute top-12 left-6 p-2 rounded-full bg-white/60 backdrop-blur-sm text-slate-600 hover:bg-white transition">
-            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+    <!-- TOP KEMENKES LOGO PILL (DIPERBESAR) -->
+    <header class="w-full max-w-6xl mx-auto pt-2 flex items-center justify-between z-30">
+        <div class="bg-white/95 backdrop-blur-md px-5 sm:px-6 py-3 rounded-full shadow-lg border border-white/80 flex items-center gap-3">
+            <img src="<?= base_url('uploads/Poltekkes.png') ?>" alt="Kemenkes Poltekkes Banjarmasin" class="h-10 sm:h-12 md:h-14 object-contain">
+        </div>
+        <a href="<?= base_url('/') ?>" class="size-11 rounded-full bg-white/90 backdrop-blur shadow flex items-center justify-center text-slate-700 hover:bg-white transition">
+            <span class="material-symbols-outlined text-xl">close</span>
         </a>
+    </header>
 
-        <div class="illustration-container relative flex items-center justify-center w-full max-w-[240px] aspect-square mt-4">
-            <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center relative border-4 border-white">
-                <div class="absolute inset-0 bg-blue-100 rounded-full opacity-40 animate-pulse"></div>
-                <span class="material-symbols-outlined text-[80px] text-primary relative z-10" style="font-variation-settings: 'FILL' 1">family_restroom</span>
+    <!-- FORM REGISTER CARD -->
+    <main class="flex-1 flex flex-col items-center justify-center my-auto z-20 w-full max-w-md mx-auto py-6">
+        
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-2xl border border-white/80 w-full space-y-5">
+            
+            <div class="text-center space-y-1">
+                <div class="size-14 rounded-full bg-[#162065]/10 text-[#162065] flex items-center justify-center mx-auto mb-1">
+                    <span class="material-symbols-outlined text-3xl">person_add</span>
+                </div>
+                <h2 class="text-2xl font-black text-[#162065] tracking-tight">Daftar Akun SiCubit</h2>
+                <p class="text-xs text-slate-500 font-medium">Isikan data diri Bunda untuk memulai pendampingan</p>
             </div>
-            <div class="absolute top-0 right-4 w-10 h-10 bg-pink-100 rounded-full opacity-60"></div>
-            <div class="absolute bottom-6 left-0 w-8 h-8 bg-blue-200 rounded-full opacity-60"></div>
-        </div>
-    </div>
 
-    <div class="hidden md:flex curvy-bg-desktop w-5/12 h-screen sticky top-0 flex-col items-center justify-center p-12 shadow-[10px_0_30px_rgba(0,0,0,0.02)] z-10">
-        <div class="text-center mb-12">
-            <div class="flex items-center justify-center gap-3 mb-4">
-                <span class="material-symbols-outlined text-5xl text-primary font-variation-fill">child_care</span>
-                <span class="font-bold text-3xl text-primary">SI CUBIT</span>
-            </div>
-            <p class="text-slate-500 font-medium">Langkah Awal Memantau Tumbuh Kembang Si Kecil</p>
-        </div>
-
-        <div class="illustration-container relative flex items-center justify-center w-full max-w-[300px] aspect-square">
-            <div class="w-56 h-56 bg-white rounded-full flex items-center justify-center relative border-8 border-white">
-                <div class="absolute inset-0 bg-blue-100 rounded-full opacity-40 animate-pulse"></div>
-                <span class="material-symbols-outlined text-[120px] text-primary relative z-10" style="font-variation-settings: 'FILL' 1">family_restroom</span>
-            </div>
-            <div class="absolute top-4 -right-2 w-14 h-14 bg-pink-100 rounded-full opacity-60"></div>
-            <div class="absolute bottom-10 -left-6 w-10 h-10 bg-blue-200 rounded-full opacity-60"></div>
-        </div>
-    </div>
-
-    <div class="flex-1 px-8 md:px-16 lg:px-24 pt-8 md:pt-16 pb-12 -mt-4 md:mt-0 bg-white md:bg-transparent relative z-20 flex flex-col justify-center min-h-screen">
-
-        <div class="text-center md:text-left mb-8 md:mb-10 max-w-xl">
-            <h1 class="text-2xl md:text-3xl font-bold text-slate-900">Buat Akun Baru</h1>
-            <p class="text-warm-gray text-sm md:text-base mt-2">Daftarkan diri Bunda untuk mulai memantau perkembangan laktasi dan kesehatan.</p>
-        </div>
-
-        <div class="flex justify-center md:justify-start gap-8 mb-8 border-b border-slate-200 max-w-xl">
-            <a href="<?= base_url('login') ?>" class="pb-3 text-slate-400 font-medium text-sm hover:text-slate-600 transition-colors">Login</a>
-            <a href="<?= base_url('register') ?>" class="pb-3 text-primary font-bold border-b-2 border-primary text-sm transition-colors">Registration</a>
-        </div>
-
-        <form id="registerForm" class="space-y-5 max-w-xl w-full">
-            <div class="space-y-4">
-                <div class="relative">
-                    <input class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Nama Lengkap Ibu" type="text" name="nama" required />
+            <form id="registerForm" class="space-y-3.5">
+                <?= csrf_field() ?>
+                
+                <div>
+                    <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Nama Lengkap Bunda</label>
+                    <input type="text" name="nama" required placeholder="Nama Lengkap" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10"/>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <input class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Umur (Tahun)" type="number" name="umur" required />
-                    <input class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Jumlah Anak" type="number" name="jumlah_anak" />
+                <div>
+                    <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Nomor Telepon / WhatsApp</label>
+                    <input type="tel" name="no_telp" required placeholder="08xxxxxxxxxx" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10"/>
                 </div>
 
-                <div class="relative">
-                    <input class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Pekerjaan" type="text" name="pekerjaan" />
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Umur (Tahun)</label>
+                        <input type="number" name="umur" min="12" max="60" placeholder="Contoh: 28" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10"/>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Jumlah Anak</label>
+                        <input type="number" name="jumlah_anak" min="0" max="20" placeholder="0" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10"/>
+                    </div>
                 </div>
 
-                <div class="relative">
-                    <input class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Nomor Telepon / WhatsApp" type="tel" name="no_telp" required />
-                </div>
-
-                <div class="relative">
-                    <textarea class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow resize-none" rows="2" placeholder="Alamat Lengkap" name="alamat"></textarea>
-                </div>
-
-                <div class="relative">
-                    <select id="selectKabkota" class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 text-slate-600 appearance-none transition-shadow disabled:bg-slate-100 disabled:text-slate-400" name="id_kabkota" required>
-                        <option value="" disabled selected>Memuat Kab/Kota...</option>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Status Bunda Saat Ini</label>
+                    <select name="status_kehamilan" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10">
+                        <option value="pra_kehamilan">Pra-Kehamilan (Perencanaan)</option>
+                        <option value="hamil">Sedang Hamil</option>
+                        <option value="pasca_melahirkan" selected>Pasca Melahirkan (Menyusui)</option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
                 </div>
 
-                <div class="relative">
-                    <select id="selectPuskesmas" class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 text-slate-600 appearance-none transition-shadow disabled:bg-slate-100 disabled:text-slate-400" name="id_puskesmas" required disabled>
-                        <option value="" disabled selected>Pilih Kab/Kota Terlebih Dahulu</option>
-                    </select>
-                    <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="regPassword" name="password" required placeholder="Minimal 6 karakter" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10" oninput="document.getElementById('regConfirmPassword').value = this.value"/>
+                    <input type="hidden" id="regConfirmPassword" name="konfirmasi_password" />
                 </div>
 
-                <div class="relative">
-                    <input class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Buat Password" type="password" name="password" required />
-                    <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 cursor-pointer hover:text-primary transition-colors">visibility</span>
-                </div>
-
-                <div class="relative">
-                    <input class="w-full px-5 py-3.5 bg-white border-0 rounded-2xl soft-input-shadow text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 transition-shadow" placeholder="Konfirmasi Password" type="password" name="konfirmasi_password" required />
-                    <span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 cursor-pointer hover:text-primary transition-colors">visibility</span>
-                </div>
-            </div>
-
-            <div class="pt-6">
-                <button id="btnReg" class="w-full bg-primary hover:bg-[#3A80D2] text-white font-bold py-4 rounded-3xl shadow-lg shadow-primary/25 active:scale-[0.98] transition-all" type="submit">
-                    Daftar Akun
+                <button type="submit" id="btnSubmitReg" class="w-full py-3.5 bg-black hover:bg-slate-900 text-white font-black text-lg rounded-2xl gold-border uppercase tracking-wider transition-all active:scale-95 shadow-xl mt-3">
+                    DAFTAR SEKARANG
                 </button>
+            </form>
+
+            <div class="text-center pt-1">
+                <p class="text-xs text-slate-600 font-bold">
+                    Sudah punya akun? <a href="<?= base_url('login') ?>" class="text-[#162065] font-black underline hover:text-blue-950">Masuk di sini</a>
+                </p>
             </div>
-        </form>
-    </div>
+
+        </div>
+
+    </main>
+
+    <footer class="text-center py-2 text-[11px] text-slate-500 font-medium">
+        &copy; <?= date('Y') ?> SI CUBIT - Kemenkes Poltekkes Banjarmasin
+    </footer>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-document.addEventListener('DOMContentLoaded', async function() {
-    
-    // 1. Script Fetch Data Wilayah Dinamis
-    const selKabkota = document.getElementById('selectKabkota');
-    const selPuskesmas = document.getElementById('selectPuskesmas');
-
-    // Ambil data Kab/Kota saat halaman dimuat
-    try {
-        const res = await fetch('<?= base_url('api/wilayah/kabkota') ?>');
-        const json = await res.json();
-        
-        if (json.status === 'success') {
-            selKabkota.innerHTML = '<option value="" disabled selected>Pilih Kabupaten/Kota</option>';
-            json.data.forEach(item => {
-                selKabkota.innerHTML += `<option value="${item.id}">${item.tipe} ${item.nama}</option>`;
-            });
-        }
-    } catch (err) {
-        selKabkota.innerHTML = '<option value="" disabled selected>Gagal memuat wilayah</option>';
-    }
-
-    // Ambil data Puskesmas SAAT Kab/Kota dipilih
-    selKabkota.addEventListener('change', async function() {
-        const idKabkota = this.value;
-        
-        // Reset dan Matikan sementara dropdown puskesmas
-        selPuskesmas.innerHTML = '<option value="" disabled selected>Memuat Puskesmas...</option>';
-        selPuskesmas.disabled = true;
-
-        try {
-            const res = await fetch(`<?= base_url('api/wilayah/puskesmas/') ?>${idKabkota}`);
-            const json = await res.json();
-            
-            if (json.status === 'success' && json.data.length > 0) {
-                selPuskesmas.innerHTML = '<option value="" disabled selected>Pilih Puskesmas</option>';
-                json.data.forEach(item => {
-                    selPuskesmas.innerHTML += `<option value="${item.id}">${item.nama}</option>`;
-                });
-                selPuskesmas.disabled = false; // Hidupkan dropdown
-            } else {
-                selPuskesmas.innerHTML = '<option value="" disabled selected>Tidak ada Puskesmas</option>';
-            }
-        } catch (err) {
-            selPuskesmas.innerHTML = '<option value="" disabled selected>Gagal memuat puskesmas</option>';
-        }
-    });
-
-    // 2. Script Submit Form Register (Tetap sama)
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        const btn = document.getElementById('btnReg');
-        const formData = new FormData(this);
-
-        Swal.fire({
-            title: 'Memproses Pendaftaran...',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
-
+        const btn = document.getElementById('btnSubmitReg');
+        const origText = btn.innerText;
         btn.disabled = true;
+        btn.innerText = 'MEMPROSES...';
+
+        document.getElementById('regConfirmPassword').value = document.getElementById('regPassword').value;
+
+        const formData = new FormData(this);
 
         try {
             const response = await fetch('<?= base_url('api/register') ?>', {
                 method: 'POST',
                 body: formData
             });
-            
-            const result = await response.json();
-            
-            if (result.status === 'success') {
+
+            const data = await response.json();
+
+            if (data.status === 'success' || response.status === 201) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Pendaftaran Berhasil!',
-                    text: 'Akun Bunda sudah aktif, silakan login.',
-                    confirmButtonColor: '#4A90E2'
+                    text: data.message || 'Akun Bunda berhasil dibuat. Silakan login.',
+                    timer: 1800,
+                    showConfirmButton: false
                 }).then(() => {
                     window.location.href = '<?= base_url('login') ?>';
                 });
             } else {
-                let errorHtml = '<ul style="text-align: left; list-style-type: disc; padding-left: 20px; color: #ef4444; font-size: 14px;">';
-                if(result.errors) {
-                    for (const key in result.errors) {
-                        errorHtml += `<li>${result.errors[key]}</li>`;
-                    }
-                } else {
-                    errorHtml += `<li>${result.message}</li>`;
+                let errText = data.message || 'Mohon periksa kembali isian form Anda.';
+                if (data.errors) {
+                    errText = Object.values(data.errors).join('<br>');
                 }
-                errorHtml += '</ul>';
-
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal Mendaftar',
-                    html: errorHtml,
-                    confirmButtonColor: '#4A90E2'
+                    title: 'Pendaftaran Gagal',
+                    html: errText
                 });
             }
-        } catch (error) {
+        } catch (err) {
             Swal.fire({
                 icon: 'error',
-                title: 'Koneksi Bermasalah',
-                text: 'Terjadi kesalahan pada server. Coba lagi nanti.',
-                confirmButtonColor: '#4A90E2'
+                title: 'Kesalahan Sistem',
+                text: 'Tidak dapat tersambung ke server. Silakan coba lagi.'
             });
         } finally {
             btn.disabled = false;
+            btn.innerText = origText;
         }
     });
-
-});
 </script>
 
 <?= $this->endSection() ?>
