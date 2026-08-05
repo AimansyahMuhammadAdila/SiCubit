@@ -161,7 +161,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-50">
                         <?php foreach ($users as $u): ?>
-                            <tr class="hover:bg-slate-50/50 transition duration-300">
+                            <tr class="hover:bg-slate-50/50 transition duration-300 user-row">
                                 <td class="px-10 py-7">
                                     <div class="flex items-center gap-4">
                                         <div class="size-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-primary">
@@ -199,6 +199,11 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="p-8 border-t border-slate-50 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p id="showingCount" class="text-xs font-bold text-slate-400 italic">Menampilkan <?= count($users) ?> Bunda</p>
+                <div id="pagination" class="flex items-center gap-2"></div>
+            </div>
         </div>
 
         <footer class="mt-20 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-slate-100 pt-10 pb-10 opacity-60">
@@ -222,6 +227,74 @@
                 overlay.classList.add('hidden');
             }
         }
+
+        const rowsPerPage = 5;
+        let currentPage = 1;
+
+        function renderPagination(totalRows, totalPages) {
+            const container = document.getElementById('pagination');
+            container.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `size-8 rounded-lg border border-slate-200 flex items-center justify-center transition ${currentPage === 1 ? 'text-slate-300 bg-slate-50 cursor-not-allowed' : 'text-slate-500 hover:bg-white cursor-pointer'}`;
+            prevBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_left</span>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => changePage(currentPage - 1);
+            container.appendChild(prevBtn);
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `size-8 rounded-lg font-bold text-xs flex items-center justify-center transition ${i === currentPage ? 'bg-primary text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`;
+                    pageBtn.textContent = i;
+                    pageBtn.onclick = () => changePage(i);
+                    container.appendChild(pageBtn);
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    const dots = document.createElement('span');
+                    dots.className = 'size-8 flex items-center justify-center text-slate-400 text-xs';
+                    dots.textContent = '...';
+                    container.appendChild(dots);
+                }
+            }
+            
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `size-8 rounded-lg border border-slate-200 flex items-center justify-center transition ${currentPage === totalPages ? 'text-slate-300 bg-slate-50 cursor-not-allowed' : 'text-slate-500 hover:bg-white cursor-pointer'}`;
+            nextBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_right</span>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => changePage(currentPage + 1);
+            container.appendChild(nextBtn);
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            filterData();
+        }
+
+        function filterData() {
+            const rows = document.querySelectorAll('.user-row');
+            const totalVisible = rows.length;
+            const totalPages = Math.ceil(totalVisible / rowsPerPage);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (totalPages === 0) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            
+            rows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('showingCount').textContent = `Menampilkan ${Math.min(endIndex, totalVisible)} dari ${totalVisible} Bunda`;
+            renderPagination(totalVisible, totalPages);
+        }
+
+        filterData();
     </script>
 </body>
 
