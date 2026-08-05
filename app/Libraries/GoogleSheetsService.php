@@ -131,8 +131,15 @@ class GoogleSheetsService
             ];
         }
 
-        // Sanitasi URL Google Apps Script jika user sengaja/tidaksengaja meng-copy URL /edit atau /dev
+        // Sanitasi URL Google Apps Script jika user sengaja/tidaksengaja meng-copy URL dengan /u/0/, ?authuser=0, /edit, atau /dev
         if (str_contains($webhookUrl, 'script.google.com')) {
+            // Hapus jalur akun seperti /u/0/ atau /u/1/
+            $webhookUrl = preg_replace('/\/u\/\d+\//', '/', $webhookUrl);
+            // Hapus query params seperti ?authuser=0
+            if (str_contains($webhookUrl, '?')) {
+                $webhookUrl = explode('?', $webhookUrl)[0];
+            }
+            // Pastikan berakhiran /exec
             if (str_contains($webhookUrl, '/edit')) {
                 $webhookUrl = preg_replace('/\/edit.*$/', '/exec', $webhookUrl);
             } elseif (str_contains($webhookUrl, '/dev')) {
@@ -150,8 +157,7 @@ class GoogleSheetsService
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Ikuti redirect 302 Google ke script.googleusercontent.com
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($jsonPayload)
+            'Content-Type: text/plain;charset=utf-8'
         ]);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); // Paksa HTTP/1.1 untuk cegah HTTP/2 stream reset error dari server Google
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) SiCubit/1.0');
@@ -182,7 +188,7 @@ class GoogleSheetsService
         } else {
             return [
                 'success' => false,
-                'message' => 'Gagal mengirim ke Webhook Google. HTTP Status: ' . $httpCode . '. Mohon pastikan Web App Apps Script sudah di-deploy dengan akses "Anyone" (Siapa Saja) dan URL berakhiran /exec.'
+                'message' => 'Gagal mengirim ke Webhook Google. HTTP Status: ' . $httpCode . '. Jika menggunakan email Kampus/Organisasi (@poltekkes-kemenkes-bjm.ac.id), pastikan Web App di-deploy dengan akses "Anyone" (Siapa saja) tanpa pembatasan organisasi, atau gunakan akun @gmail.com pribadi.'
             ];
         }
     }
