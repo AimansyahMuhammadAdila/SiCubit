@@ -83,7 +83,7 @@ class GoogleSheetsService
                 'tgl_daftar'       => $tglDaftar,
                 'nama_ibu'         => $u['nama'],
                 'umur'             => ($u['umur'] ?? '-') . ' thn',
-                'no_telp'          => $u['no_telp'] ?? '-',
+                'no_telp'          => "'" . self::formatPhoneNumber($u['no_telp'] ?? '-'),
                 'puskesmas'        => $u['nama_puskesmas'] ?? '-',
                 'kabkota'          => $u['nama_kabkota'] ?? '-',
                 'status_kehamilan' => $statusHamil,

@@ -177,7 +177,8 @@ class Admin extends BaseController
             echo '<td style="border: 1px solid #E2E8F0;">' . htmlspecialchars($r['tgl_daftar']) . '</td>';
             echo '<td style="border: 1px solid #E2E8F0; font-weight: bold;">' . htmlspecialchars($r['nama_ibu']) . '</td>';
             echo '<td style="border: 1px solid #E2E8F0; text-align: center;">' . htmlspecialchars($r['umur']) . '</td>';
-            echo '<td style="border: 1px solid #E2E8F0;">' . htmlspecialchars($r['no_telp']) . '</td>';
+            $noTelpFormatted = $this->formatPhoneNumber($r['no_telp']);
+            echo '<td style="border: 1px solid #E2E8F0; mso-number-format:\'\@\'; text-align: left;">' . htmlspecialchars($noTelpFormatted) . '</td>';
             echo '<td style="border: 1px solid #E2E8F0;">' . htmlspecialchars($r['puskesmas']) . '</td>';
             echo '<td style="border: 1px solid #E2E8F0;">' . htmlspecialchars($r['kabkota']) . '</td>';
             echo '<td style="border: 1px solid #E2E8F0;">' . htmlspecialchars($r['status_kehamilan']) . '</td>';
@@ -231,5 +232,17 @@ class Admin extends BaseController
         }
 
         return $users;
+    }
+
+    private function formatPhoneNumber(?string $phone): string
+    {
+        if (empty($phone)) return '-';
+        $cleaned = trim($phone);
+        if (str_starts_with($cleaned, '62')) {
+            $cleaned = '0' . substr($cleaned, 2);
+        } elseif (str_starts_with($cleaned, '8')) {
+            $cleaned = '0' . $cleaned;
+        }
+        return $cleaned;
     }
 }
