@@ -222,6 +222,22 @@ class DataEntryAction extends BaseController
             }
         }
 
+        // Update status_kehamilan user secara otomatis berdasarkan data riwayat yang diisi
+        $newStatus = null;
+        if (($caraPersalinan !== null && $caraPersalinan !== '') || ($umurKehamilanSalin !== null && $umurKehamilanSalin !== '')) {
+            $newStatus = 'pasca_melahirkan';
+        } elseif (($kehamilanKe !== null && $kehamilanKe !== '') || ($umurKehamilan !== null && $umurKehamilan !== '')) {
+            $newStatus = 'hamil';
+        } elseif ($bbSebelumHamil !== null || $riwayatPenyakit !== null || $riwayatAbortus !== null) {
+            $newStatus = 'pra_kehamilan';
+        }
+
+        if ($newStatus) {
+            $userModel = new \App\Models\UserModel();
+            $userModel->skipValidation(true)->update($userId, ['status_kehamilan' => $newStatus]);
+            session()->set('status_kehamilan', $newStatus);
+        }
+
         $db->transComplete();
 
         if ($db->transStatus() === false) {
@@ -234,6 +250,7 @@ class DataEntryAction extends BaseController
         return $this->response->setJSON([
             'status' => 'success',
             'message' => 'Data riwayat berhasil disimpan.',
+            'status_kehamilan' => $newStatus ?? session('status_kehamilan'),
             'data' => ['status_kecukupan_asi' => $statusKecukupanAsi],
         ])->setStatusCode(ResponseInterface::HTTP_CREATED);
     }
