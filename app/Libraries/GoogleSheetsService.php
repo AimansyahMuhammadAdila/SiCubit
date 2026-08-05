@@ -122,13 +122,22 @@ class GoogleSheetsService
      */
     public function syncToWebhook(?string $targetWebhookUrl = null): array
     {
-        $webhookUrl = $targetWebhookUrl ?: $this->settingModel->getVal('google_webhook_url');
+        $webhookUrl = trim($targetWebhookUrl ?: $this->settingModel->getVal('google_webhook_url'));
 
         if (empty($webhookUrl)) {
             return [
                 'success' => false,
                 'message' => 'URL Webhook Google Sheets belum dikonfigurasi. Silakan masukkan URL Webhook di pengaturan.'
             ];
+        }
+
+        // Sanitasi URL Google Apps Script jika user sengaja/tidaksengaja meng-copy URL /edit atau /dev
+        if (str_contains($webhookUrl, 'script.google.com')) {
+            if (str_contains($webhookUrl, '/edit')) {
+                $webhookUrl = preg_replace('/\/edit.*$/', '/exec', $webhookUrl);
+            } elseif (str_contains($webhookUrl, '/dev')) {
+                $webhookUrl = preg_replace('/\/dev.*$/', '/exec', $webhookUrl);
+            }
         }
 
         $payload = $this->getMonthlyExportData();
@@ -139,14 +148,15 @@ class GoogleSheetsService
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_POSTREDIR, CURL_REDIR_POST_ALL); // Wajib agar metode POST tidak berubah jadi GET saat redirect Google
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Ikuti redirect 302 Google ke script.googleusercontent.com
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Content-Length: ' . strlen($jsonPayload)
         ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) SiCubit/1.0');
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
         $responseBody = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -160,6 +170,7 @@ class GoogleSheetsService
             ];
         }
 
+        // Google Webhook mengembalikan 200 OK setelah redirect
         if ($httpCode >= 200 && $httpCode < 400) {
             $this->settingModel->setVal('last_synced_at', date('Y-m-d H:i:s'));
             return [
@@ -170,7 +181,7 @@ class GoogleSheetsService
         } else {
             return [
                 'success' => false,
-                'message' => 'Gagal mengirim ke Webhook Google. HTTP Response Code: ' . $httpCode . ' (Penyebab: Pastikan Webhook Apps Script telah di-deploy sebagai Web App dengan akses "Anyone")'
+                'message' => 'Gagal mengirim ke Webhook Google. HTTP Status: ' . $httpCode . '. Mohon pastikan Web App Apps Script sudah di-deploy dengan akses "Anyone" (Siapa Saja) dan URL berakhiran /exec.'
             ];
         }
     }
