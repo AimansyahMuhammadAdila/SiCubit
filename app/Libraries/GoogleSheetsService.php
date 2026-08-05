@@ -274,11 +274,23 @@ function doPost(e) {
     
     return ContentService.createTextOutput(JSON.stringify({result: "success", sheet: sheetName}))
                          .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
+   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({result: "error", error: err.toString()}))
                          .setMimeType(ContentService.MimeType.JSON);
   }
 }
 GS;
+    }
+
+    public static function formatPhoneNumber(?string $phone): string
+    {
+        if (empty($phone)) return '-';
+        $cleaned = trim($phone);
+        if (str_starts_with($cleaned, '62')) {
+            $cleaned = '0' . substr($cleaned, 2);
+        } elseif (str_starts_with($cleaned, '8')) {
+            $cleaned = '0' . $cleaned;
+        }
+        return $cleaned;
     }
 }
