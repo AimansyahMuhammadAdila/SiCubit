@@ -36,7 +36,7 @@ class GoogleSheetsService
         $builder->select('users.*, puskesmas.nama as nama_puskesmas, kabupaten_kota.nama as nama_kabkota');
         $builder->join('puskesmas', 'puskesmas.id = users.id_puskesmas', 'left');
         $builder->join('kabupaten_kota', 'kabupaten_kota.id = users.id_kabkota', 'left');
-        $builder->where('users.role', 'user');
+        $builder->whereIn('users.role', ['user', 'ibu']);
         $builder->orderBy('users.created_at', 'DESC');
         $users = $builder->get()->getResultArray();
 

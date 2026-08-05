@@ -68,16 +68,21 @@ class Dashboard extends BaseController
         $db = \Config\Database::connect();
 
         // 1. Hitung Statistik
-        $totalIbu = $db->table('users')->where('role', 'user')->countAllResults();
+        $totalIbu = $db->table('users')->whereIn('role', ['user', 'ibu'])->countAllResults();
         $perluCek = $db->table('riwayat_kehamilan')->countAllResults();
-        $resikoTinggi = $db->table('kondisi_kejiwaan_ibu')->where('status_kejiwaan', 'Berisiko')->countAllResults();
+        $resikoTinggi = $db->table('kondisi_kejiwaan_ibu')
+                                   ->groupStart()
+                                       ->where('status_kejiwaan', 'Berisiko')
+                                       ->orWhere('epds_skor >=', 10)
+                                   ->groupEnd()
+                                   ->countAllResults();
 
         // 2. Ambil Data Tabel (JOIN dengan Puskesmas dan Kabkota)
         $builder = $db->table('users');
         $builder->select('users.*, puskesmas.nama as nama_puskesmas, kabupaten_kota.nama as nama_kabkota');
         $builder->join('puskesmas', 'puskesmas.id = users.id_puskesmas', 'left');
         $builder->join('kabupaten_kota', 'kabupaten_kota.id = users.id_kabkota', 'left');
-        $builder->where('users.role', 'user');
+        $builder->whereIn('users.role', ['user', 'ibu']);
         $builder->orderBy('users.created_at', 'DESC');
         $users = $builder->get()->getResultArray();
 

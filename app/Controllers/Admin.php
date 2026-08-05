@@ -29,9 +29,14 @@ class Admin extends BaseController
         // Statistik Dinamis
         $data = [
             'title'              => 'Panel Kendali Bidan - SI CUBIT',
-            'totalIbu'           => $db->table('users')->where('role', 'user')->countAllResults(),
+            'totalIbu'           => $db->table('users')->whereIn('role', ['user', 'ibu'])->countAllResults(),
             'perluCek'           => $db->table('riwayat_kehamilan')->countAllResults(),
-            'resikoTinggi'       => $db->table('kondisi_kejiwaan_ibu')->where('status_kejiwaan', 'Berisiko')->countAllResults(),
+            'resikoTinggi'       => $db->table('kondisi_kejiwaan_ibu')
+                                       ->groupStart()
+                                           ->where('status_kejiwaan', 'Berisiko')
+                                           ->orWhere('epds_skor >=', 10)
+                                       ->groupEnd()
+                                       ->countAllResults(),
             'users'              => $this->getLatestUsers(),
             'google_webhook_url' => $this->settingModel->getVal('google_webhook_url', ''),
             'google_sheet_url'   => $this->settingModel->getVal('google_sheet_url', ''),
@@ -211,7 +216,7 @@ class Admin extends BaseController
         $builder->select('users.*, puskesmas.nama as nama_puskesmas, kabupaten_kota.nama as nama_kabkota');
         $builder->join('puskesmas', 'puskesmas.id = users.id_puskesmas', 'left');
         $builder->join('kabupaten_kota', 'kabupaten_kota.id = users.id_kabkota', 'left');
-        $builder->where('users.role', 'user');
+        $builder->whereIn('users.role', ['user', 'ibu']);
         $builder->orderBy('users.created_at', 'DESC');
         
         $users = $builder->get()->getResultArray();
