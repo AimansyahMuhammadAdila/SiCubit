@@ -3,7 +3,9 @@
 namespace App\Controllers;
 
 use App\Libraries\GoogleSheetsService;
+use App\Models\KategoriVideoModel;
 use App\Models\SettingModel;
+use App\Models\VideoModel;
 
 class Admin extends BaseController
 {
@@ -244,5 +246,273 @@ class Admin extends BaseController
             $cleaned = '0' . $cleaned;
         }
         return $cleaned;
+    }
+
+    // ---------------------------------------------------------------
+    // MANAGEMENT VIDEO EDUKASI (ADMIN)
+    // ---------------------------------------------------------------
+
+    public function video()
+    {
+        $videoModel = new VideoModel();
+        $kategoriModel = new KategoriVideoModel();
+        
+        $selectedKategori = $this->request->getGet('kategori');
+        $searchQuery      = trim($this->request->getGet('q') ?? '');
+
+        $builder = $videoModel->select('video.*, kategori_video.nama_kategori')
+                              ->join('kategori_video', 'kategori_video.id = video.id_kategori', 'left')
+                              ->orderBy('video.created_at', 'DESC');
+
+        if (!empty($selectedKategori)) {
+            $builder->where('video.id_kategori', $selectedKategori);
+        }
+
+        if (!empty($searchQuery)) {
+            $builder->groupStart()
+                    ->like('video.judul', $searchQuery)
+                    ->orLike('video.deskripsi', $searchQuery)
+                    ->groupEnd();
+        }
+
+        $videos = $builder->findAll();
+
+        foreach ($videos as &$v) {
+            $v['youtube_id'] = self::extractYoutubeId($v['video_url'] ?? '');
+        }
+
+        $data = [
+            'title'            => 'Kelola Video Edukasi - SI CUBIT Admin',
+            'videos'           => $videos,
+            'categories'       => $kategoriModel->orderBy('nama_kategori', 'ASC')->findAll(),
+            'selectedKategori' => $selectedKategori,
+            'searchQuery'      => $searchQuery,
+        ];
+
+        return view('admin/video', $data);
+    }
+
+    public function videoStore()
+    {
+        $judul      = trim($this->request->getPost('judul') ?? '');
+        $videoUrl   = trim($this->request->getPost('video_url') ?? '');
+        $idKategori = $this->request->getPost('id_kategori');
+        $deskripsi  = trim($this->request->getPost('deskripsi') ?? '');
+        $status     = $this->request->getPost('status') ?? 'published';
+
+        if (empty($judul) || empty($videoUrl)) {
+            return redirect()->back()->withInput()->with('error', 'Judul dan Link YouTube wajib diisi!');
+        }
+
+        if (!preg_match('~^https?://~i', $videoUrl)) {
+            $videoUrl = 'https://' . $videoUrl;
+        }
+
+        $youtubeId = self::extractYoutubeId($videoUrl);
+        if (!$youtubeId) {
+            return redirect()->back()->withInput()->with('error', 'Format URL YouTube tidak valid.');
+        }
+
+        $videoModel = new VideoModel();
+        
+        $adminId = session()->get('user_id') ?? session()->get('id');
+        if (!$adminId) {
+            $db = \Config\Database::connect();
+            $adminUser = $db->table('users')->where('role', 'admin')->get()->getRowArray();
+            $adminId = $adminUser['id'] ?? 1;
+        }
+
+        try {
+            $saved = $videoModel->insert([
+                'judul'       => $judul,
+                'video_url'   => $videoUrl,
+                'id_kategori' => !empty($idKategori) ? (int) $idKategori : null,
+                'deskripsi'   => $deskripsi,
+                'id_penulis'  => (int) $adminId,
+                'status'      => $status,
+            ]);
+
+            if (!$saved) {
+                $errors = $videoModel->errors();
+                $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Gagal menyimpan data ke database.';
+                return redirect()->back()->withInput()->with('error', $errorMsg);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Error videoStore: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan server: ' . $e->getMessage());
+        }
+
+        return redirect()->to(base_url('admin/video'))->with('success', 'Video edukasi berhasil ditambahkan!');
+    }
+
+    public function videoUpdate($id)
+    {
+        $videoModel = new VideoModel();
+        $video = $videoModel->find($id);
+
+        if (!$video) {
+            return redirect()->to(base_url('admin/video'))->with('error', 'Video tidak ditemukan.');
+        }
+
+        $judul      = trim($this->request->getPost('judul') ?? '');
+        $videoUrl   = trim($this->request->getPost('video_url') ?? '');
+        $idKategori = $this->request->getPost('id_kategori');
+        $deskripsi  = trim($this->request->getPost('deskripsi') ?? '');
+        $status     = $this->request->getPost('status') ?? 'published';
+
+        if (empty($judul) || empty($videoUrl)) {
+            return redirect()->back()->withInput()->with('error', 'Judul dan Link YouTube wajib diisi!');
+        }
+
+        if (!preg_match('~^https?://~i', $videoUrl)) {
+            $videoUrl = 'https://' . $videoUrl;
+        }
+
+        $youtubeId = self::extractYoutubeId($videoUrl);
+        if (!$youtubeId) {
+            return redirect()->back()->withInput()->with('error', 'Format URL YouTube tidak valid.');
+        }
+
+        try {
+            $updated = $videoModel->update($id, [
+                'judul'       => $judul,
+                'video_url'   => $videoUrl,
+                'id_kategori' => !empty($idKategori) ? (int) $idKategori : null,
+                'deskripsi'   => $deskripsi,
+                'status'      => $status,
+            ]);
+
+            if (!$updated) {
+                $errors = $videoModel->errors();
+                $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Gagal memperbarui data.';
+                return redirect()->back()->withInput()->with('error', $errorMsg);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Error videoUpdate: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+
+        return redirect()->to(base_url('admin/video'))->with('success', 'Data video berhasil diperbarui!');
+    }
+
+    public function videoDelete($id)
+    {
+        $videoModel = new VideoModel();
+        $video = $videoModel->find($id);
+
+        if (!$video) {
+            return redirect()->to(base_url('admin/video'))->with('error', 'Video tidak ditemukan.');
+        }
+
+        $videoModel->delete($id);
+
+        return redirect()->to(base_url('admin/video'))->with('success', 'Video berhasil dihapus!');
+    }
+
+    // ---------------------------------------------------------------
+    // MANAGEMENT KATEGORI VIDEO (ADMIN)
+    // ---------------------------------------------------------------
+
+    public function kategoriVideo()
+    {
+        $kategoriModel = new KategoriVideoModel();
+        $db = \Config\Database::connect();
+
+        $categories = $kategoriModel->orderBy('nama_kategori', 'ASC')->findAll();
+
+        foreach ($categories as &$c) {
+            $c['total_video'] = $db->table('video')->where('id_kategori', $c['id'])->countAllResults();
+        }
+
+        $data = [
+            'title'      => 'Kelola Kategori Video - SI CUBIT Admin',
+            'categories' => $categories,
+        ];
+
+        return view('admin/kategori_video', $data);
+    }
+
+    public function kategoriVideoStore()
+    {
+        $namaKategori = trim($this->request->getPost('nama_kategori') ?? '');
+        $deskripsi    = trim($this->request->getPost('deskripsi') ?? '');
+
+        if (empty($namaKategori)) {
+            return redirect()->back()->withInput()->with('error', 'Nama kategori wajib diisi!');
+        }
+
+        $slug = url_title($namaKategori, '-', true);
+
+        $kategoriModel = new KategoriVideoModel();
+        
+        $saved = $kategoriModel->insert([
+            'nama_kategori' => $namaKategori,
+            'slug'          => $slug,
+            'deskripsi'     => $deskripsi,
+        ]);
+
+        if (!$saved) {
+            $errors = $kategoriModel->errors();
+            return redirect()->back()->withInput()->with('error', !empty($errors) ? implode(', ', $errors) : 'Gagal menyimpan kategori.');
+        }
+
+        return redirect()->to(base_url('admin/kategori-video'))->with('success', 'Kategori video berhasil ditambahkan!');
+    }
+
+    public function kategoriVideoUpdate($id)
+    {
+        $kategoriModel = new KategoriVideoModel();
+        $kategori = $kategoriModel->find($id);
+
+        if (!$kategori) {
+            return redirect()->to(base_url('admin/kategori-video'))->with('error', 'Kategori tidak ditemukan.');
+        }
+
+        $namaKategori = trim($this->request->getPost('nama_kategori') ?? '');
+        $deskripsi    = trim($this->request->getPost('deskripsi') ?? '');
+
+        if (empty($namaKategori)) {
+            return redirect()->back()->withInput()->with('error', 'Nama kategori wajib diisi!');
+        }
+
+        $slug = url_title($namaKategori, '-', true);
+
+        $updated = $kategoriModel->update($id, [
+            'nama_kategori' => $namaKategori,
+            'slug'          => $slug,
+            'deskripsi'     => $deskripsi,
+        ]);
+
+        if (!$updated) {
+            $errors = $kategoriModel->errors();
+            return redirect()->back()->withInput()->with('error', !empty($errors) ? implode(', ', $errors) : 'Gagal memperbarui kategori.');
+        }
+
+        return redirect()->to(base_url('admin/kategori-video'))->with('success', 'Kategori video berhasil diperbarui!');
+    }
+
+    public function kategoriVideoDelete($id)
+    {
+        $kategoriModel = new KategoriVideoModel();
+        $kategori = $kategoriModel->find($id);
+
+        if (!$kategori) {
+            return redirect()->to(base_url('admin/kategori-video'))->with('error', 'Kategori tidak ditemukan.');
+        }
+
+        // Set null id_kategori pada video yang menggunakan kategori ini
+        $db = \Config\Database::connect();
+        $db->table('video')->where('id_kategori', $id)->update(['id_kategori' => null]);
+
+        $kategoriModel->delete($id);
+
+        return redirect()->to(base_url('admin/kategori-video'))->with('success', 'Kategori video berhasil dihapus!');
+    }
+
+    public static function extractYoutubeId(string $url): ?string
+    {
+        if (empty($url)) return null;
+        preg_match('%(?:youtube\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?|shorts|live)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
+        return $match[1] ?? null;
     }
 }

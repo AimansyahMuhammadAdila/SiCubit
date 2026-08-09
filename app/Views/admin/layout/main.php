@@ -44,6 +44,22 @@
                 <span class="material-symbols-outlined <?= $isDataIbu ? 'font-variation-fill' : '' ?>">groups</span>
                 Data Ibu & Anak
             </a>
+
+            <?php $isVideo = url_is('admin/video*'); ?>
+            <a href="<?= base_url('admin/video') ?>"
+                class="flex items-center gap-4 px-4 py-3.5 transition-all duration-300 rounded-2xl 
+       <?= $isVideo ? 'bg-primary text-white shadow-lg shadow-primary/20 font-bold' : 'text-slate-500 hover:bg-slate-50 font-semibold' ?>">
+                <span class="material-symbols-outlined <?= $isVideo ? 'font-variation-fill' : '' ?>">smart_display</span>
+                Kelola Video Edukasi
+            </a>
+
+            <?php $isKategori = url_is('admin/kategori-video*'); ?>
+            <a href="<?= base_url('admin/kategori-video') ?>"
+                class="flex items-center gap-4 px-4 py-3.5 transition-all duration-300 rounded-2xl 
+       <?= $isKategori ? 'bg-primary text-white shadow-lg shadow-primary/20 font-bold' : 'text-slate-500 hover:bg-slate-50 font-semibold' ?>">
+                <span class="material-symbols-outlined <?= $isKategori ? 'font-variation-fill' : '' ?>">category</span>
+                Kategori Video
+            </a>
         </nav>
         <div class="p-4 border-t border-slate-800">
             <a href="<?= base_url('admin/logout') ?>"

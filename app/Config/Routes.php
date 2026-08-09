@@ -39,6 +39,20 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->get('export-spreadsheet', 'Admin::exportSpreadsheet');
     $routes->post('sync-google-sheets', 'Admin::syncGoogleSheets');
     $routes->post('save-sheets-config', 'Admin::saveSheetsConfig');
+
+    // Admin Video CRUD
+    $routes->get('video', 'Admin::video');
+    $routes->post('video/store', 'Admin::videoStore');
+    $routes->post('video/update/(:num)', 'Admin::videoUpdate/$1');
+    $routes->get('video/delete/(:num)', 'Admin::videoDelete/$1');
+    $routes->post('video/delete/(:num)', 'Admin::videoDelete/$1');
+
+    // Admin Kategori Video CRUD
+    $routes->get('kategori-video', 'Admin::kategoriVideo');
+    $routes->post('kategori-video/store', 'Admin::kategoriVideoStore');
+    $routes->post('kategori-video/update/(:num)', 'Admin::kategoriVideoUpdate/$1');
+    $routes->get('kategori-video/delete/(:num)', 'Admin::kategoriVideoDelete/$1');
+    $routes->post('kategori-video/delete/(:num)', 'Admin::kategoriVideoDelete/$1');
 });
 
 // ---------------------------------------------------------------

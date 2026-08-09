@@ -58,6 +58,12 @@
             <a href="<?= base_url('admin/data-ibu') ?>" class="flex items-center gap-4 px-4 py-3.5 bg-[#162065] text-white rounded-2xl font-bold shadow-lg transition">
                 <span class="material-symbols-outlined">groups</span> Data Ibu & Anak
             </a>
+            <a href="<?= base_url('admin/video') ?>" class="flex items-center gap-4 px-4 py-3.5 text-slate-700 hover:bg-slate-100 rounded-2xl font-bold transition">
+                <span class="material-symbols-outlined">smart_display</span> Kelola Video Edukasi
+            </a>
+            <a href="<?= base_url('admin/kategori-video') ?>" class="flex items-center gap-4 px-4 py-3.5 text-slate-700 hover:bg-slate-100 rounded-2xl font-bold transition">
+                <span class="material-symbols-outlined">category</span> Kategori Video
+            </a>
         </nav>
 
         <div class="p-6 border-t border-slate-100 bg-slate-50/50">

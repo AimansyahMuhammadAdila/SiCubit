@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\KategoriVideoModel;
 use App\Models\VideoModel;
 
 class Edukasi extends BaseController
@@ -13,16 +14,43 @@ class Edukasi extends BaseController
             return redirect()->to(base_url('login'));
         }
 
-        $videoModel = new VideoModel();
-        
-        // Ambil semua video yang statusnya published, urutkan dari yang terbaru
-        $videos = $videoModel->where('status', 'published')
-                             ->orderBy('created_at', 'DESC')
-                             ->findAll();
+        $videoModel    = new VideoModel();
+        $kategoriModel = new KategoriVideoModel();
+
+        $activeKategori = $this->request->getGet('kategori');
+        $searchQuery    = trim($this->request->getGet('q') ?? '');
+
+        $builder = $videoModel->select('video.*, kategori_video.nama_kategori, kategori_video.slug as kategori_slug')
+                              ->join('kategori_video', 'kategori_video.id = video.id_kategori', 'left')
+                              ->where('video.status', 'published')
+                              ->orderBy('video.created_at', 'DESC');
+
+        if (!empty($activeKategori)) {
+            $builder->groupStart()
+                    ->where('kategori_video.slug', $activeKategori)
+                    ->orWhere('video.id_kategori', $activeKategori)
+                    ->groupEnd();
+        }
+
+        if (!empty($searchQuery)) {
+            $builder->groupStart()
+                    ->like('video.judul', $searchQuery)
+                    ->orLike('video.deskripsi', $searchQuery)
+                    ->groupEnd();
+        }
+
+        $videos = $builder->findAll();
+
+        foreach ($videos as &$vid) {
+            $vid['youtube_id'] = \App\Controllers\Admin::extractYoutubeId($vid['video_url'] ?? '');
+        }
 
         $data = [
-            'title'  => 'Video Edukasi - SI CUBIT',
-            'videos' => $videos
+            'title'          => 'Video Edukasi - SI CUBIT',
+            'videos'         => $videos,
+            'categories'     => $kategoriModel->orderBy('nama_kategori', 'ASC')->findAll(),
+            'activeKategori' => $activeKategori,
+            'searchQuery'    => $searchQuery,
         ];
 
         return view('edukasi/video', $data);

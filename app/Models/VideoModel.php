@@ -17,17 +17,19 @@ class VideoModel extends Model
     protected $allowedFields = [
         'judul',
         'video_url',
+        'id_kategori',
         'deskripsi',
         'id_penulis',
         'status',
     ];
 
     protected $validationRules = [
-        'judul'      => 'required|min_length[5]|max_length[255]',
-        'video_url'  => 'required|valid_url|max_length[255]',
-        'deskripsi'  => 'permit_empty',
-        'id_penulis' => 'required|integer',
-        'status'     => 'permit_empty|in_list[draft,published]',
+        'judul'       => 'required|min_length[2]|max_length[255]',
+        'video_url'   => 'required|max_length[255]',
+        'id_kategori' => 'permit_empty|integer',
+        'deskripsi'   => 'permit_empty',
+        'id_penulis'  => 'required|integer',
+        'status'      => 'permit_empty|in_list[draft,published]',
     ];
 
     /**

@@ -106,7 +106,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
                     <span class="material-symbols-outlined text-3xl sm:text-4xl">water_drop</span>
                 </div>
                 <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
-                    Kalkulator<br>Pertumbuhan
+                    Kalkulator<br>Kecukupan ASI
                 </span>
             </a>
 

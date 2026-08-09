@@ -12,7 +12,7 @@
                 <span class="material-symbols-outlined text-2xl">calculate</span>
             </div>
             <div>
-                <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Kalkulator Pertumbuhan & ASI</h1>
+                <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Kalkulator Kecukupan ASI</h1>
                 <p class="text-xs text-slate-600 font-medium">Perbarui data si kecil atau simpan evaluasi laktasi harian Bunda</p>
             </div>
         </div>
