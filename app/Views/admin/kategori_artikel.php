@@ -51,18 +51,23 @@
                     <span class="material-symbols-outlined">menu</span>
                 </button>
                 <div>
-                    <h1 class="text-xl lg:text-2xl font-extrabold text-[#162065] tracking-tight">Kategori Video Edukasi</h1>
-                    <p class="text-xs text-slate-500 font-medium">Kelola topik dan pengelompokan video kesehatan ibu & anak</p>
+                    <h1 class="text-xl lg:text-2xl font-extrabold text-[#162065] tracking-tight">Kategori Artikel Edukasi</h1>
+                    <p class="text-xs text-slate-500 font-medium">Manajemen kategori untuk mengelompokkan artikel & berita kesehatan</p>
                 </div>
             </div>
-            <button onclick="openAddModal()" class="flex items-center gap-2 bg-[#162065] hover:bg-[#101850] text-white px-4 py-2.5 rounded-2xl font-extrabold text-xs shadow-lg shadow-[#162065]/20 transition transform active:scale-95">
-                <span class="material-symbols-outlined text-sm">add_circle</span> Tambah Kategori
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="<?= base_url('admin/artikel') ?>" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-2xl font-extrabold text-xs transition">
+                    <span class="material-symbols-outlined text-sm">newspaper</span> Kelola Artikel
+                </a>
+                <button onclick="openAddModal()" class="flex items-center gap-2 bg-[#162065] hover:bg-[#101850] text-white px-4 py-2.5 rounded-2xl font-extrabold text-xs shadow-lg shadow-[#162065]/20 transition transform active:scale-95">
+                    <span class="material-symbols-outlined text-sm">add_circle</span> Tambah Kategori
+                </button>
+            </div>
         </header>
 
         <div class="p-4 lg:p-8 space-y-6 flex-1">
 
-            <!-- NOTIFIKASI SWEETALERT -->
+            <!-- NOTIFIKASI -->
             <?php if (session()->getFlashdata('success')): ?>
                 <script>
                     Swal.fire({
@@ -87,35 +92,13 @@
                 </script>
             <?php endif; ?>
 
-            <!-- STATISTIK KATEGORI -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-white/60 shadow-lg flex items-center gap-4">
-                    <div class="size-14 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
-                        <span class="material-symbols-outlined text-3xl">category</span>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Kategori</p>
-                        <h3 class="text-2xl font-black text-[#162065]"><?= count($categories) ?></h3>
-                    </div>
-                </div>
-                <div class="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-white/60 shadow-lg flex items-center gap-4">
-                    <div class="size-14 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
-                        <span class="material-symbols-outlined text-3xl">subscriptions</span>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Aksi Cepat</p>
-                        <a href="<?= base_url('admin/video') ?>" class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 mt-1">
-                            Kelola Daftar Video <span class="material-symbols-outlined text-xs">arrow_forward</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
             <!-- TABLE DAFTAR KATEGORI -->
             <div class="bg-white/95 backdrop-blur-md rounded-3xl border border-white/60 shadow-xl overflow-hidden">
-                <div class="p-6 border-b border-slate-100">
-                    <h2 class="text-lg font-black text-[#162065]">Daftar Kategori Video</h2>
-                    <p class="text-xs text-slate-500">Kategori ini digunakan untuk pemilahan dan filtering video di halaman user.</p>
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-black text-[#162065]">Daftar Kategori Artikel</h2>
+                        <p class="text-xs text-slate-500">Kategori akan tampil sebagai tab filter pada halaman Ruang Edukasi artikel pengguna.</p>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -124,9 +107,9 @@
                             <tr>
                                 <th class="p-4 pl-6 w-12 text-center">No</th>
                                 <th class="p-4">Nama Kategori</th>
-                                <th class="p-4">Slug (URL)</th>
+                                <th class="p-4">Slug URL</th>
                                 <th class="p-4">Deskripsi</th>
-                                <th class="p-4 text-center">Jumlah Video</th>
+                                <th class="p-4 w-32 text-center">Jumlah Artikel</th>
                                 <th class="p-4 pr-6 text-center w-28">Aksi</th>
                             </tr>
                         </thead>
@@ -134,33 +117,33 @@
                             <?php if (empty($categories)): ?>
                                 <tr>
                                     <td colspan="6" class="p-8 text-center text-slate-400 italic font-semibold">
-                                        Belum ada kategori yang dibuat. Klik "Tambah Kategori" untuk membuat kategori baru.
+                                        Belum ada kategori artikel yang dibuat.
                                     </td>
                                 </tr>
                             <?php else: ?>
-                                <?php foreach ($categories as $idx => $c): ?>
+                                <?php foreach ($categories as $idx => $cat): ?>
                                     <tr class="hover:bg-slate-50/80 transition">
                                         <td class="p-4 pl-6 text-center font-bold text-slate-400"><?= $idx + 1 ?></td>
-                                        <td class="p-4">
-                                            <span class="font-extrabold text-slate-900 text-sm"><?= esc($c['nama_kategori']) ?></span>
+                                        <td class="p-4 font-extrabold text-slate-900 text-sm">
+                                            <?= esc($cat['nama_kategori']) ?>
                                         </td>
-                                        <td class="p-4">
-                                            <code class="px-2.5 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-[11px]"><?= esc($c['slug']) ?></code>
+                                        <td class="p-4 font-mono text-[11px] text-indigo-600 bg-indigo-50/50 px-2 py-1 rounded w-fit">
+                                            <?= esc($cat['slug']) ?>
                                         </td>
                                         <td class="p-4 text-xs text-slate-500">
-                                            <?= esc($c['deskripsi'] ?: '-') ?>
+                                            <?= esc($cat['deskripsi'] ?: '-') ?>
                                         </td>
-                                        <td class="p-4 text-center font-extrabold">
-                                            <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs">
-                                                <?= $c['total_video'] ?> Video
+                                        <td class="p-4 text-center">
+                                            <span class="px-3 py-1 bg-blue-50 text-blue-700 font-extrabold rounded-full text-xs">
+                                                <?= $cat['total_artikel'] ?> Artikel
                                             </span>
                                         </td>
                                         <td class="p-4 pr-6 text-center">
                                             <div class="flex items-center justify-center gap-1">
-                                                <button onclick='openEditModal(<?= json_encode($c, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)' class="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition" title="Edit Kategori">
+                                                <button onclick='openEditModal(<?= json_encode($cat, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)' class="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition" title="Edit Kategori">
                                                     <span class="material-symbols-outlined text-lg">edit</span>
                                                 </button>
-                                                <button onclick="confirmDelete(<?= $c['id'] ?>, '<?= esc($c['nama_kategori'], 'js') ?>')" class="p-2 rounded-xl text-rose-600 hover:bg-rose-50 transition" title="Hapus Kategori">
+                                                <button onclick="confirmDelete(<?= $cat['id'] ?>, '<?= esc($cat['nama_kategori'], 'js') ?>')" class="p-2 rounded-xl text-rose-600 hover:bg-rose-50 transition" title="Hapus Kategori">
                                                     <span class="material-symbols-outlined text-lg">delete</span>
                                                 </button>
                                             </div>
@@ -179,30 +162,30 @@
 
     <!-- MODAL TAMBAH KATEGORI -->
     <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-slide-up">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-slide-up">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
                 <div class="flex items-center gap-3">
                     <div class="size-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-                        <span class="material-symbols-outlined text-xl">add_circle</span>
+                        <span class="material-symbols-outlined text-xl">folder_special</span>
                     </div>
                     <div>
-                        <h3 class="font-extrabold text-[#162065] text-lg">Tambah Kategori Video</h3>
-                        <p class="text-xs text-slate-500">Buat kategori baru untuk klasifikasi video</p>
+                        <h3 class="font-extrabold text-[#162065] text-lg">Tambah Kategori Artikel</h3>
+                        <p class="text-xs text-slate-500">Buat topik pengelompokan artikel</p>
                     </div>
                 </div>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 p-1"><span class="material-symbols-outlined">close</span></button>
             </div>
 
-            <form action="<?= base_url('admin/kategori-video/store') ?>" method="POST" class="space-y-4">
+            <form action="<?= base_url('admin/kategori-artikel/store') ?>" method="POST" class="space-y-4">
                 <?= csrf_field() ?>
                 <div>
                     <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Nama Kategori <span class="text-rose-500">*</span></label>
-                    <input type="text" name="nama_kategori" required placeholder="Contoh: MPASI & Nutrisi Bayi" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-[#162065] focus:ring-0 text-sm font-semibold text-slate-800">
+                    <input type="text" name="nama_kategori" required placeholder="Contoh: Kesehatan Ibu & Kehamilan" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-[#162065] focus:ring-0 text-sm font-semibold text-slate-800">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Deskripsi Kategori</label>
-                    <textarea name="deskripsi" rows="3" placeholder="Keterangan singkat cakupan materi pada kategori ini..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-[#162065] focus:ring-0 text-sm font-semibold text-slate-800"></textarea>
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Deskripsi Singkat</label>
+                    <textarea name="deskripsi" rows="3" placeholder="Jelaskan jenis artikel yang termasuk dalam kategori ini..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-[#162065] focus:ring-0 text-sm font-semibold text-slate-800"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
@@ -215,15 +198,15 @@
 
     <!-- MODAL EDIT KATEGORI -->
     <div id="editModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-slide-up">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-slide-up">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
                 <div class="flex items-center gap-3">
                     <div class="size-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
                         <span class="material-symbols-outlined text-xl">edit</span>
                     </div>
                     <div>
-                        <h3 class="font-extrabold text-[#162065] text-lg">Edit Kategori Video</h3>
-                        <p class="text-xs text-slate-500">Perbarui informasi kategori</p>
+                        <h3 class="font-extrabold text-[#162065] text-lg">Edit Kategori Artikel</h3>
+                        <p class="text-xs text-slate-500">Perbarui nama dan deskripsi kategori</p>
                     </div>
                 </div>
                 <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-1"><span class="material-symbols-outlined">close</span></button>
@@ -237,7 +220,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Deskripsi Kategori</label>
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Deskripsi Singkat</label>
                     <textarea id="edit_deskripsi" name="deskripsi" rows="3" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-[#162065] focus:ring-0 text-sm font-semibold text-slate-800"></textarea>
                 </div>
 
@@ -264,10 +247,10 @@
             document.getElementById('addModal').classList.add('hidden');
         }
 
-        function openEditModal(c) {
-            document.getElementById('editForm').action = '<?= base_url('admin/kategori-video/update') ?>/' + c.id;
-            document.getElementById('edit_nama_kategori').value = c.nama_kategori || '';
-            document.getElementById('edit_deskripsi').value = c.deskripsi || '';
+        function openEditModal(cat) {
+            document.getElementById('editForm').action = '<?= base_url('admin/kategori-artikel/update') ?>/' + cat.id;
+            document.getElementById('edit_nama_kategori').value = cat.nama_kategori || '';
+            document.getElementById('edit_deskripsi').value = cat.deskripsi || '';
             document.getElementById('editModal').classList.remove('hidden');
         }
         function closeEditModal() {
@@ -277,7 +260,7 @@
         function confirmDelete(id, nama) {
             Swal.fire({
                 title: 'Hapus Kategori?',
-                text: `Apakah Anda yakin ingin menghapus kategori "${nama}"? Video dalam kategori ini tidak akan terhapus, melainkan tidak memiliki kategori.`,
+                text: `Apakah Anda yakin ingin menghapus kategori "${nama}"? Artikel pada kategori ini tidak akan terhapus, namun kategorinya akan menjadi kosong.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e11d48',
@@ -287,7 +270,7 @@
                 customClass: { popup: 'rounded-3xl' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '<?= base_url('admin/kategori-video/delete') ?>/' + id;
+                    window.location.href = '<?= base_url('admin/kategori-artikel/delete') ?>/' + id;
                 }
             });
         }

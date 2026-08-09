@@ -45,7 +45,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
         <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 md:gap-6 text-center relative z-10">
             
             <!-- 1. Riwayat Pra Kehamilan -->
-            <a href="<?= base_url('riwayat') ?>" 
+            <a href="<?= base_url('riwayat?step=1') ?>" 
                class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
                 <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
                     <img src="<?= base_url('uploads/Riwayat_Pra_Kehamilan.png') ?>" alt="Riwayat Pra Kehamilan" class="w-full h-full object-contain filter drop-shadow">
@@ -56,7 +56,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
             </a>
 
             <!-- 2. Riwayat Kehamilan -->
-            <a href="<?= base_url('riwayat') ?>" 
+            <a href="<?= base_url('riwayat?step=2') ?>" 
                class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
                 <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
                     <img src="<?= base_url('uploads/Riwayat_Kehamilan.png') ?>" alt="Riwayat Kehamilan" class="w-full h-full object-contain filter drop-shadow">
@@ -67,7 +67,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
             </a>
 
             <!-- 3. Riwayat Persalinan -->
-            <a href="<?= base_url('riwayat') ?>" 
+            <a href="<?= base_url('riwayat?step=3') ?>" 
                class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
                 <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
                     <img src="<?= base_url('uploads/Riwayat_Persalinan.png') ?>" alt="Riwayat Persalinan" class="w-full h-full object-contain filter drop-shadow">

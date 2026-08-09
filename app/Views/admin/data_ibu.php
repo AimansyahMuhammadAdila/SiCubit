@@ -39,46 +39,7 @@
 </head>
 <body class="font-display min-h-screen flex overflow-x-hidden text-slate-800">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
-
-    <aside id="admin-sidebar" class="fixed inset-y-0 left-0 w-72 bg-white/95 backdrop-blur-md border-r border-white/60 flex flex-col z-50 transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen shadow-xl">
-        <div class="p-6 flex items-center justify-between">
-            <div class="bg-white/90 px-3 py-1.5 rounded-full shadow border border-slate-200 flex items-center gap-2">
-                <img src="<?= base_url('uploads/Poltekkes.png') ?>" alt="Kemenkes Poltekkes" class="h-8 object-contain">
-            </div>
-            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 p-2"><span class="material-symbols-outlined">close</span></button>
-        </div>
-
-        <nav class="flex-1 px-4 space-y-2">
-            <p class="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Portal Admin SiCubit</p>
-            
-            <a href="<?= base_url('admin/dashboard') ?>" class="flex items-center gap-4 px-4 py-3.5 text-slate-700 hover:bg-slate-100 rounded-2xl font-bold transition">
-                <span class="material-symbols-outlined">dashboard</span> Dashboard Utama
-            </a>
-            <a href="<?= base_url('admin/data-ibu') ?>" class="flex items-center gap-4 px-4 py-3.5 bg-[#162065] text-white rounded-2xl font-bold shadow-lg transition">
-                <span class="material-symbols-outlined">groups</span> Data Ibu & Anak
-            </a>
-            <a href="<?= base_url('admin/video') ?>" class="flex items-center gap-4 px-4 py-3.5 text-slate-700 hover:bg-slate-100 rounded-2xl font-bold transition">
-                <span class="material-symbols-outlined">smart_display</span> Kelola Video Edukasi
-            </a>
-            <a href="<?= base_url('admin/kategori-video') ?>" class="flex items-center gap-4 px-4 py-3.5 text-slate-700 hover:bg-slate-100 rounded-2xl font-bold transition">
-                <span class="material-symbols-outlined">category</span> Kategori Video
-            </a>
-        </nav>
-
-        <div class="p-6 border-t border-slate-100 bg-slate-50/50">
-            <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border border-slate-100 mb-4">
-                <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">BN</div>
-                <div class="overflow-hidden">
-                    <p class="text-xs font-bold text-slate-800 truncate">Bidan Nurul</p>
-                    <p class="text-[10px] text-slate-400 italic">Pusk. Banjarbaru</p>
-                </div>
-            </div>
-            <a href="<?= base_url('admin/logout') ?>" class="flex items-center justify-center gap-2 py-3 w-full bg-rose-50 text-rose-600 font-bold text-xs rounded-xl hover:bg-rose-100 transition">
-                <span class="material-symbols-outlined text-sm">logout</span> KELUAR SISTEM
-            </a>
-        </div>
-    </aside>
+    <?= $this->include('admin/layout/sidebar') ?>
 
     <main class="flex-1 min-w-0 p-4 lg:p-10 animate-slide-up">
         <div class="lg:hidden flex items-center justify-between mb-8 bg-white p-4 rounded-3xl shadow-sm border border-slate-100">

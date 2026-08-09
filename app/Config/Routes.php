@@ -18,6 +18,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('chat', 'Chat::index');
     $routes->get('riwayat', 'Riwayat::index');
     $routes->get('edukasi/video', 'Edukasi::video');
+    $routes->get('edukasi/artikel', 'Edukasi::artikel');
+    $routes->get('edukasi/artikel/(:segment)', 'Edukasi::detailArtikel/$1');
     $routes->get('laktasi/cek', 'Laktasi::cek'); 
     $routes->get('form-bayi', 'Laktasi::formBayi');
     $routes->get('assessment-kejiwaan', 'Laktasi::kejiwaan');
@@ -53,6 +55,20 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->post('kategori-video/update/(:num)', 'Admin::kategoriVideoUpdate/$1');
     $routes->get('kategori-video/delete/(:num)', 'Admin::kategoriVideoDelete/$1');
     $routes->post('kategori-video/delete/(:num)', 'Admin::kategoriVideoDelete/$1');
+
+    // Admin Artikel CRUD
+    $routes->get('artikel', 'Admin::artikel');
+    $routes->post('artikel/store', 'Admin::artikelStore');
+    $routes->post('artikel/update/(:num)', 'Admin::artikelUpdate/$1');
+    $routes->get('artikel/delete/(:num)', 'Admin::artikelDelete/$1');
+    $routes->post('artikel/delete/(:num)', 'Admin::artikelDelete/$1');
+
+    // Admin Kategori Artikel CRUD
+    $routes->get('kategori-artikel', 'Admin::kategoriArtikel');
+    $routes->post('kategori-artikel/store', 'Admin::kategoriArtikelStore');
+    $routes->post('kategori-artikel/update/(:num)', 'Admin::kategoriArtikelUpdate/$1');
+    $routes->get('kategori-artikel/delete/(:num)', 'Admin::kategoriArtikelDelete/$1');
+    $routes->post('kategori-artikel/delete/(:num)', 'Admin::kategoriArtikelDelete/$1');
 });
 
 // ---------------------------------------------------------------

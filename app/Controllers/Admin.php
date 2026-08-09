@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Libraries\GoogleSheetsService;
+use App\Models\ArtikelModel;
+use App\Models\KategoriArtikelModel;
 use App\Models\KategoriVideoModel;
 use App\Models\SettingModel;
 use App\Models\VideoModel;
@@ -514,5 +516,311 @@ class Admin extends BaseController
         if (empty($url)) return null;
         preg_match('%(?:youtube\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?|shorts|live)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
         return $match[1] ?? null;
+    }
+
+    // ---------------------------------------------------------------
+    // MANAGEMENT ARTIKEL EDUKASI (ADMIN)
+    // ---------------------------------------------------------------
+
+    public function artikel()
+    {
+        $artikelModel  = new ArtikelModel();
+        $kategoriModel = new KategoriArtikelModel();
+        
+        $selectedKategori = $this->request->getGet('kategori');
+        $searchQuery      = trim($this->request->getGet('q') ?? '');
+
+        $builder = $artikelModel->select('artikel.*, users.nama as nama_penulis, kategori_artikel.nama_kategori')
+                                ->join('users', 'users.id = artikel.id_penulis', 'left')
+                                ->join('kategori_artikel', 'kategori_artikel.id = artikel.id_kategori', 'left')
+                                ->orderBy('artikel.created_at', 'DESC');
+
+        if (!empty($selectedKategori)) {
+            $builder->where('artikel.id_kategori', $selectedKategori);
+        }
+
+        if (!empty($searchQuery)) {
+            $builder->groupStart()
+                    ->like('artikel.judul', $searchQuery)
+                    ->orLike('artikel.isi_konten', $searchQuery)
+                    ->groupEnd();
+        }
+
+        $artikels = $builder->findAll();
+
+        $data = [
+            'title'            => 'Kelola Artikel Edukasi - SI CUBIT Admin',
+            'artikels'         => $artikels,
+            'categories'       => $kategoriModel->orderBy('nama_kategori', 'ASC')->findAll(),
+            'selectedKategori' => $selectedKategori,
+            'searchQuery'      => $searchQuery,
+        ];
+
+        return view('admin/artikel', $data);
+    }
+
+    public function artikelStore()
+    {
+        $judul      = trim($this->request->getPost('judul') ?? '');
+        $idKategori = $this->request->getPost('id_kategori');
+        $isiKonten  = trim($this->request->getPost('isi_konten') ?? '');
+        $status     = $this->request->getPost('status') ?? 'published';
+
+        if (empty($judul) || empty($isiKonten)) {
+            return redirect()->back()->withInput()->with('error', 'Judul dan Isi Konten Artikel wajib diisi!');
+        }
+
+        $thumbnailUrl = null;
+        $fileGambar   = $this->request->getFile('gambar');
+
+        if ($fileGambar && $fileGambar->isValid() && !$fileGambar->hasMoved()) {
+            $validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!in_array($fileGambar->getMimeType(), $validTypes)) {
+                return redirect()->back()->withInput()->with('error', 'Format gambar harus JPG, JPEG, PNG, atau WEBP.');
+            }
+
+            if ($fileGambar->getSize() > 2 * 1024 * 1024) {
+                return redirect()->back()->withInput()->with('error', 'Ukuran gambar maksimal 2MB.');
+            }
+
+            $newName = $fileGambar->getRandomName();
+            $uploadDir = FCPATH . 'uploads/artikel/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $fileGambar->move($uploadDir, $newName);
+            $thumbnailUrl = 'uploads/artikel/' . $newName;
+        }
+
+        $adminId = session()->get('user_id') ?? session()->get('id');
+        if (!$adminId) {
+            $db = \Config\Database::connect();
+            $adminUser = $db->table('users')->where('role', 'admin')->get()->getRowArray();
+            $adminId = $adminUser['id'] ?? 1;
+        }
+
+        $baseSlug = url_title($judul, '-', true);
+        $slug = $baseSlug ?: 'artikel-' . time();
+
+        $artikelModel = new ArtikelModel();
+        
+        $existing = $artikelModel->where('slug', $slug)->first();
+        if ($existing) {
+            $slug .= '-' . time();
+        }
+
+        try {
+            $saved = $artikelModel->insert([
+                'judul'         => $judul,
+                'slug'          => $slug,
+                'thumbnail_url' => $thumbnailUrl,
+                'id_kategori'   => !empty($idKategori) ? (int) $idKategori : null,
+                'isi_konten'    => $isiKonten,
+                'id_penulis'    => (int) $adminId,
+                'status'        => $status,
+            ]);
+
+            if (!$saved) {
+                $errors = $artikelModel->errors();
+                return redirect()->back()->withInput()->with('error', !empty($errors) ? implode(', ', $errors) : 'Gagal menyimpan artikel.');
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Error artikelStore: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+
+        return redirect()->to(base_url('admin/artikel'))->with('success', 'Artikel berita/edukasi berhasil ditambahkan!');
+    }
+
+    public function artikelUpdate($id)
+    {
+        $artikelModel = new ArtikelModel();
+        $artikel = $artikelModel->find($id);
+
+        if (!$artikel) {
+            return redirect()->to(base_url('admin/artikel'))->with('error', 'Artikel tidak ditemukan.');
+        }
+
+        $judul      = trim($this->request->getPost('judul') ?? '');
+        $idKategori = $this->request->getPost('id_kategori');
+        $isiKonten  = trim($this->request->getPost('isi_konten') ?? '');
+        $status     = $this->request->getPost('status') ?? 'published';
+
+        if (empty($judul) || empty($isiKonten)) {
+            return redirect()->back()->withInput()->with('error', 'Judul dan Isi Konten Artikel wajib diisi!');
+        }
+
+        $thumbnailUrl = $artikel['thumbnail_url'];
+        $fileGambar   = $this->request->getFile('gambar');
+
+        if ($fileGambar && $fileGambar->isValid() && !$fileGambar->hasMoved()) {
+            $validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!in_array($fileGambar->getMimeType(), $validTypes)) {
+                return redirect()->back()->withInput()->with('error', 'Format gambar harus JPG, JPEG, PNG, atau WEBP.');
+            }
+
+            if ($fileGambar->getSize() > 2 * 1024 * 1024) {
+                return redirect()->back()->withInput()->with('error', 'Ukuran gambar maksimal 2MB.');
+            }
+
+            $newName = $fileGambar->getRandomName();
+            $uploadDir = FCPATH . 'uploads/artikel/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $fileGambar->move($uploadDir, $newName);
+
+            if (!empty($artikel['thumbnail_url']) && file_exists(FCPATH . $artikel['thumbnail_url'])) {
+                @unlink(FCPATH . $artikel['thumbnail_url']);
+            }
+
+            $thumbnailUrl = 'uploads/artikel/' . $newName;
+        }
+
+        $baseSlug = url_title($judul, '-', true);
+        $slug = $baseSlug ?: 'artikel-' . $id;
+
+        $existing = $artikelModel->where('slug', $slug)->where('id !=', $id)->first();
+        if ($existing) {
+            $slug .= '-' . time();
+        }
+
+        try {
+            $updated = $artikelModel->skipValidation(true)->update($id, [
+                'judul'         => $judul,
+                'slug'          => $slug,
+                'thumbnail_url' => $thumbnailUrl,
+                'id_kategori'   => !empty($idKategori) ? (int) $idKategori : null,
+                'isi_konten'    => $isiKonten,
+                'status'        => $status,
+            ]);
+
+            if (!$updated) {
+                $errors = $artikelModel->errors();
+                return redirect()->back()->withInput()->with('error', !empty($errors) ? implode(', ', $errors) : 'Gagal memperbarui artikel.');
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Error artikelUpdate: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+
+        return redirect()->to(base_url('admin/artikel'))->with('success', 'Artikel berhasil diperbarui!');
+    }
+
+    public function artikelDelete($id)
+    {
+        $artikelModel = new ArtikelModel();
+        $artikel = $artikelModel->find($id);
+
+        if (!$artikel) {
+            return redirect()->to(base_url('admin/artikel'))->with('error', 'Artikel tidak ditemukan.');
+        }
+
+        if (!empty($artikel['thumbnail_url']) && file_exists(FCPATH . $artikel['thumbnail_url'])) {
+            @unlink(FCPATH . $artikel['thumbnail_url']);
+        }
+
+        $artikelModel->delete($id);
+
+        return redirect()->to(base_url('admin/artikel'))->with('success', 'Artikel berhasil dihapus!');
+    }
+
+    // ---------------------------------------------------------------
+    // MANAGEMENT KATEGORI ARTIKEL (ADMIN)
+    // ---------------------------------------------------------------
+
+    public function kategoriArtikel()
+    {
+        $kategoriModel = new KategoriArtikelModel();
+        $db = \Config\Database::connect();
+
+        $categories = $kategoriModel->orderBy('nama_kategori', 'ASC')->findAll();
+
+        foreach ($categories as &$c) {
+            $c['total_artikel'] = $db->table('artikel')->where('id_kategori', $c['id'])->countAllResults();
+        }
+
+        $data = [
+            'title'      => 'Kelola Kategori Artikel - SI CUBIT Admin',
+            'categories' => $categories,
+        ];
+
+        return view('admin/kategori_artikel', $data);
+    }
+
+    public function kategoriArtikelStore()
+    {
+        $namaKategori = trim($this->request->getPost('nama_kategori') ?? '');
+        $deskripsi    = trim($this->request->getPost('deskripsi') ?? '');
+
+        if (empty($namaKategori)) {
+            return redirect()->back()->withInput()->with('error', 'Nama kategori wajib diisi!');
+        }
+
+        $slug = url_title($namaKategori, '-', true);
+
+        $kategoriModel = new KategoriArtikelModel();
+        
+        $saved = $kategoriModel->insert([
+            'nama_kategori' => $namaKategori,
+            'slug'          => $slug,
+            'deskripsi'     => $deskripsi,
+        ]);
+
+        if (!$saved) {
+            $errors = $kategoriModel->errors();
+            return redirect()->back()->withInput()->with('error', !empty($errors) ? implode(', ', $errors) : 'Gagal menyimpan kategori.');
+        }
+
+        return redirect()->to(base_url('admin/kategori-artikel'))->with('success', 'Kategori artikel berhasil ditambahkan!');
+    }
+
+    public function kategoriArtikelUpdate($id)
+    {
+        $kategoriModel = new KategoriArtikelModel();
+        $kategori = $kategoriModel->find($id);
+
+        if (!$kategori) {
+            return redirect()->to(base_url('admin/kategori-artikel'))->with('error', 'Kategori tidak ditemukan.');
+        }
+
+        $namaKategori = trim($this->request->getPost('nama_kategori') ?? '');
+        $deskripsi    = trim($this->request->getPost('deskripsi') ?? '');
+
+        if (empty($namaKategori)) {
+            return redirect()->back()->withInput()->with('error', 'Nama kategori wajib diisi!');
+        }
+
+        $slug = url_title($namaKategori, '-', true);
+
+        $updated = $kategoriModel->update($id, [
+            'nama_kategori' => $namaKategori,
+            'slug'          => $slug,
+            'deskripsi'     => $deskripsi,
+        ]);
+
+        if (!$updated) {
+            $errors = $kategoriModel->errors();
+            return redirect()->back()->withInput()->with('error', !empty($errors) ? implode(', ', $errors) : 'Gagal memperbarui kategori.');
+        }
+
+        return redirect()->to(base_url('admin/kategori-artikel'))->with('success', 'Kategori artikel berhasil diperbarui!');
+    }
+
+    public function kategoriArtikelDelete($id)
+    {
+        $kategoriModel = new KategoriArtikelModel();
+        $kategori = $kategoriModel->find($id);
+
+        if (!$kategori) {
+            return redirect()->to(base_url('admin/kategori-artikel'))->with('error', 'Kategori tidak ditemukan.');
+        }
+
+        $db = \Config\Database::connect();
+        $db->table('artikel')->where('id_kategori', $id)->update(['id_kategori' => null]);
+
+        $kategoriModel->delete($id);
+
+        return redirect()->to(base_url('admin/kategori-artikel'))->with('success', 'Kategori artikel berhasil dihapus!');
     }
 }

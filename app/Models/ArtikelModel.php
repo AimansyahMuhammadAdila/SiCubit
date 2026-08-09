@@ -18,30 +18,36 @@ class ArtikelModel extends Model
         'judul',
         'slug',
         'thumbnail_url',
+        'id_kategori',
         'isi_konten',
         'id_penulis',
         'status',
     ];
 
     protected $validationRules = [
-        'judul'         => 'required|min_length[5]|max_length[255]',
-        'slug'          => 'required|max_length[255]|is_unique[artikel.slug,id,{id}]',
-        'thumbnail_url' => 'permit_empty|valid_url|max_length[255]',
+        'judul'         => 'required|min_length[3]|max_length[255]',
+        'slug'          => 'required|max_length[255]',
+        'thumbnail_url' => 'permit_empty|max_length[255]',
         'isi_konten'    => 'required',
-        'id_penulis'    => 'required|integer',
+        'id_penulis'    => 'permit_empty|integer',
         'status'        => 'permit_empty|in_list[draft,published]',
     ];
 
     /**
-     * Ambil data artikel.
-     * Jika $slug false, ambil semua. Jika ada slug, ambil satu.
+     * Ambil data artikel beserta nama penulis
      */
-    public function getArtikel($slug = false)
+    public function getArtikelWithAuthor($idOrSlug = null)
     {
-        if ($slug === false) {
-            return $this->orderBy('created_at', 'DESC')->findAll();
+        $builder = $this->select('artikel.*, users.nama as nama_penulis, users.role as role_penulis')
+                        ->join('users', 'users.id = artikel.id_penulis', 'left');
+
+        if ($idOrSlug !== null) {
+            if (is_numeric($idOrSlug)) {
+                return $builder->where('artikel.id', $idOrSlug)->first();
+            }
+            return $builder->where('artikel.slug', $idOrSlug)->first();
         }
 
-        return $this->where(['slug' => $slug])->first();
+        return $builder->orderBy('artikel.created_at', 'DESC')->findAll();
     }
 }

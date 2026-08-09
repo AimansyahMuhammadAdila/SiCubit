@@ -185,6 +185,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
+    let hasPraKehamilan = <?= json_encode($has_pra_kehamilan ?? false) ?>;
+    let hasKehamilan = <?= json_encode($has_kehamilan ?? false) ?>;
     
     // --- 1. AMBIL DATA HISTORIS DARI API (AUTO-FILL) ---
     try {
@@ -193,6 +195,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (result.status === 'success' && result.data) {
             if (result.data.pra_kehamilan && result.data.pra_kehamilan.length > 0) {
+                hasPraKehamilan = true;
                 const pra = result.data.pra_kehamilan[0]; 
                 document.querySelector('[name="bb_sebelum_hamil"]').value = pra.bb_sebelum_hamil || '';
                 document.querySelector('[name="riwayat_abortus"]').value = pra.riwayat_abortus || 'Tidak';
@@ -205,6 +208,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
 
             if (result.data.kehamilan && result.data.kehamilan.length > 0) {
+                hasKehamilan = true;
                 const hamil = result.data.kehamilan[0];
                 document.querySelector('[name="kehamilan_ke"]').value = hamil.kehamilan_ke || '';
                 document.querySelector('[name="umur_kehamilan"]').value = hamil.umur_kehamilan || '';
@@ -244,21 +248,52 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const statusKehamilan = "<?= $status_kehamilan ?? session()->get('status_kehamilan') ?? 'pasca_melahirkan' ?>";
     
-    let maxStep = 3;
-    if (statusKehamilan === 'pra_kehamilan') {
-        maxStep = 1;
-    } else if (statusKehamilan === 'hamil') {
-        maxStep = 2;
-    } else {
-        maxStep = 3;
+    function getMaxStep() {
+        if (hasKehamilan) return 3;
+        if (hasPraKehamilan) return 2;
+        return 1;
     }
+
+    let maxStep = getMaxStep();
 
     const urlParams = new URLSearchParams(window.location.search);
     const paramStep = parseInt(urlParams.get('step'));
     
     let currentStep = 1;
-    if (paramStep && paramStep >= 1 && paramStep <= maxStep) {
-        currentStep = paramStep;
+    if (paramStep === 3) {
+        if (!hasPraKehamilan) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Lengkapi Pra Kehamilan',
+                text: 'Silakan isi data Riwayat Pra Kehamilan terlebih dahulu ya Bunda.',
+                confirmButtonColor: '#162065'
+            });
+            currentStep = 1;
+        } else if (!hasKehamilan) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Lengkapi Riwayat Kehamilan',
+                text: 'Silakan isi data Riwayat Kehamilan Saat Ini terlebih dahulu ya Bunda.',
+                confirmButtonColor: '#162065'
+            });
+            currentStep = 2;
+        } else {
+            currentStep = 3;
+        }
+    } else if (paramStep === 2) {
+        if (!hasPraKehamilan) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Lengkapi Pra Kehamilan',
+                text: 'Silakan isi data Riwayat Pra Kehamilan terlebih dahulu ya Bunda.',
+                confirmButtonColor: '#162065'
+            });
+            currentStep = 1;
+        } else {
+            currentStep = 2;
+        }
+    } else {
+        currentStep = 1;
     }
 
     const totalSteps = steps.length;
@@ -307,6 +342,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function updateWizard() {
+        maxStep = getMaxStep();
+
         steps.forEach((step, index) => {
             if (index + 1 === currentStep) {
                 step.classList.remove("hidden", "blur-sm", "opacity-40", "pointer-events-none", "select-none", "scale-[0.98]");
@@ -319,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (currentStep === 1) btnPrev.classList.add("hidden"); else btnPrev.classList.remove("hidden");
 
-        if (currentStep === maxStep) {
+        if (currentStep === 3 || (currentStep === maxStep && currentStep >= maxStep)) {
             btnNext.classList.add("hidden"); 
             btnSubmit.classList.remove("hidden");
         } else {
@@ -333,8 +370,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             const circle = indicator.querySelector("div");
             const text = indicator.querySelector("span");
 
-            if (index + 1 <= maxStep) {
-                if (index + 1 <= currentStep) {
+            const stepNum = index + 1;
+            if (stepNum <= currentStep || (stepNum === 2 && hasPraKehamilan) || (stepNum === 3 && hasKehamilan)) {
+                if (stepNum <= currentStep) {
                     circle.classList.replace("bg-slate-200", "bg-primary");
                     circle.classList.replace("text-slate-400", "text-white");
                     text.classList.replace("text-slate-400", "text-slate-700");
@@ -360,7 +398,36 @@ document.addEventListener('DOMContentLoaded', async function() {
     indicators.forEach((indicator) => {
         indicator.addEventListener("click", () => {
             const stepNum = parseInt(indicator.getAttribute("data-step"));
-            if (stepNum && stepNum <= maxStep && stepNum !== currentStep) {
+            if (stepNum && stepNum !== currentStep) {
+                if (stepNum === 2 && !hasPraKehamilan) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Lengkapi Pra Kehamilan',
+                        text: 'Silakan isi data Riwayat Pra Kehamilan terlebih dahulu ya Bunda.',
+                        confirmButtonColor: '#162065'
+                    });
+                    return;
+                }
+                if (stepNum === 3) {
+                    if (!hasPraKehamilan) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Lengkapi Pra Kehamilan',
+                            text: 'Silakan isi data Riwayat Pra Kehamilan terlebih dahulu ya Bunda.',
+                            confirmButtonColor: '#162065'
+                        });
+                        return;
+                    }
+                    if (!hasKehamilan) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Lengkapi Riwayat Kehamilan',
+                            text: 'Silakan isi data Riwayat Kehamilan Saat Ini terlebih dahulu ya Bunda.',
+                            confirmButtonColor: '#162065'
+                        });
+                        return;
+                    }
+                }
                 if (stepNum < currentStep || validateCurrentStep()) {
                     currentStep = stepNum;
                     updateWizard();
@@ -391,6 +458,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         if (stepNumber === 1) {
+            hasPraKehamilan = true;
             Swal.fire({
                 icon: 'success',
                 title: 'Riwayat Pra Kehamilan Berhasil Disimpan!',
@@ -403,7 +471,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if (maxStep < 2) maxStep = 2;
                     currentStep = 2;
                     updateWizard();
                 } else {
@@ -411,6 +478,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             });
         } else if (stepNumber === 2) {
+            hasKehamilan = true;
             Swal.fire({
                 icon: 'success',
                 title: 'Riwayat Kehamilan Berhasil Disimpan!',
@@ -423,7 +491,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if (maxStep < 3) maxStep = 3;
                     currentStep = 3;
                     updateWizard();
                 } else {

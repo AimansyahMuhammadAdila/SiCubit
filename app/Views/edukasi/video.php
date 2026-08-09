@@ -14,10 +14,24 @@
                 <span class="material-symbols-outlined text-2xl">menu_book</span>
             </div>
             <div>
-                <h1 class="text-xl sm:text-2xl md:text-3xl font-black text-[#162065] tracking-tight">Ruang Edukasi & Video Tips</h1>
-                <p class="text-xs sm:text-sm text-slate-600 font-medium">Panduan praktis dan video interaktif kesehatan ibu & anak</p>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-black text-[#162065] tracking-tight">Ruang Edukasi</h1>
+                <p class="text-xs sm:text-sm text-slate-600 font-medium">Panduan praktis, video interaktif, dan artikel kesehatan ibu & anak</p>
             </div>
         </div>
+    </div>
+
+    <!-- TAB SWITCHER: VIDEO VS ARTIKEL -->
+    <div class="flex items-center justify-center gap-1.5 p-1.5 bg-white/90 backdrop-blur rounded-2xl border border-white/60 shadow-sm w-full max-w-md mx-auto">
+        <a href="<?= base_url('edukasi/video') ?>" 
+           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all bg-[#162065] text-white shadow-md text-center">
+            <span class="material-symbols-outlined text-lg">smart_display</span>
+            <span>Video Edukasi</span>
+        </a>
+        <a href="<?= base_url('edukasi/artikel') ?>" 
+           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all text-slate-600 hover:text-[#162065] hover:bg-slate-100 text-center">
+            <span class="material-symbols-outlined text-lg">article</span>
+            <span>Artikel & Berita</span>
+        </a>
     </div>
 
     <!-- SEARCH BAR -->
