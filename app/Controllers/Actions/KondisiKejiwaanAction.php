@@ -8,11 +8,13 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class KondisiKejiwaanAction extends BaseController
 {
-    protected KondisiKejiwaanIbuModel $kejiwaanModel;
+    protected ?KondisiKejiwaanIbuModel $kejiwaanModel = null;
 
     public function __construct()
     {
-        $this->kejiwaanModel = new KondisiKejiwaanIbuModel();
+        try {
+            $this->kejiwaanModel = new KondisiKejiwaanIbuModel();
+        } catch (\Throwable $e) {}
     }
 
     // ---------------------------------------------------------------

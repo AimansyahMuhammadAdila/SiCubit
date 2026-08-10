@@ -9,13 +9,15 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class ContentAction extends BaseController
 {
-    protected ArtikelModel $artikelModel;
-    protected VideoModel   $videoModel;
+    protected ?ArtikelModel $artikelModel = null;
+    protected ?VideoModel   $videoModel = null;
 
     public function __construct()
     {
-        $this->artikelModel = new ArtikelModel();
-        $this->videoModel   = new VideoModel();
+        try {
+            $this->artikelModel = new ArtikelModel();
+            $this->videoModel   = new VideoModel();
+        } catch (\Throwable $e) {}
     }
 
     // ---------------------------------------------------------------
@@ -24,10 +26,13 @@ class ContentAction extends BaseController
 
     public function listArtikel(): ResponseInterface
     {
-        // Hanya menampilkan yang published
-        $artikel = $this->artikelModel->where('status', 'published')
-                                      ->orderBy('created_at', 'DESC')
-                                      ->findAll();
+        try {
+            $artikel = $this->artikelModel ? $this->artikelModel->where('status', 'published')
+                                          ->orderBy('created_at', 'DESC')
+                                          ->findAll() : [];
+        } catch (\Throwable $e) {
+            $artikel = [];
+        }
 
         return $this->response->setJSON([
             'status' => 'success',

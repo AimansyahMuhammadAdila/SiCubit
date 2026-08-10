@@ -11,17 +11,19 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class DataEntryAction extends BaseController
 {
-    protected RiwayatPraKehamilanModel $praKehamilanModel;
-    protected RiwayatKehamilanModel $kehamilanModel;
-    protected RiwayatPersalinanModel $persalinanModel;
-    protected AsiModel $asiModel;
+    protected ?RiwayatPraKehamilanModel $praKehamilanModel = null;
+    protected ?RiwayatKehamilanModel $kehamilanModel = null;
+    protected ?RiwayatPersalinanModel $persalinanModel = null;
+    protected ?AsiModel $asiModel = null;
 
     public function __construct()
     {
-        $this->praKehamilanModel = new RiwayatPraKehamilanModel();
-        $this->kehamilanModel = new RiwayatKehamilanModel();
-        $this->persalinanModel = new RiwayatPersalinanModel();
-        $this->asiModel = new AsiModel();
+        try {
+            $this->praKehamilanModel = new RiwayatPraKehamilanModel();
+            $this->kehamilanModel = new RiwayatKehamilanModel();
+            $this->persalinanModel = new RiwayatPersalinanModel();
+            $this->asiModel = new AsiModel();
+        } catch (\Throwable $e) {}
     }
 
     /**

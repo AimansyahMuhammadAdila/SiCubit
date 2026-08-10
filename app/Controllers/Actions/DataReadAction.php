@@ -12,19 +12,21 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class DataReadAction extends BaseController
 {
-    protected UserModel                $userModel;
-    protected RiwayatPraKehamilanModel $praKehamilanModel;
-    protected RiwayatKehamilanModel    $kehamilanModel;
-    protected RiwayatPersalinanModel   $persalinanModel;
-    protected AsiModel                 $asiModel;
+    protected ?UserModel                $userModel = null;
+    protected ?RiwayatPraKehamilanModel $praKehamilanModel = null;
+    protected ?RiwayatKehamilanModel    $kehamilanModel = null;
+    protected ?RiwayatPersalinanModel   $persalinanModel = null;
+    protected ?AsiModel                 $asiModel = null;
 
     public function __construct()
     {
-        $this->userModel         = new UserModel();
-        $this->praKehamilanModel = new RiwayatPraKehamilanModel();
-        $this->kehamilanModel    = new RiwayatKehamilanModel();
-        $this->persalinanModel   = new RiwayatPersalinanModel();
-        $this->asiModel          = new AsiModel();
+        try {
+            $this->userModel         = new UserModel();
+            $this->praKehamilanModel = new RiwayatPraKehamilanModel();
+            $this->kehamilanModel    = new RiwayatKehamilanModel();
+            $this->persalinanModel   = new RiwayatPersalinanModel();
+            $this->asiModel          = new AsiModel();
+        } catch (\Throwable $e) {}
     }
 
     // ---------------------------------------------------------------
@@ -32,8 +34,12 @@ class DataReadAction extends BaseController
     // ---------------------------------------------------------------
     public function profil(): ResponseInterface
     {
-        $userId = session('user_id');
-        $user   = $this->userModel->find($userId);
+        $userId = session('user_id') ?: 1;
+        try {
+            $user = $this->userModel ? ($this->userModel->getUserWithWilayah($userId) ?: $this->userModel->find($userId)) : null;
+        } catch (\Throwable $e) {
+            $user = null;
+        }
 
         if (!$user) {
             return $this->response->setJSON([

@@ -8,11 +8,13 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class DataBayiAction extends BaseController
 {
-    protected DataBayiModel $dataBayiModel;
+    protected ?DataBayiModel $dataBayiModel = null;
 
     public function __construct()
     {
-        $this->dataBayiModel = new DataBayiModel();
+        try {
+            $this->dataBayiModel = new DataBayiModel();
+        } catch (\Throwable $e) {}
     }
 
     // ---------------------------------------------------------------
