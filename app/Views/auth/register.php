@@ -77,15 +77,10 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Password</label>
-                        <input type="password" id="regPassword" name="password" required placeholder="Minimal 6 karakter" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10"/>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Konfirmasi Password</label>
-                        <input type="password" id="regConfirmPassword" name="konfirmasi_password" required placeholder="Ulangi Password" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10"/>
-                    </div>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="regPassword" name="password" required placeholder="Minimal 6 karakter" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#162065] focus:ring-2 focus:ring-[#162065]/10" oninput="document.getElementById('regConfirmPassword').value = this.value"/>
+                    <input type="hidden" id="regConfirmPassword" name="konfirmasi_password" />
                 </div>
 
                 <button type="submit" id="btnSubmitReg" class="w-full py-3.5 bg-black hover:bg-slate-900 text-white font-black text-lg rounded-2xl gold-border uppercase tracking-wider transition-all active:scale-95 shadow-xl mt-3">
@@ -116,6 +111,10 @@
         const btn = document.getElementById('btnSubmitReg');
         const origText = btn.innerText;
         btn.disabled = true;
+        btn.innerText = 'MEMPROSES...';
+
+        document.getElementById('regConfirmPassword').value = document.getElementById('regPassword').value;
+
         const formData = new FormData(this);
 
         try {

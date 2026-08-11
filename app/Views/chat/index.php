@@ -8,25 +8,13 @@
         <a href="<?= base_url('dashboard') ?>" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 backdrop-blur border border-white/60 text-[#162065] font-extrabold text-xs shadow-sm hover:bg-white transition mb-3">
             <span class="material-symbols-outlined text-base">arrow_back</span> Kembali
         </a>
-        <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div class="flex items-center gap-3">
-                <div class="size-12 rounded-2xl bg-[#162065] p-1.5 flex items-center justify-center shadow-md">
-                    <img src="<?= base_url('uploads/Bidan_Pintar.png') ?>" alt="Bidan Pintar" class="w-full h-full object-contain filter drop-shadow">
-                </div>
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Bidan Pintar (Asisten AI)</h1>
-                    <p class="text-xs text-slate-600 font-medium">Konsultasi interaktif & panduan kesehatan ibu dan anak 24/7</p>
-                </div>
+        <div class="flex items-center gap-3">
+            <div class="size-12 rounded-2xl bg-[#162065] p-1.5 flex items-center justify-center shadow-md">
+                <img src="<?= base_url('uploads/Bidan_Pintar.png') ?>" alt="Bidan Pintar" class="w-full h-full object-contain filter drop-shadow">
             </div>
-
-            <!-- 2-TAB NAVIGATION MATCHING FLUTTER ANDROID -->
-            <div class="flex items-center gap-2 bg-white/80 p-1.5 rounded-full border border-white/60 shadow-sm">
-                <a href="<?= base_url('faq') ?>" class="px-4 py-2 rounded-full text-xs font-bold text-slate-600 hover:text-[#162065] transition">
-                    FAQ Kebidanan
-                </a>
-                <a href="<?= base_url('chat') ?>" class="px-4 py-2 rounded-full text-xs font-black bg-[#162065] text-white shadow-sm">
-                    Tanya Bidan AI
-                </a>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-[#162065] tracking-tight">Bidan Pintar (Asisten AI)</h1>
+                <p class="text-xs text-slate-600 font-medium">Konsultasi interaktif & panduan kesehatan ibu dan anak 24/7</p>
             </div>
         </div>
     </div>
