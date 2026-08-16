@@ -125,18 +125,66 @@ class AuthAction extends BaseController
             }
         } catch (\Throwable $e) {}
 
-        $noTelp = $this->request->getPost('no_telp');
-        $password = $this->request->getPost('password');
+        $noTelp = trim($this->request->getPost('no_telp') ?? '');
+        $password = trim($this->request->getPost('password') ?? '');
 
         if (empty($noTelp) || empty($password)) {
             return $this->response->setJSON([
                 'status' => 'error',
-                'message' => 'Nomor WhatsApp dan Password wajib diisi.',
+                'message' => 'Nomor WhatsApp / Username dan Password wajib diisi.',
             ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        // DUKUNGAN LOGIN KHUSUS ADMIN (Input 'Admin' dan 'Admin123')
+        if (strcasecmp($noTelp, 'Admin') === 0 && $password === 'Admin123') {
+            $adminUser = null;
+            try {
+                if ($this->userModel) {
+                    $adminUser = $this->userModel->where('role', 'admin')->first()
+                              ?: $this->userModel->where('no_telp', 'Admin')->first();
+                }
+            } catch (\Throwable $e) {}
+
+            $adminId = $adminUser['id'] ?? 1;
+            $adminName = $adminUser['nama'] ?? 'Admin Bidan SiCubit';
+
+            $sessData = [
+                'is_logged_in' => true,
+                'logged_in'    => true,
+                'is_admin'     => true,
+                'user_id'      => $adminId,
+                'id'           => $adminId,
+                'nama'         => $adminName,
+                'no_telp'      => 'Admin',
+                'role'         => 'admin',
+            ];
+            session()->set($sessData);
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                foreach ($sessData as $k => $v) {
+                    $_SESSION[$k] = $v;
+                }
+            }
+
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Login Admin Berhasil! Mengalihkan ke Panel Kendali Bidan...',
+                'data'    => [
+                    'role' => 'admin',
+                    'user' => [
+                        'id'      => $adminId,
+                        'nama'    => $adminName,
+                        'no_telp' => 'Admin',
+                        'role'    => 'admin',
+                    ],
+                ],
+            ]);
+        }
+
         try {
-            $user = $this->userModel ? $this->userModel->where('no_telp', $noTelp)->first() : null;
+            $user = $this->userModel ? $this->userModel->groupStart()
+                ->where('no_telp', $noTelp)
+                ->orWhere('username', $noTelp)
+                ->groupEnd()->first() : null;
         } catch (\Throwable $e) {
             $user = null;
         }
@@ -185,12 +233,13 @@ class AuthAction extends BaseController
         try {
             $sessData = [
                 'is_logged_in' => true,
-                'logged_in' => true,
-                'user_id' => $user['id'],
-                'id' => $user['id'],
-                'nama' => $user['nama'],
-                'no_telp' => $user['no_telp'],
-                'role' => $user['role'],
+                'logged_in'    => true,
+                'is_admin'     => ($user['role'] === 'admin' || $user['role'] === 'bidan'),
+                'user_id'      => $user['id'],
+                'id'           => $user['id'],
+                'nama'         => $user['nama'],
+                'no_telp'      => $user['no_telp'],
+                'role'         => $user['role'],
             ];
             session()->set($sessData);
             if (session_status() === PHP_SESSION_ACTIVE) {
