@@ -124,8 +124,8 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
             <!-- 6. Cek Kelancaran ASI & Assessment -->
             <a href="<?= base_url('laktasi/cek') ?>" 
                class="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 active:scale-95">
-                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl bg-white/10 flex items-center justify-center text-amber-300 border border-white/20 transition-transform group-hover:scale-110">
-                    <span class="material-symbols-outlined text-3xl sm:text-4xl">water_drop</span>
+                <div class="size-14 sm:size-16 md:size-20 mb-2 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <img src="<?= base_url('uploads/Kalkulator_ASI.png') ?>" alt="Kalkulator Kecukupan ASI" class="w-full h-full object-contain filter drop-shadow">
                 </div>
                 <span class="text-[11px] sm:text-xs md:text-sm font-bold leading-tight text-white group-hover:text-blue-200">
                     Kalkulator<br>Kecukupan ASI
