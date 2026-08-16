@@ -74,37 +74,84 @@ class AuthAction extends BaseController
         );
 
         // Siapkan data
+        $idKabKota = $this->request->getPost('id_kabkota');
+        $idPuskesmas = $this->request->getPost('id_puskesmas');
+        $umur = $this->request->getPost('umur');
+        $jumlahAnak = $this->request->getPost('jumlah_anak');
+        $nama = trim($this->request->getPost('nama') ?? '');
+        $noTelp = trim($this->request->getPost('no_telp') ?? '');
+
         $data = [
-            'nama' => $this->request->getPost('nama'),
-            'umur' => (int) $this->request->getPost('umur'),
-            'pekerjaan' => $this->request->getPost('pekerjaan'),
-            'jumlah_anak' => (int) ($this->request->getPost('jumlah_anak') ?? 0),
-            'no_telp' => $this->request->getPost('no_telp'),
-            'alamat' => $this->request->getPost('alamat'),
-            'id_kabkota' => $this->request->getPost('id_kabkota'),
-            'id_puskesmas' => $this->request->getPost('id_puskesmas'),
+            'nama'             => $nama,
+            'role'             => 'ibu',
+            'umur'             => (!empty($umur) && is_numeric($umur)) ? (int) $umur : null,
+            'pekerjaan'        => $this->request->getPost('pekerjaan') ?: null,
+            'jumlah_anak'      => (!empty($jumlahAnak) && is_numeric($jumlahAnak)) ? (int) $jumlahAnak : 0,
+            'no_telp'          => $noTelp,
+            'alamat'           => $this->request->getPost('alamat') ?: null,
+            'id_kabkota'       => !empty($idKabKota) ? $idKabKota : null,
+            'id_puskesmas'     => !empty($idPuskesmas) ? $idPuskesmas : null,
             'status_kehamilan' => $this->request->getPost('status_kehamilan') ?: 'pasca_melahirkan',
-            'password_hash' => $passwordHash,
+            'password_hash'    => $passwordHash,
+            'created_at'       => date('Y-m-d H:i:s'),
+            'updated_at'       => date('Y-m-d H:i:s'),
         ];
 
-        // Simpan ke database
+        // Simpan ke database secara langsung
         try {
-            if ($this->userModel && !$this->userModel->insert($data, false)) {
+            $db = \Config\Database::connect();
+            $builder = $db->table('users');
+            
+            // Cek duplikasi nomor telepon secara manual
+            $existing = $builder->where('no_telp', $noTelp)->get()->getRowArray();
+            if ($existing) {
                 return $this->response->setJSON([
-                    'status' => 'error',
-                    'message' => 'Gagal menyimpan data.',
-                    'errors' => $this->userModel->errors(),
+                    'status'  => 'error',
+                    'message' => 'Nomor WhatsApp sudah terdaftar. Silakan langsung login.',
+                ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $inserted = $builder->insert($data);
+            if (!$inserted) {
+                return $this->response->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Gagal menyimpan data pendaftaran ke database.',
                 ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
             }
-            $insertId = $this->userModel ? $this->userModel->getInsertID() : rand(100, 999);
+            $insertId = $db->insertID();
         } catch (\Throwable $e) {
-            $insertId = rand(100, 999);
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+            ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        // Set session otomatis
+        $sessData = [
+            'is_logged_in' => true,
+            'logged_in'    => true,
+            'is_admin'     => false,
+            'user_id'      => $insertId,
+            'id'           => $insertId,
+            'nama'         => $nama,
+            'no_telp'      => $noTelp,
+            'role'         => 'ibu',
+        ];
+        session()->set($sessData);
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            foreach ($sessData as $k => $v) {
+                $_SESSION[$k] = $v;
+            }
         }
 
         return $this->response->setJSON([
-            'status' => 'success',
-            'message' => 'Registrasi berhasil.',
-            'data' => ['id' => $insertId ?: rand(100, 999)],
+            'status'  => 'success',
+            'message' => 'Registrasi berhasil. Selamat datang di SiCubit!',
+            'data'    => [
+                'id'   => $insertId,
+                'role' => 'ibu',
+                'user' => $sessData,
+            ],
         ])->setStatusCode(ResponseInterface::HTTP_CREATED);
     }
 
@@ -114,12 +161,12 @@ class AuthAction extends BaseController
 
     public function login(): ResponseInterface
     {
-        // Rate Limiter: Maksimal 15 percobaan login per menit per IP
+        // Rate Limiter: Maksimal 25 percobaan login per menit per IP
         try {
             $throttler = \Config\Services::throttler();
-            if ($throttler->check(md5($this->request->getIPAddress() . 'login'), 15, MINUTE) === false) {
+            if ($throttler->check(md5($this->request->getIPAddress() . 'login'), 25, MINUTE) === false) {
                 return $this->response->setJSON([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Terlalu banyak percobaan login. Silakan tunggu 1 menit.',
                 ])->setStatusCode(429);
             }
@@ -130,14 +177,13 @@ class AuthAction extends BaseController
 
         if (empty($noTelp) || empty($password)) {
             return $this->response->setJSON([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Nomor WhatsApp / Username dan Password wajib diisi.',
             ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         // DUKUNGAN LOGIN KHUSUS ADMIN (Username 'Admin' / 'admin' / 'bidan')
         if (strcasecmp($noTelp, 'Admin') === 0 || strcasecmp($noTelp, 'admin') === 0 || strcasecmp($noTelp, 'bidan') === 0) {
-            // SANGAT KETAT: Password HARUS 'Admin123'! Password abal-abal akan ditolak!
             if ($password !== 'Admin123') {
                 return $this->response->setJSON([
                     'status'  => 'error',
@@ -147,10 +193,9 @@ class AuthAction extends BaseController
 
             $adminUser = null;
             try {
-                if ($this->userModel) {
-                    $adminUser = $this->userModel->where('role', 'admin')->first()
-                              ?: $this->userModel->where('no_telp', 'Admin')->first();
-                }
+                $db = \Config\Database::connect();
+                $adminUser = $db->table('users')->where('role', 'admin')->get()->getRowArray()
+                          ?: $db->table('users')->where('no_telp', 'Admin')->get()->getRowArray();
             } catch (\Throwable $e) {}
 
             $adminId = $adminUser['id'] ?? 1;
@@ -198,21 +243,20 @@ class AuthAction extends BaseController
         }
 
         try {
-            $user = null;
-            if ($this->userModel) {
-                $builder = $this->userModel->groupStart()
-                    ->where('no_telp', $noTelp)
-                    ->orWhere('username', $noTelp);
-                
-                if (!empty($cleanTelp)) {
-                    $builder->orWhere('no_telp', $cleanTelp);
-                }
-                if (!empty($altTelp)) {
-                    $builder->orWhere('no_telp', $altTelp);
-                }
-                
-                $user = $builder->groupEnd()->first();
+            $db = \Config\Database::connect();
+            $builder = $db->table('users');
+            
+            $builder->groupStart()
+                ->where('no_telp', $noTelp)
+                ->orWhere('nama', $noTelp);
+            
+            if (!empty($cleanTelp)) {
+                $builder->orWhere('no_telp', $cleanTelp);
             }
+            if (!empty($altTelp)) {
+                $builder->orWhere('no_telp', $altTelp);
+            }
+            $user = $builder->groupEnd()->get()->getRowArray();
         } catch (\Throwable $e) {
             $user = null;
         }
