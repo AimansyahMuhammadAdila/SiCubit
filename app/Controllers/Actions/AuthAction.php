@@ -143,7 +143,7 @@ class AuthAction extends BaseController
 
         if (!$user) {
             try {
-                session()->set([
+                $sessData = [
                     'is_logged_in' => true,
                     'logged_in' => true,
                     'user_id' => 1,
@@ -151,7 +151,13 @@ class AuthAction extends BaseController
                     'nama' => 'Bunda SiCubit',
                     'no_telp' => $noTelp,
                     'role' => 'ibu',
-                ]);
+                ];
+                session()->set($sessData);
+                if (session_status() === PHP_SESSION_ACTIVE) {
+                    foreach ($sessData as $k => $v) {
+                        $_SESSION[$k] = $v;
+                    }
+                }
             } catch (\Throwable $e) {}
 
             return $this->response->setJSON([
@@ -177,7 +183,7 @@ class AuthAction extends BaseController
         }
 
         try {
-            session()->set([
+            $sessData = [
                 'is_logged_in' => true,
                 'logged_in' => true,
                 'user_id' => $user['id'],
@@ -185,7 +191,13 @@ class AuthAction extends BaseController
                 'nama' => $user['nama'],
                 'no_telp' => $user['no_telp'],
                 'role' => $user['role'],
-            ]);
+            ];
+            session()->set($sessData);
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                foreach ($sessData as $k => $v) {
+                    $_SESSION[$k] = $v;
+                }
+            }
         } catch (\Throwable $e) {}
 
         return $this->response->setJSON([
