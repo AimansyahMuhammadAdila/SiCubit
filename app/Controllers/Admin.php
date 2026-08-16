@@ -18,7 +18,7 @@ class Admin extends BaseController
     {
         // PROTEKSI: Jika bukan admin, tendang ke login admin
         if (!session()->get('is_admin')) {
-            header('Location: ' . base_url('admin/login'));
+            header('Location: ' . base_url('login'));
             exit;
         }
 
