@@ -189,11 +189,30 @@ class AuthAction extends BaseController
             ]);
         }
 
+        $cleanTelp = preg_replace('/[^0-9]/', '', $noTelp);
+        $altTelp = '';
+        if (str_starts_with($cleanTelp, '62')) {
+            $altTelp = '0' . substr($cleanTelp, 2);
+        } elseif (str_starts_with($cleanTelp, '0')) {
+            $altTelp = '62' . substr($cleanTelp, 1);
+        }
+
         try {
-            $user = $this->userModel ? $this->userModel->groupStart()
-                ->where('no_telp', $noTelp)
-                ->orWhere('username', $noTelp)
-                ->groupEnd()->first() : null;
+            $user = null;
+            if ($this->userModel) {
+                $builder = $this->userModel->groupStart()
+                    ->where('no_telp', $noTelp)
+                    ->orWhere('username', $noTelp);
+                
+                if (!empty($cleanTelp)) {
+                    $builder->orWhere('no_telp', $cleanTelp);
+                }
+                if (!empty($altTelp)) {
+                    $builder->orWhere('no_telp', $altTelp);
+                }
+                
+                $user = $builder->groupEnd()->first();
+            }
         } catch (\Throwable $e) {
             $user = null;
         }
@@ -201,7 +220,7 @@ class AuthAction extends BaseController
         if (!$user) {
             return $this->response->setJSON([
                 'status'  => 'error',
-                'message' => 'Nomor WhatsApp atau Username tidak terdaftar. Silakan registrasi terlebih dahulu.',
+                'message' => 'Nomor WhatsApp atau Username tidak terdaftar. Silakan registrasi akun terlebih dahulu.',
             ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
         }
 
