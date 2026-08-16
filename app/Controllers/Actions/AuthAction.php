@@ -145,7 +145,9 @@ class AuthAction extends BaseController
             try {
                 session()->set([
                     'is_logged_in' => true,
+                    'logged_in' => true,
                     'user_id' => 1,
+                    'id' => 1,
                     'nama' => 'Bunda SiCubit',
                     'no_telp' => $noTelp,
                     'role' => 'ibu',
@@ -156,6 +158,7 @@ class AuthAction extends BaseController
                 'status' => 'success',
                 'message' => 'Login berhasil.',
                 'data' => [
+                    'role' => 'ibu',
                     'user' => [
                         'id' => 1,
                         'nama' => 'Bunda SiCubit',
@@ -176,7 +179,9 @@ class AuthAction extends BaseController
         try {
             session()->set([
                 'is_logged_in' => true,
+                'logged_in' => true,
                 'user_id' => $user['id'],
+                'id' => $user['id'],
                 'nama' => $user['nama'],
                 'no_telp' => $user['no_telp'],
                 'role' => $user['role'],
@@ -187,6 +192,7 @@ class AuthAction extends BaseController
             'status' => 'success',
             'message' => 'Login berhasil.',
             'data' => [
+                'role' => $user['role'],
                 'user' => [
                     'id' => $user['id'],
                     'nama' => $user['nama'],
