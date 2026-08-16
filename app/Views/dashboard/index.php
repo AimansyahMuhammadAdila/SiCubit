@@ -24,7 +24,7 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
                     <?= esc(str_replace('_', ' ', strtoupper($statusKehamilan))) ?>
                 </div>
                 <h2 class="text-[#162065] font-black text-xl sm:text-2xl md:text-3xl leading-tight">
-                    Halo Bunda.......
+                    Halo <?= esc(session()->get('nama') ?: 'Bunda') ?>
                 </h2>
                 <p class="text-slate-800 font-bold text-xs sm:text-sm md:text-base mt-0.5">
                     Selamat datang di <span class="text-[#162065] font-black">SiCubit</span>
@@ -35,6 +35,28 @@ $statusKehamilan = session()->get('status_kehamilan') ?? $status_kehamilan ?? 'p
         <a href="<?= base_url('profil') ?>" class="hidden sm:flex items-center gap-2 bg-white/80 hover:bg-white text-[#162065] px-4 py-2.5 rounded-2xl text-xs font-black shadow-sm transition border border-white/80 whitespace-nowrap">
             <span class="material-symbols-outlined text-lg">person</span> Lihat Profil
         </a>
+    </div>
+
+    <!-- HEALTH QUICK METRICS ROW (IMT & EPDS MATCHING ANDROID UI) -->
+    <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-white/60 shadow-sm flex items-center gap-3">
+            <div class="size-11 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-2xl">monitor_weight</span>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">IMT Status</p>
+                <h4 class="font-black text-slate-800 text-sm sm:text-base">Ideal / Normal</h4>
+            </div>
+        </div>
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-white/60 shadow-sm flex items-center gap-3">
+            <div class="size-11 rounded-xl bg-[#162065]/10 text-[#162065] flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-2xl">psychology</span>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">EPDS Mental</p>
+                <h4 class="font-black text-slate-800 text-sm sm:text-base">Kondisi Stabil</h4>
+            </div>
+        </div>
     </div>
 
     <!-- MAIN MENU CONTAINER (ADAPTIVE GRID: 3 COLS MOBILE -> 6 COLS DESKTOP) -->
