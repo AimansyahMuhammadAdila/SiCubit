@@ -133,10 +133,16 @@ class AuthAction extends BaseController
                 'status' => 'error',
                 'message' => 'Nomor WhatsApp / Username dan Password wajib diisi.',
             ])->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
-        }
+               // DUKUNGAN LOGIN KHUSUS ADMIN (Username 'Admin' / 'admin' / 'bidan')
+        if (strcasecmp($noTelp, 'Admin') === 0 || strcasecmp($noTelp, 'admin') === 0 || strcasecmp($noTelp, 'bidan') === 0) {
+            // SANGAT KETAT: Password HARUS 'Admin123'! Password abal-abal akan ditolak!
+            if ($password !== 'Admin123') {
+                return $this->response->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Password Admin salah! Silakan gunakan password Admin123.',
+                ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+            }
 
-        // DUKUNGAN LOGIN KHUSUS ADMIN (Input 'Admin' dan 'Admin123')
-        if (strcasecmp($noTelp, 'Admin') === 0 && $password === 'Admin123') {
             $adminUser = null;
             try {
                 if ($this->userModel) {
@@ -158,6 +164,7 @@ class AuthAction extends BaseController
                 'no_telp'      => 'Admin',
                 'role'         => 'admin',
             ];
+
             session()->set($sessData);
             if (session_status() === PHP_SESSION_ACTIVE) {
                 foreach ($sessData as $k => $v) {
@@ -190,45 +197,18 @@ class AuthAction extends BaseController
         }
 
         if (!$user) {
-            try {
-                $sessData = [
-                    'is_logged_in' => true,
-                    'logged_in' => true,
-                    'user_id' => 1,
-                    'id' => 1,
-                    'nama' => 'Bunda SiCubit',
-                    'no_telp' => $noTelp,
-                    'role' => 'ibu',
-                ];
-                session()->set($sessData);
-                if (session_status() === PHP_SESSION_ACTIVE) {
-                    foreach ($sessData as $k => $v) {
-                        $_SESSION[$k] = $v;
-                    }
-                }
-            } catch (\Throwable $e) {}
-
             return $this->response->setJSON([
-                'status' => 'success',
-                'message' => 'Login berhasil.',
-                'data' => [
-                    'role' => 'ibu',
-                    'user' => [
-                        'id' => 1,
-                        'nama' => 'Bunda SiCubit',
-                        'no_telp' => $noTelp,
-                        'role' => 'ibu',
-                    ],
-                ],
-            ]);
+                'status'  => 'error',
+                'message' => 'Nomor WhatsApp atau Username tidak terdaftar. Silakan registrasi terlebih dahulu.',
+            ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
         }
 
         if (!password_verify($password, $user['password_hash'])) {
             return $this->response->setJSON([
-                'status' => 'error',
-                'message' => 'Nomor WhatsApp atau password salah.',
+                'status'  => 'error',
+                'message' => 'Password yang Anda masukkan salah.',
             ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
-        }
+        }   }
 
         try {
             $sessData = [
